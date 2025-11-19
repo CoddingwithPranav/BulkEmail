@@ -1,21 +1,38 @@
 {
   "$schema": "https://turborepo.com/schema.json",
-  "ui": "tui",
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".next/**", "!.next/cache/**"]
+      "outputs": ["dist/**", "build/**", ".vite/**"]
     },
     "lint": {
-      "dependsOn": ["^lint"]
+      "dependsOn": ["^lint"],
+      "outputs": []
     },
-    "check-types": {
-      "dependsOn": ["^check-types"]
+    "type-check": {
+      "dependsOn": ["^type-check"],
+      "outputs": []
     },
     "dev": {
       "cache": false,
       "persistent": true
+    },
+    "clean": {
+      "cache": false
     }
+  },
+  "globalDependencies": [
+    "tsconfig.json",
+    "tailwind.config.js",
+    "postcss.config.js",
+    ".env*"
+  ],
+  "globalEnv": ["NODE_ENV"],
+  "globalPassThroughEnv": ["VITE_*", "API_*"],
+  "ui": "tui",
+  "concurrency": "50%",
+  "remoteCache": {
+    "signature": true
   }
 }
