@@ -384,7 +384,7 @@ export default function AuthPage() {
             className="w-full h-12 flex items-center gap-2"
           >
             <Eye className="h-4 w-4" />
-            Try as Guest
+            <Link href="/guest"> Try as Guest </Link>
           </Button>
 
           <div className="text-center mt-6">

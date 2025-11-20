@@ -92,7 +92,7 @@ model Files {
   receivers Receiver[]
   campaigns Campaign[] // a file can be reused in multiple campaigns
 
-  @@map("files_v1")
+  @@map("files")
 }
 
 model Receiver {
@@ -112,7 +112,7 @@ model Receiver {
   file Files @relation(fields: [fileId], references: [id], onDelete: Cascade)
 
   @@unique([fileId, phoneNumber]) // prevent duplicates in same file
-  @@map("receiver_v1")
+  @@map("receiver")
 }
 
 model Campaign {
@@ -146,7 +146,7 @@ model Campaign {
   user User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   file Files? @relation(fields: [fileId], references: [id], onDelete: SetNull)
 
-  @@map("campaign_v1")
+  @@map("campaign")
 }
 
 model QuickSMSSend {
@@ -161,5 +161,6 @@ model QuickSMSSend {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@map("quick_sms_send_v1")
+  @@map("quick_sms_send")
 }
+
