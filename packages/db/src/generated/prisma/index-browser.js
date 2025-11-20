@@ -200,6 +200,16 @@ exports.Prisma.QuickSMSSendScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.PaymentScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  paidOn: 'paidOn',
+  isPaid: 'isPaid',
+  isSmsSent: 'isSmsSent',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -261,7 +271,8 @@ exports.Prisma.ModelName = {
   Files: 'Files',
   Receiver: 'Receiver',
   Campaign: 'Campaign',
-  QuickSMSSend: 'QuickSMSSend'
+  QuickSMSSend: 'QuickSMSSend',
+  Payment: 'Payment'
 };
 
 /**
