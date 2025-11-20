@@ -72,6 +72,7 @@ model User {
   files      Files[]
   campaigns  Campaign[]
   quickSends QuickSMSSend[]
+  payments   Payment[]
 
   @@map("users")
 }
@@ -131,7 +132,7 @@ model Campaign {
   recipientsNumber Int?
   deliveredNumber  Int   @default(0)
   failedNumber     Int   @default(0)
-  deliveryRate     Float @default(0) // can be calculated or stored
+  deliveryRate     Float @default(0) 
 
   totalSmsCost        Float?
   paymentReceiptImage String?
@@ -162,5 +163,20 @@ model QuickSMSSend {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("quick_sms_send")
+}
+
+
+model Payment {
+  id Int @id @default(autoincrement())
+  userId Int
+  paidOn DateTime @default(now())
+  isPaid Boolean @default(false)
+  isSmsSent Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("payment")
 }
 
