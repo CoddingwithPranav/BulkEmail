@@ -27,7 +27,7 @@ app.use(expressWinston.logger({
   ignoreRoute: (req) => req.url === '/api/health',
 }));
 
-app.use('/api', routes);
+app.use('/api/v1', routes);
 
 // Health check (won't be logged because of ignoreRoute above)
 app.get('/api/health', (req, res) => {

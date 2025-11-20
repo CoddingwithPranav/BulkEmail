@@ -10,9 +10,9 @@ export default async function CustomersRequestsLayout({
 }>) {
   const role = await getCurrentRole();
 
-  if (!hasAccess(role, [SystemRole.ADMIN, SystemRole.DEALER])) {
-    redirect("/not-authorized");
-  }
+  // if (!hasAccess(role, [SystemRole.ADMIN, SystemRole.DEALER])) {
+  //   redirect("/not-authorized");
+  // }
 
   return <>{children}</>;
 }
