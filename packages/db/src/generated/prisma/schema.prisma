@@ -1,0 +1,165 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  GUEST
+  USER
+  ADMIN
+  SUPERADMIN
+}
+
+enum AccountType {
+  INDIVIDUAL
+  ORGANIZATION
+}
+
+enum FileType {
+  CSV
+  XLSX
+}
+
+enum UploadStatus {
+  PENDING
+  UPLOADED
+  FAILED
+}
+
+enum CampaignStatus {
+  PENDING
+  CANCELLED
+  APPROVED
+}
+
+enum DeliveryStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+}
+
+enum QuickSendStatus {
+  PENDING
+  SENT
+  FAILED
+}
+
+model User {
+  id                Int          @id @default(autoincrement())
+  isGuest           Boolean      @default(false) // true = temporary guest account (no login)
+  email             String?      @unique
+  phoneNumber       String?      @unique
+  hashedPassword    String? // null for guests
+  firstName         String?
+  lastName          String?
+  organizationName  String?
+  profileImage      String?
+  accountType       AccountType?
+  isAccountVerified Boolean      @default(false)
+  role              Role         @default(USER)
+  citizenshipNumber String?
+  citizenshipImage  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  files      Files[]
+  campaigns  Campaign[]
+  quickSends QuickSMSSend[]
+
+  @@map("users")
+}
+
+model Files {
+  id                Int          @id @default(autoincrement())
+  userId            Int
+  name              String
+  numberOfReceivers Int? // filled after parsing
+  sizeInBytes       BigInt
+  type              FileType
+  uploadStatus      UploadStatus @default(PENDING)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  receivers Receiver[]
+  campaigns Campaign[] // a file can be reused in multiple campaigns
+
+  @@map("files")
+}
+
+model Receiver {
+  id           Int     @id @default(autoincrement())
+  fileId       Int
+  firstName    String?
+  lastName     String?
+  province     String?
+  district     String?
+  municipality String?
+  phoneNumber  String
+  isDeleted    Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  file Files @relation(fields: [fileId], references: [id], onDelete: Cascade)
+
+  @@unique([fileId, phoneNumber]) // prevent duplicates in same file
+  @@map("receiver")
+}
+
+model Campaign {
+  id             Int            @id @default(autoincrement())
+  userId         Int
+  name           String
+  messageText    String
+  status         CampaignStatus @default(PENDING) // approval status
+  deliveryStatus DeliveryStatus @default(NOT_STARTED)
+
+  province     String?
+  district     String?
+  municipality String?
+
+  fileId           Int?
+  recipientsNumber Int?
+  deliveredNumber  Int   @default(0)
+  failedNumber     Int   @default(0)
+  deliveryRate     Float @default(0) // can be calculated or stored
+
+  totalSmsCost        Float?
+  paymentReceiptImage String?
+  paid                Boolean @default(false)
+  isEmailSent         Boolean @default(false)
+
+  submitDate DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  file Files? @relation(fields: [fileId], references: [id], onDelete: SetNull)
+
+  @@map("campaign")
+}
+
+model QuickSMSSend {
+  id            Int             @id @default(autoincrement())
+  userId        Int
+  toPhoneNumber String
+  message       String
+  status        QuickSendStatus @default(PENDING)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("quick_sms_send")
+}
