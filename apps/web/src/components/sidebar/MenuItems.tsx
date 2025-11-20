@@ -1,6 +1,6 @@
-import { getNavGroupsByRole } from '@/hooks/use-nav-groups';
-import { SidebarGroup, SidebarGroupLabel, SidebarMenu } from '../ui/sidebar';
-import { MenuItem } from './MenuItem';
+import { getNavGroupsByRole } from "@/hooks/use-nav-groups";
+import { SidebarGroup, SidebarGroupLabel, SidebarMenu } from "../ui/sidebar";
+import { MenuItem } from "./MenuItem";
 
 export const MenuItems = async () => {
   const { navItems, businessNav } = await getNavGroupsByRole();

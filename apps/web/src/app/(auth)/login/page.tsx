@@ -188,17 +188,13 @@
 //   );
 // }
 
-
 // app/auth/page.tsx
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ThemeToggle } from "@/components/header/ThemeToggle";
 import { Eye, EyeOff, MessageCircle } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -207,181 +203,225 @@ import { useState } from "react";
 export default function AuthPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [activeTab, setActiveTab] = useState("register");
+  const [type, setType] = useState("individual");
 
   return (
-    <div className="flex min-h-screen bg-background-light dark:bg-background-dark overflow-hidden">
-      {/* LEFT: Form – Takes full height */}
-      <div className="flex w-full lg:w-1/2 items-center justify-center p-6 lg:p-12">
-        <Card className="w-full max-w-lg border-0 shadow-2xl bg-surface-light dark:bg-surface-dark">
-          <div className="p-8 lg:p-12 space-y-8">
-            {/* Logo + Title */}
-            <div className="text-center lg:text-left">
-              <div className="flex items-center justify-center lg:justify-start gap-3 mb-4">
-                <MessageCircle className="h-10 w-10 text-primary dark:text-secondary" />
-                <h1 className="text-3xl font-bold text-text-light dark:text-text-dark">NepalSMS</h1>
-              </div>
-              <p className="text-placeholder-light dark:text-placeholder-dark">
-                Reliable Bulk SMS for Nepal
-              </p>
-            </div>
-
-            {/* Tabs */}
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-2 h-14 bg-gray-200/50 dark:bg-white/10 p-1.5 rounded-lg">
-                <TabsTrigger value="register" className="data-[state=active]:bg-surface-light data-[state=active]:text-primary dark:data-[state=active]:bg-surface-dark dark:data-[state=active]:text-white rounded-md font-medium">
-                  Register
-                </TabsTrigger>
-                <TabsTrigger value="login" className="data-[state=active]:bg-surface-light data-[state=active]:text-primary dark:data-[state=active]:bg-surface-dark dark:data-[state=active]:text-white rounded-md font-medium">
-                  Log In
-                </TabsTrigger>
-              </TabsList>
-
-              {/* Register Form */}
-              <TabsContent value="register" className="mt-8 space-y-6">
-                <div className="space-y-5">
-                  <div>
-                    <Label htmlFor="name">Full Name / Organization</Label>
-                    <Input id="name" placeholder="Enter your name or organization" className="mt-2 h-12" />
-                  </div>
-                  <div>
-                    <Label htmlFor="email">Email Address</Label>
-                    <Input id="email" type="email" placeholder="you@example.com" className="mt-2 h-12" />
-                  </div>
-                  <div>
-                    <Label htmlFor="phone">Phone Number</Label>
-                    <div className="flex mt-2">
-                      <span className="inline-flex items-center rounded-l-lg border border-r-0 border-border-light dark:border-border-dark bg-gray-100 dark:bg-surface-dark px-4 text-sm font-medium">
-                        +977
-                      </span>
-                      <Input id="phone" placeholder="98XXXXXXXX" className="rounded-l-none h-12" />
-                    </div>
-                  </div>
-                  <div>
-                    <Label htmlFor="password">Password</Label>
-                    <div className="relative mt-2">
-                      <Input
-                        id="password"
-                        type={showPassword ? "text" : "password"}
-                        placeholder="Enter a strong password"
-                        className="h-12 pr-12"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-3.5 text-placeholder-light dark:text-placeholder-dark hover:text-primary"
-                      >
-                        {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                      </button>
-                    </div>
-                    <p className="text-xs text-placeholder-light dark:text-placeholder-dark mt-1">
-                      Must be at least 8 characters long.
-                    </p>
-                  </div>
-                  <div>
-                    <Label>Account Type</Label>
-                    <RadioGroup defaultValue="individual" className="flex gap-8 mt-4">
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="individual" id="individual" />
-                        <Label htmlFor="individual" className="cursor-pointer font-medium">Individual</Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="organization" id="organization" />
-                        <Label htmlFor="organization" className="cursor-pointer font-medium">Organization</Label>
-                      </div>
-                    </RadioGroup>
-                  </div>
-                </div>
-                <Button className="w-full h-14 text-lg font-bold bg-primary hover:bg-primary/90 dark:bg-secondary dark:hover:bg-secondary/90 shadow-lg">
-                  Create Account
-                </Button>
-              </TabsContent>
-
-              {/* Login Form */}
-              <TabsContent value="login" className="mt-8 space-y-6">
-                <div className="space-y-5">
-                  <div>
-                    <Label htmlFor="login-email">Email or Phone</Label>
-                    <Input id="login-email" placeholder="Enter email or phone" className="mt-2 h-12" />
-                  </div>
-                  <div>
-                    <Label htmlFor="login-password">Password</Label>
-                    <div className="relative mt-2">
-                      <Input
-                        id="login-password"
-                        type={showPassword ? "text" : "password"}
-                        placeholder="Enter your password"
-                        className="h-12 pr-12"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-3.5 text-placeholder-light dark:text-placeholder-dark hover:text-primary"
-                      >
-                        {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                <Button className="w-full h-14 text-lg font-bold bg-primary hover:bg-primary/90 dark:bg-secondary dark:hover:bg-secondary/90 shadow-lg">
-                  Log In
-                </Button>
-              </TabsContent>
-            </Tabs>
-
-            <div className="relative my-8">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-border-light dark:border-border-dark" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-surface-light dark:bg-surface-dark px-4 text-placeholder-light dark:text-placeholder-dark">
-                  Or
-                </span>
-              </div>
-            </div>
-
-            <Button variant="outline" className="w-full h-14 text-lg font-medium flex items-center gap-3 border-border-light dark:border-border-dark hover:bg-accent/50">
-              <Eye className="h-5 w-5" />
-              Try as Guest
-            </Button>
-
-            <div className="text-center space-y-4 pt-6">
-              <Link href="/forgot-password" className="text-sm font-medium text-primary hover:underline dark:text-secondary">
-                Forgot Password?
-              </Link>
-              <div className="flex justify-center gap-4 text-xs text-placeholder-light dark:text-placeholder-dark">
-                <Link href="/terms" className="hover:underline">Terms</Link>
-                <span>•</span>
-                <Link href="/privacy" className="hover:underline">Privacy</Link>
-              </div>
-            </div>
+    <div className="flex min-h-screen bg-background">
+      {/* LEFT SIDE */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 lg:p-12">
+        <div className="w-full max-w-md border border-border rounded-lg shadow-md p-8 bg-card backdrop-blur">
+          {/* Logo */}
+          <div className="flex items-center gap-3 mb-6">
+            <MessageCircle className="h-8 w-8 text-primary" />
+            <h1 className="text-2xl font-bold text-foreground">NepalSMS</h1>
           </div>
-        </Card>
 
-        {/* Theme Toggle – Top Left */}
-        <div className="fixed top-6 left-6 z-50">
-          <ThemeToggle />
+          <p className="text-muted-foreground mb-8">
+            Reliable Bulk SMS for Nepal.
+          </p>
+
+          <h2 className="text-3xl font-bold text-foreground">
+            Create Your Account
+          </h2>
+          <p className="text-muted-foreground mt-1 mb-6 text-sm">
+            Or log in if you already have an account.
+          </p>
+
+          {/* Tabs */}
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="grid w-full grid-cols-2 bg-muted p-1 rounded-lg mb-8">
+              <TabsTrigger
+                value="register"
+                className="rounded-md data-[state=active]:bg-background data-[state=active]:shadow-sm"
+              >
+                Register
+              </TabsTrigger>
+              <TabsTrigger
+                value="login"
+                className="rounded-md data-[state=active]:bg-background data-[state=active]:shadow-sm"
+              >
+                Log In
+              </TabsTrigger>
+            </TabsList>
+
+            {/* REGISTER FORM */}
+            <TabsContent value="register">
+              <div className="space-y-5">
+                <div>
+                  <Label className="text-foreground">
+                    Full Name / Organization Name
+                  </Label>
+                  <Input
+                    className="mt-1 h-12 bg-input text-foreground placeholder:text-muted-foreground"
+                    placeholder="Enter your full name or organization name"
+                  />
+                </div>
+
+                <div>
+                  <Label className="text-foreground">Email Address</Label>
+                  <Input
+                    className="mt-1 h-12 bg-input text-foreground placeholder:text-muted-foreground"
+                    placeholder="Enter your email address"
+                  />
+                </div>
+
+                <div>
+                  <Label className="text-foreground">Phone Number</Label>
+                  <div className="flex mt-1">
+                    <span className="inline-flex items-center px-4 rounded-l-md border border-r-0 bg-muted text-muted-foreground">
+                      +977
+                    </span>
+                    <Input
+                      className="rounded-l-none h-12 bg-input text-foreground placeholder:text-muted-foreground"
+                      placeholder="98XXXXXXXX"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <Label className="text-foreground">Password</Label>
+                  <div className="relative mt-1">
+                    <Input
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Enter a strong password"
+                      className="h-12 pr-10 bg-input text-foreground placeholder:text-muted-foreground"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      aria-label={
+                        showPassword ? "Hide password" : "Show password"
+                      }
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-5 w-5" />
+                      ) : (
+                        <Eye className="h-5 w-5" />
+                      )}
+                    </button>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Must be at least 8 characters long.
+                  </p>
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium text-foreground">
+                    Account Type
+                  </label>
+                  <div className="flex gap-4 mt-2">
+                    <Button
+                      variant="outline"
+                      className={`flex-1 rounded-lg ${type === "individual" ? "bg-primary text-white border-primary" : ""}`}
+                      onClick={() => setType("individual")}
+                    >
+                      Individual
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className={`flex-1 rounded-lg ${type === "organization" ? "bg-primary text-white border-primary" : ""}`}
+                      onClick={() => setType("organization")}
+                    >
+                      Organization
+                    </Button>
+                  </div>
+                </div>
+
+                <Button className="w-full h-12 text-lg">Create Account</Button>
+              </div>
+            </TabsContent>
+
+            {/* LOGIN */}
+            <TabsContent value="login">
+              <div className="space-y-5">
+                <div>
+                  <Label className="text-foreground">Email or Phone</Label>
+                  <Input
+                    className="mt-1 h-12 bg-input text-foreground placeholder:text-muted-foreground"
+                    placeholder="Enter email or phone"
+                  />
+                </div>
+
+                <div>
+                  <Label className="text-foreground">Password</Label>
+                  <div className="relative mt-1">
+                    <Input
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Enter your password"
+                      className="h-12 pr-10 bg-input text-foreground placeholder:text-muted-foreground"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                      aria-label={
+                        showPassword ? "Hide password" : "Show password"
+                      }
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-5 w-5" />
+                      ) : (
+                        <Eye className="h-5 w-5" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                <Button className="w-full h-12 text-lg">Log In</Button>
+              </div>
+            </TabsContent>
+          </Tabs>
+
+          <div className="flex items-center my-8">
+            <span className="flex-1 border-t border-border/50" />
+            <span className="px-3 text-xs text-muted-foreground">OR</span>
+            <span className="flex-1 border-t border-border/50" />
+          </div>
+
+          <Button
+            variant="outline"
+            className="w-full h-12 flex items-center gap-2"
+          >
+            <Eye className="h-4 w-4" />
+            Try as Guest
+          </Button>
+
+          <div className="text-center mt-6">
+            <Link href="#" className="text-sm text-primary">
+              Forgot Password?
+            </Link>
+          </div>
+
+          <div className="flex justify-center gap-4 text-xs mt-6 text-muted-foreground">
+            <Link href="#">Terms of Service</Link>
+            <span>•</span>
+            <Link href="#">Privacy Policy</Link>
+          </div>
         </div>
       </div>
 
-      {/* RIGHT: Image – Same height as form, no overflow */}
-      <div className="hidden lg:block w-[40vw] h-[95vh] relative overflow-hidden">
-        <Image
-          src="/images/potrate.jpg"
-          alt="Himalayan prayer flags"
-          fill
-          className="object-contain "
-          priority
-        />
-        
-        <div className="absolute bottom-0 left-0 p-12 text-white max-w-lg">
-          <h1 className="text-5xl lg:text-6xl font-black leading-tight">
-            Connect with Everyone.<br />
-            <span className="text-secondary">Instantly.</span>
-          </h1>
-          <p className="mt-6 text-lg text-white/90">
-            Your reliable partner for bulk SMS communication across Nepal — from the Terai plains to the Himalayan peaks.
-          </p>
-          <p className="mt-12 text-sm text-white/70">Trusted by thousands across Nepal</p>
+      {/* RIGHT SIDE */}
+      <div className="hidden lg:flex w-1/2 p-8 lg:p-12">
+        <div className="relative w-full h-full rounded-2xl overflow-hidden shadow-lg">
+          <Image
+            src="/images/potrate.jpg"
+            alt="Himalayas"
+            fill
+            className="object-cover"
+          />
+          {/* TEXT OVERLAY */}
+          <div className="absolute bottom-0 left-0 p-8 text-white">
+            <h1 className="text-3xl font-bold leading-tight">
+              Connect with Everyone.
+              <br />
+              Instantly.
+            </h1>
+            <p className="mt-3 text-sm text-white/80 max-w-sm">
+              Your reliable partner for bulk SMS communication across Nepal,
+              from the Terai plains to the Himalayan peaks.
+            </p>
+          </div>
         </div>
       </div>
     </div>
