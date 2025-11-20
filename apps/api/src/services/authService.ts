@@ -1,6 +1,7 @@
-import prisma from '../config/database';
-import logger from '../config/logger';
-import { hashPassword, comparePassword } from '../utils/password';
+import prisma from "../config/database";
+
+import logger from "../config/logger";
+import { comparePassword, hashPassword } from "../utils/password";
 
 export const register = async (data: any) => {
   const {
@@ -11,18 +12,18 @@ export const register = async (data: any) => {
     firstName,
     lastName,
     organizationName,
-    accountType = 'INDIVIDUAL',
+    accountType = "INDIVIDUAL",
     citizenshipNumber,
   } = data;
 
   // Duplicate check
   if (email) {
     const existing = await prisma.user.findUnique({ where: { email } });
-    if (existing) throw new Error('Email already registered');
+    if (existing) throw new Error("Email already registered");
   }
   if (phoneNumber) {
     const existing = await prisma.user.findUnique({ where: { phoneNumber } });
-    if (existing) throw new Error('Phone number already registered');
+    if (existing) throw new Error("Phone number already registered");
   }
 
   const hashedPassword = isGuest ? null : await hashPassword(password);
@@ -38,13 +39,11 @@ export const register = async (data: any) => {
       accountType,
       citizenshipNumber,
       isGuest,
-      role: isGuest ? 'GUEST' : 'USER',
+      role: isGuest ? "GUEST" : "USER",
     },
- 
-
   });
 
-  logger.info('New user registered', { userId: user.id, isGuest });
+  logger.info("New user registered", { userId: user.id, isGuest });
   return user;
 };
 
@@ -56,11 +55,11 @@ export const login = async (identifier: string, password: string) => {
   });
 
   if (!user || user.isGuest || !user.hashedPassword) {
-    throw new Error('Invalid credentials');
+    throw new Error("Invalid credentials");
   }
 
   const isMatch = await comparePassword(password, user.hashedPassword);
-  if (!isMatch) throw new Error('Invalid credentials');
+  if (!isMatch) throw new Error("Invalid credentials");
 
   return user;
 };
