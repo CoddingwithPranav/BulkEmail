@@ -5,7 +5,7 @@ import { SystemRole } from "../types";
 
 export const setAuthToken = async (token: string, role?: string) => {
   const cookies = await nextCookies();
-  cookies.set("_pb_jwt", token, {
+  cookies.set("jwt", token, {
     maxAge: 60 * 60 * 24 * 1,
     httpOnly: true,
     sameSite: "strict",
@@ -23,7 +23,7 @@ export const setAuthToken = async (token: string, role?: string) => {
 
 export const clearAuthToken = async () => {
   const cookies = await nextCookies();
-  cookies.delete("_pb_jwt");
+  cookies.delete("jwt");
   cookies.delete("user_role");
 };
 
@@ -31,3 +31,9 @@ export const getCurrentRole = async () => {
   const cookies = await nextCookies();
   return cookies.get("user_role")?.value as SystemRole;
 };
+
+
+export async function isUserLoggedIn(): Promise<boolean> {
+  const cookieStore = await nextCookies();
+  return !!cookieStore.get("jwt")?.value;
+}

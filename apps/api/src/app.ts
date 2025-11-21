@@ -3,7 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import expressWinston from 'express-winston';
-import logger from './config/logger'; // ← our new logger
+import logger from './config/logger'; 
 import routes from './routes/v1';
 import { errorHandler } from './middleware/errorHandler';
 
