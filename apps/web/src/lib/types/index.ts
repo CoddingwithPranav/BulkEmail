@@ -14,10 +14,9 @@ export type BaseQueryParams = {
 };
 
 export enum SystemRole {
-  ADMIN = "admin",
-  DEALER = "dealer",
-  EMPLOYEE = "employee",
-  USER = "user",
+  ADMIN = "ADMIN",
+  SUPER_ADMIN = "SUPERADMIN",
+  USER = "USER",
 }
 
 export type DealerResale = {

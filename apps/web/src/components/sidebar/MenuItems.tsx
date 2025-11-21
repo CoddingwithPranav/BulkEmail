@@ -3,7 +3,8 @@ import { SidebarGroup, SidebarGroupLabel, SidebarMenu } from "../ui/sidebar";
 import { MenuItem } from "./MenuItem";
 
 export const MenuItems = async () => {
-  const { navItems, businessNav } = await getNavGroupsByRole();
+  const { navItems } = await getNavGroupsByRole();
+  console.log("Nav Items in MenuItems:", navItems);
   return (
     <>
       <SidebarGroup>
@@ -11,14 +12,6 @@ export const MenuItems = async () => {
           {navItems.map((item) => {
             return <MenuItem key={item.name} item={item} />;
           })}
-        </SidebarMenu>
-      </SidebarGroup>
-      <SidebarGroup>
-        <SidebarGroupLabel>Business</SidebarGroupLabel>
-        <SidebarMenu>
-          {businessNav.map((item) => (
-            <MenuItem key={item.name} item={item} />
-          ))}
         </SidebarMenu>
       </SidebarGroup>
       {/* <SidebarGroup>

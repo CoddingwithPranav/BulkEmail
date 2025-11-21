@@ -4,54 +4,43 @@ import { getCurrentRole } from "@/lib/data/cookies";
 import { SystemRole } from "@/lib/types";
 
 const navItems = [
-  { name: "Dashboard", href: "/", icon: "BarChart" },
-  { name: "Service Requests", href: "/service-requests", icon: "Car" },
-  { name: "Job Cards", href: "/job-cards", icon: "Wrench" },
+  { name: "Dashboard", href: "/dashboard", icon: "Home" },
+  { name: "Campaigns", href: "/dashboard/campaigns", icon: "Megaphone" },
+  { name: "Receiver List", href: "/dashboard/receiver-list", icon: "Users" },
+ 
 ];
 
-const businessNav = [
-  { name: "Vehicle Sales", href: "/vehicle-sales", icon: "Car" },
-  { name: "Vehicles", href: "/vehicles", icon: "CarFront" },
-  { name: "Customers", href: "/customers", icon: "User" },
-  // { name: "Dealers", href: "/dealers", icon: "Building" },
-  { name: "Invoices", href: "/invoices", icon: "Receipt", count: 12 },
-];
+const adminItems = [
+   { name: "Guest Payments", href: "/dashboard/guest-payments", icon: "CreditCard" },
+]
+const superAdminItems = [
+   { name: "User Management", href: "/dashboard/user-management", icon: "UserPlus" },
+   { name: "System Settings", href: "/dashboard/system-settings", icon: "Settings" },
+]
 
-const othersNav = [{ name: "Settings", href: "/settings", icon: "Settings" }];
 
 export const getNavGroupsByRole = async () => {
   const role = await getCurrentRole();
-
   if (!role) {
     return { navItems: [], businessNav: [], othersNav: [] };
   }
 
+
   switch (role) {
-    case SystemRole.DEALER:
+    case SystemRole.USER:
       return {
-        navItems: navItems.filter((item) => item.name === "Dashboard"),
-        businessNav: businessNav.filter((item) =>
-          ["Vehicle Sales", "Customers", "Vehicle"].includes(item.name)
-        ),
-        othersNav: [],
-      };
-    case SystemRole.EMPLOYEE:
-      return {
-        navItems: navItems.filter((item) =>
-          ["Dashboard", "Service Requests", "Job Cards"].includes(item.name)
-        ),
-        businessNav: businessNav.filter((item) =>
-          ["Vehicles", "Invoices"].includes(item.name)
-        ),
+        navItems: navItems,
         othersNav: [],
       };
     case SystemRole.ADMIN:
       return {
-        navItems,
-        businessNav: businessNav.filter(
-          (item) => !["Vehicle Sales", "Invoices"].includes(item.name)
-        ),
-        othersNav,
+        navItems: [...navItems, ...adminItems],
+        othersNav: [],
+      };
+    case SystemRole.SUPER_ADMIN:
+      return {
+        navItems:[...navItems,...adminItems, ...superAdminItems],
+        othersNav:[],
       };
     default:
       return { navItems: [], businessNav: [], othersNav: [] };
