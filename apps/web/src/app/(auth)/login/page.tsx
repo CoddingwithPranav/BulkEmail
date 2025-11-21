@@ -4,35 +4,37 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  useLoginMutation,
+  useRegisterMutation,
+} from "@/hooks/queries/auth.query";
+import { setAuthToken } from "@/lib/data/cookies";
+import {
+  LoginForm,
+  loginSchema,
+  RegisterForm,
+  registerSchema,
+} from "@/lib/schemas/auth.schema";
+import { useAuthStore } from "@/lib/store";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, MessageCircle } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
-import { LoginForm, loginSchema, RegisterForm, registerSchema } from "@/lib/schemas/auth.schema";
-import { useAuthStore } from "@/lib/store";
-import { useLoginMutation, useRegisterMutation } from "@/hooks/queries/auth.query";
-import { setAuthToken } from "@/lib/data/cookies";
-
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 
 export default function AuthPage() {
   const { setToken, setUser } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
   const [activeTab, setActiveTab] = useState<"login" | "register">("register");
-  const [accountType, setAccountType] = useState<"INDIVIDUAL" | "ORGANIZATION">("INDIVIDUAL");
+  const [accountType, setAccountType] = useState<"INDIVIDUAL" | "ORGANIZATION">(
+    "INDIVIDUAL"
+  );
   const { mutate: loginMutate, isPending: isLoginLoading } = useLoginMutation();
-  const { mutate: registerMutate, isPending: isRegisterLoading } = useRegisterMutation();
+  const { mutate: registerMutate, isPending: isRegisterLoading } =
+    useRegisterMutation();
   const router = useRouter();
 
   const registerForm = useForm<RegisterForm>({
@@ -119,7 +121,9 @@ export default function AuthPage() {
             <MessageCircle className="h-8 w-8 text-primary" />
             <h1 className="text-2xl font-bold text-foreground">NepalSMS</h1>
           </div>
-          <p className="text-muted-foreground mb-8">Reliable Bulk SMS for Nepal.</p>
+          <p className="text-muted-foreground mb-8">
+            Reliable Bulk SMS for Nepal.
+          </p>
 
           <h2 className="text-3xl font-bold text-foreground">
             {activeTab === "register" ? "Create Your Account" : "Welcome Back"}
@@ -138,7 +142,10 @@ export default function AuthPage() {
 
             {/* ====================== REGISTER ====================== */}
             <TabsContent value="register">
-              <form onSubmit={registerForm.handleSubmit(onRegister)} className="space-y-5">
+              <form
+                onSubmit={registerForm.handleSubmit(onRegister)}
+                className="space-y-5"
+              >
                 <div>
                   <Label>Full Name / Organization Name</Label>
                   <Input
@@ -201,7 +208,11 @@ export default function AuthPage() {
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-3 top-1/2 -translate-y-1/2"
                     >
-                      {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                      {showPassword ? (
+                        <EyeOff className="h-5 w-5" />
+                      ) : (
+                        <Eye className="h-5 w-5" />
+                      )}
                     </button>
                   </div>
                   {registerForm.formState.errors.password && (
@@ -231,15 +242,24 @@ export default function AuthPage() {
                   </div>
                 </div>
 
-                <Button type="submit" className="w-full h-12 text-lg" disabled={registerForm.formState.isSubmitting}>
-                  {registerForm.formState.isSubmitting ? "Creating..." : "Create Account"}
+                <Button
+                  type="submit"
+                  className="w-full h-12 text-lg"
+                  disabled={registerForm.formState.isSubmitting}
+                >
+                  {registerForm.formState.isSubmitting
+                    ? "Creating..."
+                    : "Create Account"}
                 </Button>
               </form>
             </TabsContent>
 
             {/* ====================== LOGIN ====================== */}
             <TabsContent value="login">
-              <form onSubmit={loginForm.handleSubmit(onLogin)} className="space-y-5">
+              <form
+                onSubmit={loginForm.handleSubmit(onLogin)}
+                className="space-y-5"
+              >
                 <div>
                   <Label>Email or Phone</Label>
                   <Input
@@ -263,13 +283,23 @@ export default function AuthPage() {
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-3 top-1/2 -translate-y-1/2"
                     >
-                      {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                      {showPassword ? (
+                        <EyeOff className="h-5 w-5" />
+                      ) : (
+                        <Eye className="h-5 w-5" />
+                      )}
                     </button>
                   </div>
                 </div>
 
-                <Button type="submit" className="w-full h-12 text-lg" disabled={loginForm.formState.isSubmitting}>
-                  {loginForm.formState.isSubmitting ? "Logging in..." : "Log In"}
+                <Button
+                  type="submit"
+                  className="w-full h-12 text-lg"
+                  disabled={loginForm.formState.isSubmitting}
+                >
+                  {loginForm.formState.isSubmitting
+                    ? "Logging in..."
+                    : "Log In"}
                 </Button>
               </form>
             </TabsContent>
@@ -281,14 +311,21 @@ export default function AuthPage() {
             <span className="flex-1 border-t border-border/50" />
           </div>
 
-          <Button variant="outline" className="w-full h-12" onClick={handleGuest}>
+          <Button
+            variant="outline"
+            className="w-full h-12"
+            onClick={handleGuest}
+          >
             <Eye className="h-4 w-4 mr-2" />
             Try as Guest
           </Button>
 
           {activeTab === "login" && (
             <div className="text-center mt-6">
-              <Link href="#" className="text-sm text-primary hover:underline">
+              <Link
+                href="/forgot-password"
+                className="text-sm text-primary hover:underline"
+              >
                 Forgot Password?
               </Link>
             </div>

@@ -3,7 +3,16 @@ import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 // Public routes that anyone can access (even when logged in)
-const publicRoutes = ["/", "/login", "/guest", "/privacy", "/terms", "/about"];
+const publicRoutes = [
+  "/",
+  "/login",
+  "/guest",
+  "/privacy",
+  "/terms",
+  "/about",
+  "/forgot-password",
+  "/verify-otp",
+];
 
 // Routes that should redirect logged-in users away from (like login page)
 const authRoutes = ["/login"];
