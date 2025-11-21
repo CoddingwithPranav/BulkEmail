@@ -18,12 +18,14 @@ export const registerController = async (req: Request, res: Response) => {
 
     res.status(201).json({
       message: "Registration successful",
-      user: {
-        id: user.id,
-        email: user.email,
-        phoneNumber: user.phoneNumber,
-        role: user.role,
-        isGuest: user.isGuest,
+      data: {
+        user: {
+          id: user.id,
+          email: user.email,
+          phoneNumber: user.phoneNumber,
+          role: user.role,
+          isGuest: user.isGuest,
+        },
       },
     });
   } catch (err: any) {
@@ -34,8 +36,8 @@ export const registerController = async (req: Request, res: Response) => {
 
 export const loginController = async (req: Request, res: Response) => {
   try {
-    const { identifier, password } = req.body;
-    const user = await login(identifier, password);
+    const { name, password } = req.body;
+    const user = await login(name, password);
     const token = signToken({ id: user.id, role: user.role });
 
     res.cookie("jwt", token, cookieOptions);
@@ -43,11 +45,14 @@ export const loginController = async (req: Request, res: Response) => {
 
     res.json({
       message: "Login successful",
-      user: {
-        id: user.id,
-        email: user.email,
-        phoneNumber: user.phoneNumber,
-        role: user.role,
+      data: {
+        user: {
+          id: user.id,
+          email: user.email,
+          phoneNumber: user.phoneNumber,
+          role: user.role,
+        },
+        token: { accessToken: token },
       },
     });
   } catch (err: any) {

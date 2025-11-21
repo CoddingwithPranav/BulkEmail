@@ -72,19 +72,22 @@ export default function AuthPage() {
   };
 
   const onRegister = async (data: RegisterForm) => {
-    const [firstName = "", ...lastNameParts] = (data.fullName ?? "").trim().split(" ");
-    const lastName = lastNameParts.join(" ") || firstName;
+    const trimmedName = (data.fullName ?? "").trim();
+    const nameParts = trimmedName.split(/\s+/);
+    const firstName = nameParts[0] || "";
+    const lastName = nameParts.slice(1).join(" ") || firstName;
 
-    let newData = {
-        email: data.email,
-        firstName,
-        lastName,
-        phoneNumber: data.phoneNumber,
-        accountType: data.accountType,
-        isGuest: false,
-        password: data.password,
-      }
-    registerMutate(newData, {
+    const payload = {
+      firstName,
+      lastName,
+      email: data.email,
+      phoneNumber: data.phoneNumber,
+      password: data.password,
+      isGuest: false,
+      accountType: data.accountType,
+    };
+
+    registerMutate(payload, {
       onSuccess: async (response) => {
         const { user, token } = response.data;
         await setAuthToken(token.accessToken, user.role);
@@ -103,9 +106,7 @@ export default function AuthPage() {
   };
 
   const handleGuest = () => {
-    document.cookie = `token=guest-mode; path=/; max-age=3600`;
-    toast.info("Continuing as guest");
-    router.push("/dashboard");
+    router.push("/guest");
   };
 
   return (

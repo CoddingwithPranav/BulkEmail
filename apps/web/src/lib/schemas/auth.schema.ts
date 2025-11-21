@@ -7,12 +7,12 @@ export const loginSchema = z.object({
 });
 
 export const registerSchema = z.object({
-  firstName:z.string().min(2, "First name is required"),
-  lastName:z.string().min(2, "Last name is required"),
+  firstName:z.string().min(2, "First name is required").optional(),
+  lastName:z.string().min(2, "Last name is required").optional(),
   fullName: z.string().min(2, "Name is required").optional(),
-  isGuest: z.boolean().optional(),
+  isGuest: z.boolean().optional().default(false),
   email: z.string().email("Invalid email address"),
-  phoneNumber: z.string().regex(/^9[78]\d{8}$/, "Invalid Nepali phone number"),
+  phoneNumber:  z.string().regex(/^9\d{9}$/, "Invalid phone number"),
   password: z.string().min(8, "Password must be at least 8 characters"),
   accountType: z.enum(["INDIVIDUAL", "ORGANIZATION"]),
 });
