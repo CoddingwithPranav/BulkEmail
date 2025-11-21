@@ -15,7 +15,7 @@ router.use(protect);
 
 // User routes
 // @ts-expect-error: createCampaignSchema is a ZodEffects, so use .schema for the inner object
-router.post('/', validate(createCampaignSchema.schema), campaignCtrl.createCampaign);
+router.post('/', validate(createCampaignSchema), campaignCtrl.createCampaign);
 router.get('/', campaignCtrl.getMyCampaigns);
 router.get('/:id', campaignCtrl.getCampaignById);
 router.patch('/:id', validate(updateCampaignSchema), campaignCtrl.updateCampaign);
