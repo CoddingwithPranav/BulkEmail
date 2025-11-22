@@ -4,6 +4,7 @@ import campaignRoutes from "./campaign";
 import fileRoutes from "./file";
 import quickSmsRoutes from "./quickSms";
 import userRoutes from "./user";
+import { protect } from "../../middleware/auth";
 
 const router: Router = Router();
 
