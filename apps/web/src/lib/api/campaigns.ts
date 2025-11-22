@@ -2,26 +2,25 @@
 import axiosInstance from "@/axios";
 import {
   BaseQueryParams,
-  Campaign,
-  CampaignsResponse,
-  InitalResponse,
+  InitialResponse
 } from "../types";
+import { Campaign, CampaignsResponse, CreateCampaignInput } from "@repo/types";
 
 export const getCampaigns = async (query: BaseQueryParams) => {
-  const { data: result } = await axiosInstance.get<CampaignsResponse>("/campaigns", {
+  const { data: result } = await axiosInstance.get<InitialResponse<CampaignsResponse>>("/campaigns", {
     params: query,
   });
   return result.data;
 };
 
 export const getCampaignById = async (id: string) => {
-  const { data: result } = await axiosInstance.get<InitalResponse<Campaign>>(
+  const { data: result } = await axiosInstance.get<InitialResponse<Campaign>>(
     `/campaigns/${id}`
   );
   return result.data;
 };
 
-export const createCampaign = async (data: Record<string, string>) => {
+export const createCampaign = async (data:CreateCampaignInput) => {
   const { data: result } = await axiosInstance.post("/campaigns", data);
   return result.data;
 };
@@ -30,7 +29,7 @@ export const updateCampaign = async (
   id: string,
   data: Record<string, string>
 ) => {
-  const { data: result } = await axiosInstance.put(`/campaigns/${id}`, data);
+  const { data: result } = await axiosInstance.patch(`/campaigns/${id}`, data);
   return result.data;
 };
 

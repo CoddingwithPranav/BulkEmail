@@ -1,41 +1,32 @@
-// app/dashboard/campaigns/create/page.tsx
-import { Container, Heading } from "@/components/common";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, Megaphone } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
+import Link from "next/link";
+import CreateCampaign from "./_components/CreateCampaign";
 
-export const metadata = {
-  title: "Create Campaign",
-};
-
-export default function CreateCampaignPage() {
+const CreateCampaignPage = async ({ params }: { params: Promise<{ id: string }> }) => {
+  const { id } = await params;
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Link href="/dashboard/campaigns">
-            <Button variant="ghost" size="icon">
-              <ChevronLeft className="h-5 w-5" />
-            </Button>
-          </Link>
-          <div>
-            <Heading level="h4">Create New Campaign</Heading>
-            <p className="text-sm text-muted-foreground">
-              Design and launch a new marketing campaign
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <Container>
-        <div className="py-12 text-center">
-          <Megaphone className="w-16 h-16 mx-auto text-brand mb-4" />
-          <h3 className="text-xl font-semibold mb-2">Campaign Builder Coming Soon</h3>
-          <p className="text-muted-foreground max-w-md mx-auto">
-            SMS, WhatsApp, and Email campaign builder with templates and scheduling will be available soon.
+    <div className="container mx-auto">
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <h1 className="text-2xl font-semibold">Create Campaign</h1>
+          <p className="text-sm text-muted-foreground">
+            Design and launch a new marketing campaign
           </p>
         </div>
-      </Container>
+        <Link href="/dashboard/campaigns" passHref>
+          <Button
+            variant="ghost"
+            className="flex items-center border border-accent"
+          >
+            <ChevronLeft className="h-5 w-5 mr-1" /> Back
+          </Button>
+        </Link>
+      </div>
+
+      <CreateCampaign />
     </div>
   );
-}
+};
+
+export default CreateCampaignPage;

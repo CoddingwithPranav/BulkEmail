@@ -32,9 +32,7 @@ export default function CampaignsPage() {
       </div>
 
       <Container className="p-0 overflow-hidden">
-        <Suspense fallback={<div className="p-8 text-center">Loading campaigns...</div>}>
           <CampaignsTable />
-        </Suspense>
       </Container>
     </div>
   );

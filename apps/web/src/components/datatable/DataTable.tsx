@@ -56,7 +56,6 @@ export function DataTable<T>({
     page: 1,
     limit: pageSize,
   };
-  debugger
   const noQuery =
     isEqual(queryObject, defaultQueryObject) ||
     Object.values(queryObject).filter((v) => Boolean(v)).length === 0;

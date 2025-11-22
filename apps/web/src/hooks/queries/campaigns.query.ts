@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { createCampaign, getCampaignById, getCampaigns, updateCampaign } from "@/lib/api/campaigns";
+import { createCampaign, deleteCampaign, getCampaignById, getCampaigns, updateCampaign } from "@/lib/api/campaigns";
 import { deleteJobCard } from "@/lib/api/jobcards";
 import { BaseQueryParams } from "@/lib/types";
+import { CreateCampaignInput } from "@repo/types";
 import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query";
 
 export const useCampaignsQuery = (query: BaseQueryParams) => {
@@ -21,7 +22,7 @@ export const useCampaignsQueryById = (id: string) => {
 
 export const useCampaignCreateMutation = () => {
   return useMutation({
-    mutationFn: (data: any) => createCampaign(data),
+    mutationFn: (data: CreateCampaignInput) => createCampaign(data),
     meta: {
       invalidateQuery: ["campaigns"],
       successMessage: "Campaign created successfully",
@@ -43,7 +44,7 @@ export const useCampaignUpdateMutation = (id: string) => {
 
 export const useCampaignDeleteMutation = () => {
   return useMutation({
-    mutationFn: (id: string) => deleteJobCard(id),
+    mutationFn: (id: string) => deleteCampaign(id),
     meta: {
       invalidateQuery: ["campaigns"],
       successMessage: "Campaign deleted successfully",

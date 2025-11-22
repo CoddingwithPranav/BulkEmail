@@ -89,12 +89,15 @@ export const getAllCampaigns = async (_req: Request, res: Response) => {
 };
 
 export const getCampaignById = async (req: AuthRequest, res: Response) => {
-  const campaign = await prisma.campaign.findFirst({
+  const data = await prisma.campaign.findFirst({
     where: { id: Number(req.params.id), userId: req.user.id },
     include: { file: true },
   });
-  if (!campaign) return res.status(404).json({ message: "Campaign not found" });
-  res.json({ campaign });
+  if (!data) return res.status(404).json({ message: "Campaign not found" });
+  res.json({ 
+    status: "success",
+    data
+   });
 };
 
 export const updateCampaign = async (req: AuthRequest, res: Response) => {

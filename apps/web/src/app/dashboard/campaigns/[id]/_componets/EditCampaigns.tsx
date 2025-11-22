@@ -2,20 +2,13 @@
 
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-import {
-  useJobcardsQueryById,
-  useJobCardUpdateMutation,
-} from "@/hooks/queries/jobcards.query";
-import {
-  CreateJobCardsFormData,
-} from "@/lib/schemas/jobcards.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { CreateCampaignInput, createCampaignSchema, UpdateCampaignInput } from "@/lib/schemas/campaigns.schema";
 import CampaignsCardsForm from "../../_components/CampaignsCardsForm";
-import { useCampaignsQueryById } from "@/hooks/queries/campaigns.query";
+import { useCampaignsQueryById, useCampaignUpdateMutation } from "@/hooks/queries/campaigns.query";
+import { CreateCampaignInput, createCampaignSchema } from "@repo/types";
 
 const EditCampaigns = ({ id }: { id: string }) => {
   const router = useRouter();
@@ -27,13 +20,10 @@ const EditCampaigns = ({ id }: { id: string }) => {
       province: "",
       district: "",
       municipality: "",
-      manualReceivers: [],
-      paymentReceiptImage: "",
     },
   });
 
-  const { mutateAsync: updateJobCardAsync, isPending } =
-    useJobCardUpdateMutation(id);
+  const { mutateAsync: updateCampaignAsync, isPending } = useCampaignUpdateMutation(id);
 
   const onSubmit = async (values: CreateCampaignInput) => {
     try {
@@ -43,10 +33,8 @@ const EditCampaigns = ({ id }: { id: string }) => {
         province: values.province,
         district: values.district,
         municipality: values.municipality,
-        manualReceivers: values.manualReceivers,
-        paymentReceiptImage: values.paymentReceiptImage,
       };
-      await updateJobCardAsync(payload);
+      await updateCampaignAsync(payload);
       form.reset();
       router.back();
     } catch (e) {
@@ -57,17 +45,17 @@ const EditCampaigns = ({ id }: { id: string }) => {
   const { data, isSuccess } = useCampaignsQueryById(id);
 
   useEffect(() => {
+    console.log("Fetched campaign data:", data);
     if (isSuccess && data) {
       const campaign = data;
+      console.log("Populating form with campaign data:", campaign);
 
       form.reset({
         name: campaign.name,
-        // messageText: campaign.messageText,
-        // province: campaign.province || "",
-        // district: campaign.district || "",
-        // municipality: campaign.municipality || "",
-        // manualReceivers: campaign.manualReceivers || [],
-        // paymentReceiptImage: campaign.paymentReceiptImage || "",
+        messageText: campaign.messageText,
+        province: campaign.province || "",
+        district: campaign.district || "",
+        municipality: campaign.municipality || "",
       });
     }
   }, [data, isSuccess, form]);

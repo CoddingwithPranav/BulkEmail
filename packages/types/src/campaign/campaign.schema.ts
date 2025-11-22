@@ -1,8 +1,11 @@
 import { z } from "zod";
+import id from "zod/v4/locales/id.js";
 
 const nepalPhoneRegex = /^9[78][0-9]{8}$/;
 
+
 const campaignBase = z.object({
+  id: z.string().uuid().optional(),
   name: z.string().min(3, "Campaign name must be at least 3 characters"),
   messageText: z
     .string()
@@ -12,6 +15,13 @@ const campaignBase = z.object({
   province: z.string().optional(),
   district: z.string().optional(),
   municipality: z.string().optional(),
+  totalSmsCost: z.number().min(0).optional(),
+  recipientsNumber: z.number().int().min(0).optional(),
+  deliveredNumber: z.number().int().min(0).optional(),
+  failedNumber: z.number().int().min(0).optional(),
+  deliveryRate: z.number().min(0).max(100).optional(),
+  paid: z.boolean().optional(),
+  status: z.enum(["PENDING", "APPROVED", "SENT", "CANCELLED"]).optional(),
   manualReceivers: z
     .array(
       z.object({
@@ -25,10 +35,7 @@ const campaignBase = z.object({
 });
 
 
-export const createCampaignSchema = campaignBase.refine(
-  (data) => !!data.fileId || (data.manualReceivers?.length ?? 0) > 0,
-  { message: "Either fileId or manualReceivers is required" }
-);
+export const createCampaignSchema = campaignBase
 
 export type CreateCampaignInput = z.infer<typeof createCampaignSchema>;
 
@@ -41,4 +48,10 @@ export const approveCampaignSchema = z.object({
   reason: z.string().optional(),
 });
 
+
+export type CampaignsResponse = {
+  campaigns: z.infer<typeof createCampaignSchema>[];
+  count: number;
+}
+export type Campaign = z.infer<typeof createCampaignSchema>;
 export type ApproveCampaignInput = z.infer<typeof approveCampaignSchema>;

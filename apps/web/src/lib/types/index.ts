@@ -1,9 +1,8 @@
-import { CreateCampaignInput } from "../schemas/campaigns.schema";
-
-export type InitalResponse<T> = {
+export type InitialResponse<T> = {
   success: boolean;
   message: string;
   data: T;
+  count?: number;
 };
 
 export type BaseQueryParams = {
@@ -19,18 +18,4 @@ export enum SystemRole {
   USER = "USER",
 }
 
-export type CampaignsResponse = InitalResponse<{
-  campaigns: CreateCampaignInput[];
-  count: number;
-}>;
 
-export type Campaign ={
-  id: string;
-  name: string;
-  type: string;
-  recipients: number;
-  sentDate: string | null;
-  budget: number;
-  conversions: number;
-  status: "completed" | "sent" | "scheduled"; 
-}

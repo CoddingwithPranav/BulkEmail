@@ -8,6 +8,7 @@ import { useSearchParams } from 'next/navigation';
 
 const PAGE_SIZE = 10;
 
+
 const CampaignsTable = () => {
   const columns = useCampaignsTableColumns();
   const searchParams = useSearchParams();
@@ -25,7 +26,7 @@ const CampaignsTable = () => {
     count: data?.count,
     enablePagination: true,
     pageSize: PAGE_SIZE,
-    getRowId: (row) => row.id,
+    getRowId: (row) => row.id || "",
   });
 
 
