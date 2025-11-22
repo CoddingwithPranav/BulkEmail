@@ -3,6 +3,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useSidebar } from '@/components/ui/sidebar';
 import { cn } from '@/lib/utils';
+import { Text } from '../common';
 
 export const AdminAvatar = ({ show }: { show?: boolean }) => {
   const { state } = useSidebar();
@@ -19,10 +20,9 @@ export const AdminAvatar = ({ show }: { show?: boolean }) => {
       </Avatar>
       {(!collapsed || show) && (
         <div>
-          <p className="text-sm truncate font-medium">PB Car Service Admin</p>
-          {/* <p className="text-xs truncate text-muted-foreground">
-            neto_admin
-          </p> */}
+          <Text size='base'  className="text-sm">
+            Messenger Admin
+          </Text>
         </div>
       )}
     </div>

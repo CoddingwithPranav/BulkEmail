@@ -2,21 +2,19 @@
 import axiosInstance from "@/axios";
 import {
   BaseQueryParams,
-  InitalResponse,
-  JobCard,
-  JobCardResponse,
+  InitalResponse
 } from "../types";
 import { JobComplaintsResponse } from "../types/job";
 
 export const getJobCards = async (query: BaseQueryParams) => {
-  const { data: result } = await axiosInstance.get<JobCardResponse>("/jobs", {
+  const { data: result } = await axiosInstance.get<any>("/jobs", {
     params: query,
   });
   return result.data;
 };
 
 export const getJobCardById = async (id: string) => {
-  const { data: result } = await axiosInstance.get<InitalResponse<JobCard>>(
+  const { data: result } = await axiosInstance.get<InitalResponse<any>>(
     `/jobs/${id}`
   );
   return result.data;

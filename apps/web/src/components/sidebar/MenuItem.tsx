@@ -77,7 +77,7 @@ export const MenuItem: React.FC<MenuItemProps> = ({ item }) => {
           {Icon && (
             <Icon
               className={cn(
-                "h-4.5 w-4.5 shrink-0 transition-transform group-hover:scale-110",
+                "h-4.5 w-4.5 shrink-0",
                 isActive && "text-white"
               )}
             />

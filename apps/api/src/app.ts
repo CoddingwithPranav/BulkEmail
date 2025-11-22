@@ -6,6 +6,7 @@ import expressWinston from 'express-winston';
 import logger from './config/logger'; 
 import routes from './routes/v1';
 import { errorHandler } from './middleware/errorHandler';
+import { generateImageKitAuth } from './utils/imageKit';
 
 const app:express.Application = express();
 
@@ -17,6 +18,7 @@ app.use(helmet());
 app.use(express.json());
 app.use(cookieParser());
 
+  
 // HTTP Request Logging (before routes)
 app.use(expressWinston.logger({
   winstonInstance: logger,
@@ -34,10 +36,22 @@ app.get('/api/health', (req, res) => {
   res.json({ message: 'API is running!', timestamp: new Date().toISOString() });
 });
 
+
+app.get('/api/v1/imagekit/auth', (req, res) => {
+  try {
+    const authParams = generateImageKitAuth(600);
+    res.json(authParams);
+  } catch (err) {
+    logger.error('ImageKit auth failed', { error: err });
+    res.status(500).json({ message: 'Failed to generate upload token' });
+  }
+});
+
 // Error logging middleware (after routes
 app.use(expressWinston.errorLogger({
   winstonInstance: logger,
 }));
+
 
 app.use(errorHandler);
 

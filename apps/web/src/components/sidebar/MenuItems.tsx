@@ -17,7 +17,7 @@ export const MenuItems = async () => {
       {/* <SidebarGroup>
         <SidebarGroupLabel>System</SidebarGroupLabel>
         <SidebarMenu>
-          {othersNav.map((item) => (
+          {navItems.map((item) => (
             <MenuItem key={item.name} item={item} />
           ))}
         </SidebarMenu>

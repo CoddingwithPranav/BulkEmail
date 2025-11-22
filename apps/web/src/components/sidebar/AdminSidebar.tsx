@@ -2,7 +2,6 @@ import {
   Sidebar,
   SidebarContent,
   SidebarHeader,
-  SidebarRail,
 } from '@/components/ui/sidebar';
 import { Logo } from './Logo';
 import { MenuItems } from './MenuItems';
@@ -18,14 +17,14 @@ export const AdminSidebar = () => {
         {' '}
         <MenuItems />
       </SidebarContent>
-
-      {/* <SidebarFooter className="flex py-4">
+{/* 
+      <SidebarFooter className="flex py-4">
         <div className="flex items-start">
           <SidebarDropdownMenu />
         </div>
-      </SidebarFooter> */}
+      </SidebarFooter>
 
-      <SidebarRail />
+      <SidebarRail /> */}
     </Sidebar>
   );
 };

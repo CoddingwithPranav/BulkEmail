@@ -10,7 +10,7 @@ export default async function JobCardsRequestsLayout({
 }>) {
   const role = await getCurrentRole();
 
-  if (!hasAccess(role, [SystemRole.ADMIN, SystemRole.EMPLOYEE])) {
+  if (!hasAccess(role, [SystemRole.ADMIN, SystemRole.SUPER_ADMIN])) {
     redirect("/not-authorized");
   }
 

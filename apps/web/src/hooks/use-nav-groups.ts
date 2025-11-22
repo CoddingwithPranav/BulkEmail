@@ -6,8 +6,7 @@ import { SystemRole } from "@/lib/types";
 const navItems = [
   { name: "Dashboard", href: "/dashboard", icon: "Home" },
   { name: "Campaigns", href: "/dashboard/campaigns", icon: "Megaphone" },
-  { name: "Receiver List", href: "/dashboard/receiver-list", icon: "Users" },
- 
+  { name: "Receiver List", href: "/dashboard/receiver-list", icon: "Users" }, 
 ];
 
 const adminItems = [
@@ -21,10 +20,12 @@ const superAdminItems = [
 
 export const getNavGroupsByRole = async () => {
   const role = await getCurrentRole();
+  console.log("Current Role in use-nav-groups:", role);
+
   if (!role) {
     return { navItems: [], businessNav: [], othersNav: [] };
   }
-
+  
 
   switch (role) {
     case SystemRole.USER:

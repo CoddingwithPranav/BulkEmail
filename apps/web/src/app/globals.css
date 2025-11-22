@@ -149,3 +149,13 @@ body {
 @apply bg-background text-foreground;
 }
 }
+
+
+/* globals.css or app.css */
+@keyframes blink {
+  0%, 100% { opacity: 0; transform: translateY(0); }
+  50%      { opacity: 1; transform: translateY(-4px); }
+}
+.animate-blink {
+  animation: blink 1.6s ease-in-out infinite;
+}

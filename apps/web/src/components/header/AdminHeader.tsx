@@ -29,6 +29,7 @@ import { SidebarTrigger } from "../ui/sidebar";
 import { Skeleton } from "../ui/skeleton";
 import { NotificationDropdown } from "./NotificationDropdown";
 import { ThemeToggle } from "./ThemeToggle";
+import { AvatarImage } from "@radix-ui/react-avatar";
 
 interface User {
   userFullName: string;
@@ -82,6 +83,7 @@ const LogoutAlert = () => {
 
 export const AdminHeader = () => {
   const user = useAuthStore((state) => state.user);
+  const router = useRouter();
 
   const getAvatarInitials = (name: string) => {
     const initials = name
@@ -90,6 +92,10 @@ export const AdminHeader = () => {
       .join("");
     return initials;
   };
+   
+  const onProfileClick = () => {
+    router.push("/dashboard/profile");
+  }
 
   return (
     <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-16 px-4 justify-between border-b">
@@ -111,7 +117,8 @@ export const AdminHeader = () => {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="gap-2 px-2 h-8">
-              <Avatar>
+              <Avatar >
+                  <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
                 <AvatarFallback>
                   {getAvatarInitials(user?.userFullName ?? "")}
                 </AvatarFallback>
@@ -132,7 +139,7 @@ export const AdminHeader = () => {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-40">
-            <DropdownMenuItem className="gap-2 text-xs py-2">
+            <DropdownMenuItem className="gap-2 text-xs py-2" onClick={onProfileClick}>
               <UserCircle className="h-3 w-3" />
               Profile
             </DropdownMenuItem>

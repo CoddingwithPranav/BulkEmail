@@ -23,6 +23,7 @@ export const useJobCardsQuery = (query: BaseQueryParams) => {
   });
 };
 
+
 export const useJobcardsQueryById = (id: string) => {
   return useQuery({
     queryKey: ["jobs", id],

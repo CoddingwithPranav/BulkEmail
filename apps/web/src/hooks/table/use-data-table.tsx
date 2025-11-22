@@ -102,7 +102,6 @@ export const useDataTable = <TData,>({
     setPagination(state);
     return state;
   };
-
   const table = useReactTable({
     data,
     columns,
