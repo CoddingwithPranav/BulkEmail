@@ -2,7 +2,7 @@ import { Router } from 'express';
 import * as quickSmsCtrl from '../../controllers/quickSmsController';
 import { protect } from '../../middleware/auth';
 import { validate } from '../../middleware/validate';
-import { sendQuickSmsSchema, sendBulkQuickSmsSchema } from '../../validators/quickSmsSchemas';
+import { sendBulkQuickSmsSchema, sendQuickSmsSchema } from '@repo/types';
 
 const router:Router = Router();
 

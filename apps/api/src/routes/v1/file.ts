@@ -3,7 +3,7 @@ import * as fileCtrl from '../../controllers/fileController';
 import { protect } from '../../middleware/auth';
 import { upload } from '../../middleware/upload';
 import { validate } from '../../middleware/validate';
-import { uploadFileSchema } from '../../validators/fileSchemas';
+import { uploadFileSchema } from '@repo/types';
 
 const router:Router = Router();
 

@@ -35,6 +35,7 @@
   },
   "devDependencies": {
     "@repo/db": "workspace:*",
+    "@repo/types": "workspace:*",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/bcrypt": "^5.0.2",
