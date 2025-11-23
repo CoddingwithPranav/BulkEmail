@@ -56,7 +56,7 @@ export const loginController = async (req: Request, res: Response) => {
       },
     });
   } catch (err: any) {
-    logger.warn("Login failed", { identifier: req.body.identifier });
+    logger.warn("Login failed", { name: req.body.name });
     res.status(401).json({ message: err.message });
   }
 };

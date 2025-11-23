@@ -47,10 +47,10 @@ export const register = async (data: any) => {
   return user;
 };
 
-export const login = async (identifier: string, password: string) => {
+export const login = async (name: string, password: string) => {
   const user = await prisma.user.findFirst({
     where: {
-      OR: [{ email: identifier }, { phoneNumber: identifier }],
+      OR: [{ email: name }, { phoneNumber: name }],
     },
   });
 
