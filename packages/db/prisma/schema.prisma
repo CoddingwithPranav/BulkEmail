@@ -27,6 +27,7 @@ enum FileType {
 
 enum UploadStatus {
   PENDING
+  PROCESSING   // ← ADD THIS (very important!)
   UPLOADED
   FAILED
 }
@@ -50,99 +51,97 @@ enum QuickSendStatus {
   FAILED
 }
 
+// =============================================
+// MODELS
+// =============================================
+
 model User {
-  id                Int          @id @default(autoincrement())
-  isGuest           Boolean      @default(false) // true = temporary guest account (no login)
-  email             String?      @unique
-  phoneNumber       String?      @unique
-  hashedPassword    String? // null for guests
+  id                Int              @id @default(autoincrement())
+  isGuest           Boolean          @default(false)
+  email             String?          @unique
+  phoneNumber       String?          @unique
+  hashedPassword    String?
   firstName         String?
   lastName          String?
   organizationName  String?
   profileImage      String?
   accountType       AccountType?
-  isAccountVerified Boolean      @default(false)
-  role              Role         @default(USER)
+  isAccountVerified Boolean          @default(false)
+  role              Role             @default(USER)
   citizenshipNumber String?
   citizenshipImage  String?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  files      Files[]
-  campaigns  Campaign[]
-  quickSends QuickSMSSend[]
-  payments   Payment[]
+  files       Files[]
+  campaigns   Campaign[]
+  quickSends  QuickSMSSend[]
+  payments    Payment[]
 
   @@map("users")
 }
 
 model Files {
-  id                Int          @id @default(autoincrement())
-  userId            Int
-  name              String
-  numberOfReceivers Int? // filled after parsing
-  sizeInBytes       BigInt
-  type              FileType
-  uploadStatus      UploadStatus @default(PENDING)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                  Int           @id @default(autoincrement())
+  userId              Int
+  name                String
+  path                String        // ← ADD THIS: where file is saved
+  numberOfReceivers   Int?
+  invalidRowsPath     String?       // ← ADD THIS: for download
+  sizeInBytes         BigInt
+  type                FileType
+  uploadStatus        UploadStatus  @default(PENDING)
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
 
   user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   receivers Receiver[]
-  campaigns Campaign[] // a file can be reused in multiple campaigns
+  campaigns Campaign[]
 
   @@map("files")
 }
 
 model Receiver {
-  id           Int     @id @default(autoincrement())
-  fileId       Int
-  firstName    String?
-  lastName     String?
-  province     String?
-  district     String?
-  municipality String?
-  phoneNumber  String
-  isDeleted    Boolean @default(false)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            Int      @id @default(autoincrement())
+  fileId        Int
+  firstName     String?
+  lastName      String?
+  province      String?
+  district      String?
+  municipality  String?
+  phoneNumber   String
+  isDeleted     Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   file Files @relation(fields: [fileId], references: [id], onDelete: Cascade)
 
-  @@unique([fileId, phoneNumber]) // prevent duplicates in same file
+  @@unique([fileId, phoneNumber])
   @@map("receiver")
 }
 
 model Campaign {
-  id             Int            @id @default(autoincrement())
-  userId         Int
-  name           String
-  messageText    String
-  status         CampaignStatus @default(PENDING) // approval status
-  deliveryStatus DeliveryStatus @default(NOT_STARTED)
-
-  province     String?
-  district     String?
-  municipality String?
-
-  fileId           Int?
-  recipientsNumber Int?
-  deliveredNumber  Int   @default(0)
-  failedNumber     Int   @default(0)
-  deliveryRate     Float @default(0) 
-
-  totalSmsCost        Float?
-  paymentReceiptImage String?
-  paid                Boolean @default(false)
-  isEmailSent         Boolean @default(false)
-
-  submitDate DateTime?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                   Int             @id @default(autoincrement())
+  userId               Int
+  name                 String
+  messageText          String
+  status               CampaignStatus  @default(PENDING)
+  deliveryStatus       DeliveryStatus  @default(NOT_STARTED)
+  province             String?
+  district             String?
+  municipality         String?
+  fileId               Int?
+  recipientsNumber     Int?
+  deliveredNumber      Int             @default(0)
+  failedNumber         Int             @default(0)
+  deliveryRate         Float           @default(0)
+  totalSmsCost         Float?
+  paymentReceiptImage  String?
+  paid                 Boolean         @default(false)
+  isEmailSent          Boolean         @default(false)
+  submitDate           DateTime?
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
 
   user User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   file Files? @relation(fields: [fileId], references: [id], onDelete: SetNull)
@@ -156,22 +155,20 @@ model QuickSMSSend {
   toPhoneNumber String
   message       String
   status        QuickSendStatus @default(PENDING)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("quick_sms_send")
 }
 
-
 model Payment {
-  id Int @id @default(autoincrement())
-  userId Int
-  paidOn DateTime @default(now())
-  isPaid Boolean @default(false)
-  isSmsSent Boolean @default(false)
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  paidOn    DateTime @default(now())
+  isPaid    Boolean  @default(false)
+  isSmsSent Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -179,4 +176,3 @@ model Payment {
 
   @@map("payment")
 }
-

@@ -1,0 +1,28 @@
+{
+  "name": "worker-file-processor",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Background file processing worker (CSV/XLSX → validate → save contacts + invalid rows)",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "lint": "eslint . --ext .ts",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "bullmq": "^5.13.0",
+    "ioredis": "^5.4.1",
+    "csv-parser": "^3.0.0",
+    "xlsx": "^0.18.5",
+    "@repo/db": "workspace:*",
+    "@repo/config": "workspace:*"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "tsx": "^4.19.0",
+    "typescript": "^5.5.4"
+  }
+}

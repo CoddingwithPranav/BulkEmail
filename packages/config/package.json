@@ -1,0 +1,23 @@
+{
+  "name": "@repo/config",
+  "version": "1.0.0",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./logger": "./src/logger.ts",
+    "./redis": "./src/redis.ts"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "winston": "^3.14.2",
+    "winston-daily-rotate-file": "^5.0.0",
+    "ioredis": "^5.4.1"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*"
+  }
+}
