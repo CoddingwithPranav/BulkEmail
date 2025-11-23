@@ -1,6 +1,6 @@
+import { SystemRole } from "@repo/types";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { SystemRole } from "../types";
 
 type User = {
   userId: string;

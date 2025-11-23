@@ -1,8 +1,8 @@
 import axiosInstance from '@/axios';
 import { login , register} from '@/lib/api/auth';
 import { clearAuthToken } from '@/lib/data/cookies';
-import { LoginForm, RegisterForm } from '@/lib/schemas/auth.schema';
 import { useAuthStore } from '@/lib/store';
+import { LoginForm, RegisterForm } from '@repo/types';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 export const useLoginMutation = () => {

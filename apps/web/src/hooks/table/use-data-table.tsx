@@ -46,22 +46,22 @@ export const useDataTable = <TData,>({
   meta,
   prefix,
 }: UseDataTableProps<TData>) => {
-  // const router = useRouter();
   const searchParams = useSearchParams();
-  const offsetKey = `${prefix ? `${prefix}_` : ""}offset`;
-  const offset = searchParams.get(offsetKey);
+  
+// CHANGE: Use "page" instead of "offset" and read from URL
+  const pageKey = `${prefix ? `${prefix}_` : ""}page`;
+  const urlPage = searchParams.get(pageKey);
 
   const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({
-    pageIndex: offset ? Math.ceil(Number(offset) / _pageSize) : 0,
+    pageIndex: urlPage ? Number(urlPage) - 1 : 0, // page=1 → index=0
     pageSize: _pageSize,
   });
+
   const pagination = useMemo(
-    () => ({
-      pageIndex,
-      pageSize,
-    }),
+    () => ({ pageIndex, pageSize }),
     [pageIndex, pageSize]
   );
+
   const [localRowSelection, setLocalRowSelection] = useState({});
   const rowSelection = _rowSelection?.state ?? localRowSelection;
   const setRowSelection = _rowSelection?.updater ?? setLocalRowSelection;
@@ -73,35 +73,34 @@ export const useDataTable = <TData,>({
     // router.replace(`?${params.toString()}`);
     window.history.replaceState(null, "", `?${params.toString()}`);
   };
-
-  useEffect(() => {
-    if (!enablePagination) {
-      return;
-    }
-
-    const index = offset ? Math.ceil(Number(offset) / _pageSize) : 0;
-
-    if (index === pageIndex) {
-      return;
-    }
-
-    setPagination((prev) => ({
-      ...prev,
-      pageIndex: index,
-    }));
-  }, [offset, enablePagination, _pageSize, pageIndex]);
-
+// CHANGE: Update URL when user clicks Next/Prev
   const onPaginationChange = (
     updater: (old: PaginationState) => PaginationState
   ) => {
-    const state = updater(pagination);
-    const { pageIndex, pageSize } = state;
+    const state = typeof updater === "function" ? updater(pagination) : updater;
+    const newPageNumber = state.pageIndex + 1; // Convert to 1-based
 
-    setSearchParam(offsetKey, `${pageIndex * pageSize}`);
+    const params = new URLSearchParams(searchParams.toString());
+    if (newPageNumber === 1) {
+      params.delete(pageKey);
+    } else {
+      params.set(pageKey, String(newPageNumber));
+    }
+
+    // This triggers re-render in Next.js → queryObject changes → API refetches
+    window.history.replaceState(null, "", `?${params.toString()}`);
 
     setPagination(state);
-    return state;
   };
+
+  // CHANGE: Sync URL back/forward buttons → table state
+  useEffect(() => {
+    if (!enablePagination) return;
+    const indexFromUrl = urlPage ? Number(urlPage) - 1 : 0;
+    if (indexFromUrl !== pageIndex) {
+      setPagination((prev) => ({ ...prev, pageIndex: indexFromUrl }));
+    }
+  }, [urlPage, enablePagination, pageIndex]);
   const table = useReactTable({
     data,
     columns,

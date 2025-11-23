@@ -9,14 +9,9 @@ import {
   useRegisterMutation,
 } from "@/hooks/queries/auth.query";
 import { setAuthToken } from "@/lib/data/cookies";
-import {
-  LoginForm,
-  loginSchema,
-  RegisterForm,
-  registerSchema,
-} from "@/lib/schemas/auth.schema";
 import { useAuthStore } from "@/lib/store";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { loginBodySchema, LoginForm, registerBodySchema, RegisterForm } from "@repo/types";
 import { Eye, EyeOff, MessageCircle } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -38,7 +33,7 @@ export default function AuthPage() {
   const router = useRouter();
 
   const registerForm = useForm<RegisterForm>({
-    resolver: zodResolver(registerSchema),
+    resolver: zodResolver(registerBodySchema),
     defaultValues: {
       fullName: "",
       email: "",
@@ -49,7 +44,7 @@ export default function AuthPage() {
   });
 
   const loginForm = useForm<LoginForm>({
-    resolver: zodResolver(loginSchema),
+    resolver: zodResolver(loginBodySchema),
     defaultValues: {
       name: "",
       password: "",

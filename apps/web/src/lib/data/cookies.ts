@@ -1,7 +1,7 @@
 "use server";
 
+import { SystemRole } from "@repo/types";
 import { cookies as nextCookies } from "next/headers";
-import { SystemRole } from "../types";
 
 export const setAuthToken = async (token: string, role?: string) => {
   const cookies = await nextCookies();

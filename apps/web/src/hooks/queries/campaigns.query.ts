@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createCampaign, deleteCampaign, getCampaignById, getCampaigns, updateCampaign } from "@/lib/api/campaigns";
-import { deleteJobCard } from "@/lib/api/jobcards";
-import { BaseQueryParams } from "@/lib/types";
-import { CreateCampaignInput } from "@repo/types";
+import { BaseQueryParams, CreateCampaignInput } from "@repo/types";
 import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query";
 
 export const useCampaignsQuery = (query: BaseQueryParams) => {

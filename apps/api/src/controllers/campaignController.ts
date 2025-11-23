@@ -50,28 +50,59 @@ export const createCampaign = async (req: AuthRequest, res: Response) => {
 };
 
 export const getMyCampaigns = async (req: AuthRequest, res: Response) => {
+  console.log("Fetching campaigns for user:", req.user.id);
   const query = req.query;
-  const [campaigns, totalCampaigns] = await prisma.$transaction([
-        prisma.campaign.findMany({
-          skip: 0,
-          take: 10,
-          orderBy: {
-            createdAt: 'desc',
-          },
-          where: { userId: req.user.id },
-        }),
+  console.log("Query parameters:", query);
+
+  // Default values
+  const page = Number(query.page) || 1;
+  const limit = Math.min(Number(query.limit) || 10, 100); // max 100 per page
+  const skip = (page - 1) * limit;
+
+  console.log("Pagination →", { page, limit, skip });
+
+  try {
+    const [campaigns, totalCampaigns] = await prisma.$transaction([
+      prisma.campaign.findMany({
+        skip,
+        take: limit,
+        orderBy: {
+          createdAt: 'desc',
+        },
+        where: {
+          userId: req.user.id,
+        },
+        // Optional: select only needed fields for performance
+        // select: { id: true, title: true, status: true, createdAt: true, ... }
+      }),
       prisma.campaign.count({
         where: { userId: req.user.id },
       }),
     ]);
 
-  res.json({
-    status: "success",
-    data: {
-      campaigns,
-      count: totalCampaigns
-    },
-  });
+    const totalPages = Math.ceil(totalCampaigns / limit);
+
+    res.json({
+      status: "success",
+      data: {
+        campaigns,
+        pagination: {
+          currentPage: page,
+          totalPages,
+          totalItems: totalCampaigns,
+          perPage: limit,
+          hasNext: page < totalPages,
+          hasPrev: page > 1,
+        },
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching campaigns:", error);
+    res.status(500).json({
+      status: "error",
+      message: "Failed to fetch campaigns",
+    });
+  }
 };
 
 export const getAllCampaigns = async (_req: Request, res: Response) => {

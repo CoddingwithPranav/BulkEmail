@@ -1,10 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import axiosInstance from "@/axios";
-import {
-  BaseQueryParams,
-  InitialResponse
-} from "../types";
-import { Campaign, CampaignsResponse, CreateCampaignInput } from "@repo/types";
+import { BaseQueryParams, Campaign, CampaignsResponse, CreateCampaignInput, InitialResponse } from "@repo/types";
 
 export const getCampaigns = async (query: BaseQueryParams) => {
   const { data: result } = await axiosInstance.get<InitialResponse<CampaignsResponse>>("/campaigns", {

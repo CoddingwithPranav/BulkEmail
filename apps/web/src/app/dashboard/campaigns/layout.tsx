@@ -1,6 +1,6 @@
 import { getCurrentRole } from "@/lib/data/cookies";
-import { SystemRole } from "@/lib/types";
 import { hasAccess } from "@/lib/utils";
+import { SystemRole } from "@repo/types";
 import { redirect } from "next/navigation";
 
 export default async function CustomersRequestsLayout({

@@ -1,7 +1,7 @@
 "use server";
 
 import { getCurrentRole } from "@/lib/data/cookies";
-import { SystemRole } from "@/lib/types";
+import { SystemRole } from "@repo/types";
 
 const navItems = [
   { name: "Dashboard", href: "/dashboard", icon: "Home" },

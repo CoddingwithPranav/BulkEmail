@@ -16,6 +16,7 @@ export const registerBodySchema = z
     password: z.string().min(8, "Password must be at least 8 characters").optional(),
     firstName: z.string().optional(),
     lastName: z.string().optional(),
+    fullName: z.string().optional(),
     organizationName: z.string().optional(),
     accountType: z.enum(["INDIVIDUAL", "ORGANIZATION"]).default("INDIVIDUAL"),
     isGuest: z.boolean().optional().default(false),
@@ -27,13 +28,11 @@ export const registerBodySchema = z
     message: "Password is required for non-guest accounts",
   });
 
-export type RegisterInput = z.infer<typeof registerBodySchema>;
+export type RegisterForm = z.infer<typeof registerBodySchema>;
 
-// Login body (shared)
 export const loginBodySchema = z.object({
-  // You can use email OR phone as login identifier
   name: z.string(), // will accept both email or phone
   password: z.string().min(8, "Password must be at least 8 characters"),
 });
 
-export type LoginInput = z.infer<typeof loginBodySchema>;
+export type LoginForm = z.infer<typeof loginBodySchema>;
