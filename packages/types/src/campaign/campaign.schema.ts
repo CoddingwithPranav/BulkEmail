@@ -51,7 +51,14 @@ export const approveCampaignSchema = z.object({
 
 export type CampaignsResponse = {
   campaigns: z.infer<typeof createCampaignSchema>[];
-  count: number;
+  pagination: {
+    currentPage: number;
+    perPage: number;
+    totalItems: number;
+    totalPages: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+  };
 }
 export type Campaign = z.infer<typeof createCampaignSchema>;
 export type ApproveCampaignInput = z.infer<typeof approveCampaignSchema>;

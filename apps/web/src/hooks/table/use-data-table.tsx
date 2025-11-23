@@ -46,9 +46,9 @@ export const useDataTable = <TData,>({
   meta,
   prefix,
 }: UseDataTableProps<TData>) => {
-  const searchParams = useSearchParams();
-  
-// CHANGE: Use "page" instead of "offset" and read from URL
+ const searchParams = useSearchParams();
+
+  // CHANGE: Use "page" instead of "offset" and read from URL
   const pageKey = `${prefix ? `${prefix}_` : ""}page`;
   const urlPage = searchParams.get(pageKey);
 
@@ -66,14 +66,7 @@ export const useDataTable = <TData,>({
   const rowSelection = _rowSelection?.state ?? localRowSelection;
   const setRowSelection = _rowSelection?.updater ?? setLocalRowSelection;
 
-  const setSearchParam = (key: string, value: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set(key, value);
-
-    // router.replace(`?${params.toString()}`);
-    window.history.replaceState(null, "", `?${params.toString()}`);
-  };
-// CHANGE: Update URL when user clicks Next/Prev
+  // CHANGE: Update URL when user clicks Next/Prev
   const onPaginationChange = (
     updater: (old: PaginationState) => PaginationState
   ) => {

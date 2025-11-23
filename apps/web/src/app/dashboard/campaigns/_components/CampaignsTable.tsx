@@ -19,12 +19,12 @@ const CampaignsTable = () => {
     limit: PAGE_SIZE,
     page: searchParams.get('page') ? Number(searchParams.get('page')) : 1,
   }), [searchParams]);
-  debugger
+
   const { data, isLoading } = useCampaignsQuery(queryObject);
   const { table } = useDataTable({
     data: data?.campaigns ?? [],
     columns,
-    count: data?.count,
+    count: data?.pagination?.totalItems ?? 0,
     enablePagination: true,
     pageSize: PAGE_SIZE,
     getRowId: (row) => row.id || "",
@@ -35,7 +35,7 @@ const CampaignsTable = () => {
     <DataTable
       table={table}
       columns={columns}
-      count={data?.count ?? 0}
+      count={data?.pagination?.totalItems ?? 0}
       pageSize={PAGE_SIZE}
       isLoading={isLoading}
       queryObject={queryObject}
@@ -46,5 +46,4 @@ const CampaignsTable = () => {
 };
 
 export default CampaignsTable;
-
 

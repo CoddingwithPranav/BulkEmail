@@ -10,8 +10,15 @@ export type InitialResponse<T> = {
   message: string;
   data: T;
   count?: number;
+  pagination?: {
+    currentPage: number;
+    perPage: number;
+    totalItems: number;
+    totalPages: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+  };
 };
-
 export type BaseQueryParams = {
   q?: string | null;
   page?: number | null;

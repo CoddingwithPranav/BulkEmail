@@ -50,17 +50,24 @@ export const createCampaign = async (req: AuthRequest, res: Response) => {
 };
 
 export const getMyCampaigns = async (req: AuthRequest, res: Response) => {
-  console.log("Fetching campaigns for user:", req.user.id);
   const query = req.query;
-  console.log("Query parameters:", query);
 
   // Default values
   const page = Number(query.page) || 1;
   const limit = Math.min(Number(query.limit) || 10, 100); // max 100 per page
   const skip = (page - 1) * limit;
+  const search = query.q as string | undefined;
 
   console.log("Pagination →", { page, limit, skip });
-
+  const whereClause: any = {
+        userId: req.user.id,
+      ...(search && {
+        OR: [
+          { name: { contains: search, mode: 'insensitive' } },
+          { province: { contains: search, mode: 'insensitive' } },
+        ],
+      }),
+    };
   try {
     const [campaigns, totalCampaigns] = await prisma.$transaction([
       prisma.campaign.findMany({
@@ -69,9 +76,7 @@ export const getMyCampaigns = async (req: AuthRequest, res: Response) => {
         orderBy: {
           createdAt: 'desc',
         },
-        where: {
-          userId: req.user.id,
-        },
+         where: whereClause,
         // Optional: select only needed fields for performance
         // select: { id: true, title: true, status: true, createdAt: true, ... }
       }),
@@ -86,6 +91,7 @@ export const getMyCampaigns = async (req: AuthRequest, res: Response) => {
       status: "success",
       data: {
         campaigns,
+        count: totalCampaigns,
         pagination: {
           currentPage: page,
           totalPages,
@@ -104,7 +110,6 @@ export const getMyCampaigns = async (req: AuthRequest, res: Response) => {
     });
   }
 };
-
 export const getAllCampaigns = async (_req: Request, res: Response) => {
   const campaigns = await prisma.campaign.findMany({
     include: { user: { select: { email: true, organizationName: true } } },
