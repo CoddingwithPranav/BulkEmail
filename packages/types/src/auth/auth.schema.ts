@@ -32,7 +32,7 @@ export type RegisterInput = z.infer<typeof registerBodySchema>;
 // Login body (shared)
 export const loginBodySchema = z.object({
   // You can use email OR phone as login identifier
-  identifier: z.string(), // will accept both email or phone
+  name: z.string(), // will accept both email or phone
   password: z.string().min(8, "Password must be at least 8 characters"),
 });
 
