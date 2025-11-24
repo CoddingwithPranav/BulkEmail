@@ -1,6 +1,6 @@
 import logger from "@repo/config/logger";
+import { dbClient } from "@repo/db/client";
 import { Response } from "express";
-import prisma from "../config/database";
 import { fileProcessingQueue } from "../jobs/queues";
 import { AuthRequest } from "../middleware/auth";
 
@@ -10,7 +10,7 @@ export const uploadFile = async (req: AuthRequest, res: Response) => {
   const { originalname, filename, size, path: filePath } = req.file;
 
   try {
-    const fileRecord = await prisma.files.create({
+    const fileRecord = await dbClient.files.create({
       data: {
         userId: req.user.id,
         name: originalname,
@@ -47,8 +47,8 @@ export const uploadFile = async (req: AuthRequest, res: Response) => {
 };
 
 export const getFileStatus = async (req: AuthRequest, res: Response) => {
-  const file = await prisma.files.findFirst({
-    where: { id: Number(req.params.id), userId: req.user.id },
+  const file = await dbClient.files.findFirst({
+    where: { id: req.params.id, userId: req.user.id },
     select: {
       id: true,
       name: true,
@@ -65,8 +65,8 @@ export const getFileStatus = async (req: AuthRequest, res: Response) => {
 };
 
 export const downloadInvalidRows = async (req: AuthRequest, res: Response) => {
-  const file = await prisma.files.findFirst({
-    where: { id: Number(req.params.id), userId: req.user.id },
+  const file = await dbClient.files.findFirst({
+    where: { id: req.params.id, userId: req.user.id },
   });
 
   if (!file?.invalidRowsPath) {

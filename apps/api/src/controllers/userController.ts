@@ -1,5 +1,5 @@
+import { dbClient } from "@repo/db/client";
 import { Request, Response } from "express";
-import prisma from "../config/database";
 import logger from "../config/logger";
 import { AuthRequest } from "../middleware/auth";
 
@@ -9,7 +9,7 @@ export const getMyProfile = (req: AuthRequest, res: Response) => {
 
 export const updateMyProfile = async (req: AuthRequest, res: Response) => {
   try {
-    const user = await prisma.user.update({
+    const user = await dbClient.user.update({
       where: { id: req.user.id },
       data: req.body,
       select: {
@@ -31,7 +31,7 @@ export const updateMyProfile = async (req: AuthRequest, res: Response) => {
 };
 
 export const getAllUsers = async (_req: Request, res: Response) => {
-  const users = await prisma.user.findMany({
+  const users = await dbClient.user.findMany({
     select: {
       id: true,
       email: true,
@@ -46,8 +46,8 @@ export const getAllUsers = async (_req: Request, res: Response) => {
 };
 
 export const getUserById = async (req: Request, res: Response) => {
-  const user = await prisma.user.findUnique({
-    where: { id: Number(req.params.id) },
+  const user = await dbClient.user.findUnique({
+    where: { id: req.params.id },
     select: {
       id: true,
       email: true,
@@ -63,8 +63,8 @@ export const getUserById = async (req: Request, res: Response) => {
 
 export const updateUserRole = async (req: Request, res: Response) => {
   const { role } = req.body;
-  const user = await prisma.user.update({
-    where: { id: Number(req.params.id) },
+  const user = await dbClient.user.update({
+    where: { id: req.params.id },
     data: { role },
   });
   logger.warn("User role changed", {
@@ -76,7 +76,7 @@ export const updateUserRole = async (req: Request, res: Response) => {
 };
 
 export const deleteUser = async (req: Request, res: Response) => {
-  await prisma.user.delete({ where: { id: Number(req.params.id) } });
+  await dbClient.user.delete({ where: { id: req.params.id } });
   logger.warn("User deleted", {
     deletedUserId: req.params.id,
     by: (req as AuthRequest).user.id,

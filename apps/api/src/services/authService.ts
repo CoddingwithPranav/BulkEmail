@@ -1,9 +1,9 @@
-import prisma from "../config/database";
+import { dbClient, User } from "@repo/db/client";
 
 import logger from "../config/logger";
 import { comparePassword, hashPassword } from "../utils/password";
 
-export const register = async (data: any) => {
+export const register = async (data: any): Promise<User> => {
   const {
     email,
     phoneNumber,
@@ -17,17 +17,17 @@ export const register = async (data: any) => {
 
   // Duplicate check
   if (email) {
-    const existing = await prisma.user.findUnique({ where: { email } });
+    const existing = await dbClient.user.findUnique({ where: { email } });
     if (existing) throw new Error("Email already registered");
   }
   if (phoneNumber) {
-    const existing = await prisma.user.findUnique({ where: { phoneNumber } });
+    const existing = await dbClient.user.findUnique({ where: { phoneNumber } });
     if (existing) throw new Error("Phone number already registered");
   }
 
   const hashedPassword = await hashPassword(password);
 
-  const user = await prisma.user.create({
+  const user = await dbClient.user.create({
     data: {
       email,
       phoneNumber,
@@ -45,8 +45,8 @@ export const register = async (data: any) => {
   return user;
 };
 
-export const login = async (name: string, password: string) => {
-  const user = await prisma.user.findFirst({
+export const login = async (name: string, password: string): Promise<User> => {
+  const user = await dbClient.user.findFirst({
     where: {
       OR: [{ email: name }, { phoneNumber: name }],
     },
@@ -62,13 +62,14 @@ export const login = async (name: string, password: string) => {
   return user;
 };
 
-export const findUserById = async (id: number) => {
-  return prisma.user.findUnique({
+export const findUserById = async (id: string): Promise<User | null> => {
+  return dbClient.user.findUnique({
     where: { id },
     select: {
       id: true,
       email: true,
       phoneNumber: true,
+      hashedPassword: true,
       firstName: true,
       lastName: true,
       organizationName: true,
@@ -77,6 +78,9 @@ export const findUserById = async (id: number) => {
       role: true,
       isAccountVerified: true,
       createdAt: true,
+      updatedAt: true,
+      citizenshipNumber: true,
+      citizenshipImage: true,
     },
   });
 };

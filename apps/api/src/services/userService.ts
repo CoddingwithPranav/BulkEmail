@@ -1,8 +1,8 @@
-import prisma from '../config/database';
-import logger from '../config/logger';
+import { dbClient } from "@repo/db/client";
+import logger from "../config/logger";
 
-export const getUserProfile = async (userId: number) => {
-  const user = await prisma.user.findUnique({
+export const getUserProfile = async (userId: string) => {
+  const user = await dbClient.user.findUnique({
     where: { id: userId },
     select: {
       id: true,
@@ -18,12 +18,12 @@ export const getUserProfile = async (userId: number) => {
       createdAt: true,
     },
   });
-  if (!user) throw new Error('User not found');
+  if (!user) throw new Error("User not found");
   return user;
 };
 
-export const updateUserProfile = async (userId: number, data: any) => {
-  const updated = await prisma.user.update({
+export const updateUserProfile = async (userId: string, data: any) => {
+  const updated = await dbClient.user.update({
     where: { id: userId },
     data,
     select: {
@@ -37,12 +37,12 @@ export const updateUserProfile = async (userId: number, data: any) => {
       accountType: true,
     },
   });
-  logger.info('User profile updated', { userId });
+  logger.info("User profile updated", { userId });
   return updated;
 };
 
 export const getAllUsers = async () => {
-  return prisma.user.findMany({
+  return dbClient.user.findMany({
     select: {
       id: true,
       email: true,
@@ -52,6 +52,6 @@ export const getAllUsers = async () => {
       isAccountVerified: true,
       createdAt: true,
     },
-    orderBy: { createdAt: 'desc' },
+    orderBy: { createdAt: "desc" },
   });
 };

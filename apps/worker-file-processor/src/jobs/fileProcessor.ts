@@ -1,14 +1,15 @@
 import logger from "@repo/config/logger";
+import { dbClient } from "@repo/db";
 import { Job } from "bullmq";
 import csv from "csv-parser";
 import fs from "fs";
 import path from "path";
 import XLSX from "xlsx";
-import prisma from "../config/database";
 import { generateInvalidExcel } from "../utils/excel";
 import { contactSchema } from "../utils/validation";
 
 export const processFileJob = async (job: Job) => {
+  console.log("Processing job:", job.id);
   const { fileId, filePath } = job.data;
   let validCount = 0;
   let invalidRows: any[] = [];
@@ -41,7 +42,7 @@ export const processFileJob = async (job: Job) => {
             );
           })
           .on("end", async () => {
-            await prisma.receiver.createMany({ data: valid });
+            await dbClient.upload_Receiver.createMany({ data: valid });
             resolve(null);
           })
           .on("error", reject);
@@ -73,7 +74,7 @@ export const processFileJob = async (job: Job) => {
           invalidRows.push({ ...row, errors: result.error.message });
         }
       });
-      await prisma.receiver.createMany({ data: valid });
+      await dbClient.receiver.createMany({ data: valid });
     }
 
     // Save invalid rows
@@ -88,7 +89,7 @@ export const processFileJob = async (job: Job) => {
       fs.writeFileSync(invalidPath, buffer);
     }
 
-    await prisma.files.update({
+    await dbClient.files.update({
       where: { id: fileId },
       data: {
         uploadStatus: "UPLOADED",
@@ -103,7 +104,7 @@ export const processFileJob = async (job: Job) => {
       invalid: invalidRows.length,
     });
   } catch (err: any) {
-    await prisma.files.update({
+    await dbClient.files.update({
       where: { id: fileId },
       data: { uploadStatus: "FAILED" },
     });

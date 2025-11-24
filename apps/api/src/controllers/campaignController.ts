@@ -1,5 +1,5 @@
+import { dbClient } from "@repo/db/client";
 import { Request, Response } from "express";
-import prisma from "../config/database";
 import logger from "../config/logger";
 import { AuthRequest } from "../middleware/auth";
 
@@ -7,26 +7,7 @@ export const createCampaign = async (req: AuthRequest, res: Response) => {
   const { fileId, manualReceivers, ...data } = req.body;
 
   try {
-    let receiversData: any[] = [];
-    if (manualReceivers && manualReceivers.length > 0) {
-      const tempFile = await prisma.files.create({
-        data: {
-          userId: req.user.id,
-          name: "Manual Entry",
-          type: "CSV",
-          uploadStatus: "UPLOADED",
-          numberOfReceivers: manualReceivers.length,
-        },
-      });
-      receiversData = manualReceivers.map((r: any) => ({
-        ...r,
-        fileId: tempFile.id,
-      }));
-      await prisma.receiver.createMany({ data: receiversData });
-      data.fileId = tempFile.id;
-    }
-
-    const campaign = await prisma.campaign.create({
+    const campaign = await dbClient.campaign.create({
       data: {
         ...data,
         userId: req.user.id,
@@ -70,8 +51,8 @@ export const getMyCampaigns = async (req: AuthRequest, res: Response) => {
   };
   console.log("Where Clause →", whereClause);
   try {
-    const [campaigns, totalCampaigns] = await prisma.$transaction([
-      prisma.campaign.findMany({
+    const [campaigns, totalCampaigns] = await dbClient.$transaction([
+      dbClient.campaign.findMany({
         skip,
         take: limit,
         orderBy: {
@@ -79,7 +60,7 @@ export const getMyCampaigns = async (req: AuthRequest, res: Response) => {
         },
         where: whereClause,
       }),
-      prisma.campaign.count({
+      dbClient.campaign.count({
         where: { userId: req.user.id },
       }),
     ]);
@@ -110,10 +91,9 @@ export const getMyCampaigns = async (req: AuthRequest, res: Response) => {
   }
 };
 export const getAllCampaigns = async (_req: Request, res: Response) => {
-  const campaigns = await prisma.campaign.findMany({
+  const campaigns = await dbClient.campaign.findMany({
     include: { user: { select: { email: true, organizationName: true } } },
     orderBy: { submitDate: "desc" },
-    count: true,
   });
   res.status(200).json({
     status: "success",
@@ -125,7 +105,7 @@ export const getAllCampaigns = async (_req: Request, res: Response) => {
 
 export const getCampaignById = async (req: AuthRequest, res: Response) => {
   console.log("Fetching campaign with ID:", req.params.id);
-  const data = await prisma.campaign.findFirst({
+  const data = await dbClient.campaign.findFirst({
     where: { id: req.params.id, userId: req.user.id },
     include: { file: true },
   });
@@ -138,7 +118,7 @@ export const getCampaignById = async (req: AuthRequest, res: Response) => {
 
 export const updateCampaign = async (req: AuthRequest, res: Response) => {
   console.log("Updating campaign with ID:", req.params.id, req.body);
-  const campaign = await prisma.campaign.update({
+  const campaign = await dbClient.campaign.update({
     where: { id: req.params.id, userId: req.user.id },
     data: req.body,
   });
@@ -147,7 +127,7 @@ export const updateCampaign = async (req: AuthRequest, res: Response) => {
 };
 
 export const deleteCampaign = async (req: AuthRequest, res: Response) => {
-  await prisma.campaign.delete({
+  await dbClient.campaign.delete({
     where: { id: req.params.id, userId: req.user.id },
   });
   logger.info("Campaign deleted", { campaignId: req.params.id });
@@ -159,9 +139,9 @@ export const approveOrCancelCampaign = async (
   res: Response
 ) => {
   const { action, reason } = req.body;
-  const campaign = await prisma.campaign.update({
-    where: { id: Number(req.params.id) },
-    data: { status: action, isEmailSent: true },
+  const campaign = await dbClient.campaign.update({
+    where: { id: req.params.id },
+    data: { status: action },
   });
 
   logger.warn("Campaign status changed", {

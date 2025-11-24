@@ -1,5 +1,5 @@
+import { dbClient } from "@repo/db/client";
 import { NextFunction, Request, Response } from "express";
-import prisma from "../config/database";
 import { verifyToken } from "../utils/jwt";
 
 export interface AuthRequest extends Request {
@@ -19,8 +19,8 @@ export const protect = async (
     }
 
     try {
-      const decoded = verifyToken(token) as { id: number };
-      const user = await prisma.user.findUnique({
+      const decoded = verifyToken(token) as { id: string };
+      const user = await dbClient.user.findUnique({
         where: { id: decoded.id },
         select: {
           id: true,

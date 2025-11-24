@@ -1,5 +1,5 @@
+import { dbClient } from "@repo/db/client";
 import { Request, Response } from "express";
-import prisma from "../config/database";
 import logger from "../config/logger";
 import { AuthRequest } from "../middleware/auth";
 import { login, register } from "../services/authService";
@@ -77,7 +77,7 @@ export const updateProfile = async (req: AuthRequest, res: Response) => {
       delete updates.password;
     }
 
-    const user = await prisma.user.update({
+    const user = await dbClient.user.update({
       where: { id: req.user.id },
       data: updates,
       select: {
