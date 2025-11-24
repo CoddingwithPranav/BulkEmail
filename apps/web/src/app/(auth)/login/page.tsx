@@ -11,7 +11,12 @@ import {
 import { setAuthToken } from "@/lib/data/cookies";
 import { useAuthStore } from "@/lib/store";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { loginBodySchema, LoginForm, registerBodySchema, RegisterForm } from "@repo/types";
+import {
+  loginBodySchema,
+  LoginForm,
+  registerBodySchema,
+  RegisterForm,
+} from "@repo/types";
 import { Eye, EyeOff, MessageCircle } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -80,7 +85,6 @@ export default function AuthPage() {
       email: data.email,
       phoneNumber: data.phoneNumber,
       password: data.password,
-      isGuest: false,
       accountType: data.accountType,
     };
 

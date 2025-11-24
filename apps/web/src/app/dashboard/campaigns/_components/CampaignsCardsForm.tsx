@@ -1,26 +1,26 @@
 "use client";
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Container } from "@/components/common/Container";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Container } from "@/components/common/Container";
-import { Briefcase, Users, MapPin } from "lucide-react";
+import { Briefcase, MapPin } from "lucide-react";
 import React from "react";
-import { UseFormReturn, useFieldArray } from "react-hook-form";
+import { UseFormReturn } from "react-hook-form";
 
-import type { CreateCampaignInput } from "@repo/types";
+import type { Campaign } from "@repo/types";
 
 interface CampaignFormProps {
-  form: UseFormReturn<CreateCampaignInput>;
+  form: UseFormReturn<Campaign>;
   children?: React.ReactNode;
 }
 
-
 const CampaignForm = ({ form, children }: CampaignFormProps) => {
-  const { fields, append, remove } = useFieldArray({
-    control: form.control,
-    name: "manualReceivers",
-  });
-
   return (
     <>
       {/* Campaign Details */}
@@ -83,7 +83,11 @@ const CampaignForm = ({ form, children }: CampaignFormProps) => {
               <FormItem>
                 <FormLabel>Province</FormLabel>
                 <FormControl>
-                  <Input placeholder="e.g. Bagmati" {...field} value={field.value ?? ""} />
+                  <Input
+                    placeholder="e.g. Bagmati"
+                    {...field}
+                    value={field.value ?? ""}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -97,7 +101,11 @@ const CampaignForm = ({ form, children }: CampaignFormProps) => {
               <FormItem>
                 <FormLabel>District</FormLabel>
                 <FormControl>
-                  <Input placeholder="e.g. Kathmandu" {...field} value={field.value ?? ""} />
+                  <Input
+                    placeholder="e.g. Kathmandu"
+                    {...field}
+                    value={field.value ?? ""}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

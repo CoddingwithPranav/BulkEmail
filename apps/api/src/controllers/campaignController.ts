@@ -7,7 +7,6 @@ export const createCampaign = async (req: AuthRequest, res: Response) => {
   const { fileId, manualReceivers, ...data } = req.body;
 
   try {
-    // Handle manual receivers
     let receiversData: any[] = [];
     if (manualReceivers && manualReceivers.length > 0) {
       const tempFile = await prisma.files.create({
@@ -54,31 +53,31 @@ export const getMyCampaigns = async (req: AuthRequest, res: Response) => {
 
   // Default values
   const page = Number(query.page) || 1;
-  const limit = Math.min(Number(query.limit) || 10, 100); // max 100 per page
+  const limit = Math.min(Number(query.limit) || 10, 100);
   const skip = (page - 1) * limit;
   const search = query.q as string | undefined;
 
   console.log("Pagination →", { page, limit, skip });
+
   const whereClause: any = {
-        userId: req.user.id,
-      ...(search && {
-        OR: [
-          { name: { contains: search, mode: 'insensitive' } },
-          { province: { contains: search, mode: 'insensitive' } },
-        ],
-      }),
-    };
+    userId: req.user.id,
+    ...(search && {
+      OR: [
+        { name: { contains: search, mode: "insensitive" } },
+        { province: { contains: search, mode: "insensitive" } },
+      ],
+    }),
+  };
+  console.log("Where Clause →", whereClause);
   try {
     const [campaigns, totalCampaigns] = await prisma.$transaction([
       prisma.campaign.findMany({
         skip,
         take: limit,
         orderBy: {
-          createdAt: 'desc',
+          createdAt: "desc",
         },
-         where: whereClause,
-        // Optional: select only needed fields for performance
-        // select: { id: true, title: true, status: true, createdAt: true, ... }
+        where: whereClause,
       }),
       prisma.campaign.count({
         where: { userId: req.user.id },
@@ -125,20 +124,22 @@ export const getAllCampaigns = async (_req: Request, res: Response) => {
 };
 
 export const getCampaignById = async (req: AuthRequest, res: Response) => {
+  console.log("Fetching campaign with ID:", req.params.id);
   const data = await prisma.campaign.findFirst({
-    where: { id: Number(req.params.id), userId: req.user.id },
+    where: { id: req.params.id, userId: req.user.id },
     include: { file: true },
   });
   if (!data) return res.status(404).json({ message: "Campaign not found" });
-  res.json({ 
+  res.json({
     status: "success",
-    data
-   });
+    data,
+  });
 };
 
 export const updateCampaign = async (req: AuthRequest, res: Response) => {
+  console.log("Updating campaign with ID:", req.params.id, req.body);
   const campaign = await prisma.campaign.update({
-    where: { id: Number(req.params.id), userId: req.user.id },
+    where: { id: req.params.id, userId: req.user.id },
     data: req.body,
   });
   logger.info("Campaign updated", { campaignId: campaign.id });
@@ -147,7 +148,7 @@ export const updateCampaign = async (req: AuthRequest, res: Response) => {
 
 export const deleteCampaign = async (req: AuthRequest, res: Response) => {
   await prisma.campaign.delete({
-    where: { id: Number(req.params.id), userId: req.user.id },
+    where: { id: req.params.id, userId: req.user.id },
   });
   logger.info("Campaign deleted", { campaignId: req.params.id });
   res.json({ message: "Campaign deleted" });

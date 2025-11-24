@@ -1,6 +1,5 @@
-// lib/table/useCampaignsTableColumns.tsx
-import { Button } from "@/components/ui/button";
 import { ConfirmDeleteDialog } from "@/components/common/ConfirmDeleteDialog";
+import { Button } from "@/components/ui/button";
 import { useCampaignDeleteMutation } from "@/hooks/queries/campaigns.query";
 import { Campaign } from "@repo/types";
 import { createColumnHelper } from "@tanstack/react-table";
@@ -20,7 +19,6 @@ export const useCampaignsTableColumns = () => {
     });
   };
 
-  // Remove useMemo — or at least include dependencies!
   return [
     columnHelper.display({
       id: "name",
@@ -56,8 +54,8 @@ export const useCampaignsTableColumns = () => {
             row.original.status === "APPROVED"
               ? "bg-green-100 text-green-800"
               : row.original.status === "PENDING"
-              ? "bg-yellow-100 text-yellow-800"
-              : "bg-gray-100 text-gray-800"
+                ? "bg-yellow-100 text-yellow-800"
+                : "bg-gray-100 text-gray-800"
           }`}
         >
           {row.original.status}
@@ -88,7 +86,6 @@ export const useCampaignsTableColumns = () => {
               Delete
             </Button>
 
-            {/* This will now work perfectly */}
             <ConfirmDeleteDialog
               open={deleteId === campaign.id}
               onOpenChange={(open) => !open && setDeleteId(null)}

@@ -24,7 +24,6 @@ export const registerController = async (req: Request, res: Response) => {
           email: user.email,
           phoneNumber: user.phoneNumber,
           role: user.role,
-          isGuest: user.isGuest,
         },
       },
     });

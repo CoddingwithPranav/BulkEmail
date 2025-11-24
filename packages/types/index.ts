@@ -1,15 +1,13 @@
-export * from "./src/campaign";
 export * from "./src/auth";
-export * from "./src/quickSms";
+export * from "./src/campaign";
 export * from "./src/file";
+export * from "./src/quickSms";
 export * from "./src/users";
-
 
 export type InitialResponse<T> = {
   success: boolean;
   message: string;
   data: T;
-  count?: number;
   pagination?: {
     currentPage: number;
     perPage: number;
@@ -31,5 +29,3 @@ export enum SystemRole {
   SUPER_ADMIN = "SUPERADMIN",
   USER = "USER",
 }
-
-

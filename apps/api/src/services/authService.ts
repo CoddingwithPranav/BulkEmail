@@ -8,7 +8,6 @@ export const register = async (data: any) => {
     email,
     phoneNumber,
     password,
-    isGuest = false,
     firstName,
     lastName,
     organizationName,
@@ -26,7 +25,7 @@ export const register = async (data: any) => {
     if (existing) throw new Error("Phone number already registered");
   }
 
-  const hashedPassword = isGuest ? null : await hashPassword(password);
+  const hashedPassword = await hashPassword(password);
 
   const user = await prisma.user.create({
     data: {
@@ -38,12 +37,11 @@ export const register = async (data: any) => {
       organizationName,
       accountType,
       citizenshipNumber,
-      isGuest,
-      role: isGuest ? "GUEST" : "USER",
+      role: "USER",
     },
   });
 
-  logger.info("New user registered", { userId: user.id, isGuest });
+  logger.info("New user registered", { userId: user.id });
   return user;
 };
 
@@ -54,7 +52,7 @@ export const login = async (name: string, password: string) => {
     },
   });
 
-  if (!user || user.isGuest || !user.hashedPassword) {
+  if (!user || !user.hashedPassword) {
     throw new Error("Invalid credentials");
   }
 

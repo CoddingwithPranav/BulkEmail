@@ -2,22 +2,17 @@
 
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
+import { useCampaignCreateMutation } from "@/hooks/queries/campaigns.query";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Campaign, createCampaignSchema } from "@repo/types";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-
-import {
-  createCampaignSchema,       
-  type CreateCampaignInput,     
-} from "@repo/types";
-
-import { useCampaignCreateMutation } from "@/hooks/queries/campaigns.query";
 import CampaignForm from "../../_components/CampaignsCardsForm";
 
 export default function CreateCampaign() {
   const router = useRouter();
 
-  const form = useForm<CreateCampaignInput>({
+  const form = useForm<Campaign>({
     resolver: zodResolver(createCampaignSchema),
     defaultValues: {
       name: "",
@@ -27,10 +22,10 @@ export default function CreateCampaign() {
     },
   });
 
-  const { mutateAsync: createCampaign, isPending } = useCampaignCreateMutation();
+  const { mutateAsync: createCampaign, isPending } =
+    useCampaignCreateMutation();
 
-
-  const onSubmit = async (values: CreateCampaignInput) => {
+  const onSubmit = async (values: Campaign) => {
     try {
       await createCampaign(values);
       form.reset();
