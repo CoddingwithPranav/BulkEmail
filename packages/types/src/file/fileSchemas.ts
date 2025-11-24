@@ -1,6 +1,9 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export const uploadFileSchema = z.object({
-  file: z.any().refine((file) => file, "File is required"),
-  // Multer will validate mimetype, but we double-check
+  name: z.string().min(1, "Name required"),
+  email: z.string().email("Invalid email"),
+  phoneNumber: z.string().regex(/^\d{10}$/, "Phone must be 10 digits"),
 });
+
+export type UploadFile = z.infer<typeof uploadFileSchema>;
