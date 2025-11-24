@@ -2,6 +2,7 @@ export * from "./src/auth";
 export * from "./src/campaign";
 export * from "./src/file";
 export * from "./src/quickSms";
+export * from "./src/receiver";
 export * from "./src/users";
 
 export type InitialResponse<T> = {
