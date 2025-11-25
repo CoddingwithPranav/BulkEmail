@@ -89,9 +89,10 @@ model Files {
   createdAt         DateTime     @default(now())
   updatedAt         DateTime     @updatedAt
 
-  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  receivers Upload_Receiver[]
-  campaigns Campaign[]
+  user                   User                      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  receivers              Upload_Receiver[]
+  campaigns              Campaign[]
+  invalidUploadReceivers Invalid_Upload_Receiver[]
 
   @@map("files")
 }
@@ -113,6 +114,25 @@ model Upload_Receiver {
 
   @@unique([fileId, phoneNumber])
   @@map("upload_receiver")
+}
+
+model Invalid_Upload_Receiver {
+  id           String   @id @default(uuid())
+  fileId       String
+  firstName    String?
+  lastName     String?
+  province     String?
+  district     String?
+  municipality String?
+  phoneNumber  String
+  isDeleted    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  file Files @relation(fields: [fileId], references: [id], onDelete: Cascade)
+
+  @@unique([fileId, phoneNumber])
+  @@map("invalid_upload_receiver")
 }
 
 model Receiver {
@@ -229,8 +249,9 @@ model GuestFile {
   createdAt         DateTime     @default(now())
   updatedAt         DateTime     @updatedAt
 
-  guest     Guest           @relation(fields: [guestId], references: [id], onDelete: Cascade)
-  receivers GuestReceiver[]
+  guest                 Guest                  @relation(fields: [guestId], references: [id], onDelete: Cascade)
+  receivers             GuestReceiver[]
+  invalidGuestReceivers InvalidGuestReceiver[]
 
   @@map("guest_files")
 }
@@ -251,4 +272,22 @@ model GuestReceiver {
 
   @@unique([guestFileId, phoneNumber])
   @@map("guest_receivers")
+}
+
+model InvalidGuestReceiver {
+  id           String   @id @default(uuid())
+  guestFileId  String
+  firstName    String?
+  lastName     String?
+  province     String?
+  district     String?
+  municipality String?
+  phoneNumber  String
+  isDeleted    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+
+  file GuestFile @relation(fields: [guestFileId], references: [id], onDelete: Cascade)
+
+  @@unique([guestFileId, phoneNumber])
+  @@map("invalid_guest_receivers")
 }
