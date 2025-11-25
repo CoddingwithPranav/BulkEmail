@@ -30,3 +30,5 @@ export enum SystemRole {
   SUPER_ADMIN = "SUPERADMIN",
   USER = "USER",
 }
+
+export * from "zod";

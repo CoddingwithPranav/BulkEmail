@@ -22,7 +22,7 @@ export const receiverBase = z.object({
 
   receiverMessageId: z.string().uuid().nullable().optional(),
 
-  userId: z.string().uuid(),
+  userId: z.string().uuid().optional(),
 });
 
 export const createReceiverSchema = receiverBase;
