@@ -1,8 +1,11 @@
+import {
+  createReceiverValidationSchema,
+  updateReceiverValidationSchema,
+} from "@repo/types";
 import { Router } from "express";
+import * as receiverCtrl from "../../controllers/receiverController";
 import { protect } from "../../middleware/auth";
 import { validate } from "../../middleware/validate";
-import { createReceiverValidationSchema } from "@repo/types";
-import * as receiverCtrl from "../../controllers/receiverController";
 
 const router: Router = Router();
 
@@ -16,8 +19,11 @@ router.post(
 
 router.get("/", receiverCtrl.getAllReceivers);
 router.get("/:id", receiverCtrl.getReceiverById);
-router.patch("/:id", receiverCtrl.updateReceiver);
+router.patch(
+  "/:id",
+  validate(updateReceiverValidationSchema),
+  receiverCtrl.updateReceiver
+);
 router.delete("/:id", receiverCtrl.deleteReceiver);
 
 export default router;
-
