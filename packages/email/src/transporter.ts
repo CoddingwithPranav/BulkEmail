@@ -5,9 +5,8 @@ let transporter: nodemailer.Transporter | null = null;
 
 export const getTransporter = () => {
   if (!transporter) {
-    if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) {
+    if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) {  //TO Know if env variables are missing
       console.warn("GMAIL_USER or GMAIL_APP_PASSWORD missing → emails disabled");
-      // Return a dummy transporter that logs instead of sending
       transporter = {
         sendMail: async (mailOptions: any) => {
           console.log("EMAIL (mock):", mailOptions.subject, "→", mailOptions.to);
