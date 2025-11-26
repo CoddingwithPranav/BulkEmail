@@ -5,6 +5,7 @@ import fs from "fs";
 import XLSX from "xlsx";
 import { fileProcessingQueue, fileProcessingQueueEvents } from "../jobs/queues";
 import { AuthRequest } from "../middleware/auth";
+import { success } from "zod/v4";
 
 export const uploadFile = async (req: AuthRequest, res: Response) => {
   if (!req.file) return res.status(400).json({ message: "No file uploaded" });
@@ -58,15 +59,20 @@ export const uploadFile = async (req: AuthRequest, res: Response) => {
     });
 
     res.status(202).json({
-      message: "File uploaded and processing started",
+      success: true,
+      data:{
+         message: "File uploaded and processing started",
       fileId: fileRecord.id,
       jobId: job.id,
       progressUrl: `/api/files/progress/${job.id}`,
       isGuest,
+      }
     });
   } catch (err: any) {
     logger.error("Upload failed", { error: err.message });
-    res.status(500).json({ message: "Upload failed" });
+    res.status(500).json({ success: false, data:{
+      message: "Failed to upload file",
+    }});
   }
 };
 
@@ -128,8 +134,11 @@ export const getFileStatus = async (req: AuthRequest, res: Response) => {
     },
   });
 
-  if (!file) return res.status(404).json({ message: "File not found" });
-  res.json({ file });
+  if (!file) return res.status(404).json({success: false, data:{ message: "File not found" }});
+  res.json({
+    success: true,
+    data: { file },
+  });
 };
 
 export const getUserFiles = async (req: AuthRequest, res: Response) => {
@@ -145,7 +154,10 @@ export const getUserFiles = async (req: AuthRequest, res: Response) => {
       createdAt: true,
     },
   });
-  res.json({ files });
+  res.json({
+    success: true,
+    data: { files },
+  });
 };
 
 export const downloadInvalidRows = async (req: AuthRequest, res: Response) => {
@@ -182,7 +194,12 @@ export const downloadInvalidRows = async (req: AuthRequest, res: Response) => {
   }
 
   if (invalidRows.length === 0) {
-    return res.status(404).json({ message: "No invalid rows found" });
+    return res.status(404).json({
+      success: false,
+      data:{
+        message: "No invalid rows found for this file",
+      }
+    });
   }
 
   // Add helpful error hint (optional but very user-friendly)
@@ -272,5 +289,8 @@ export const deleteFile = async (req: AuthRequest, res: Response) => {
   }
 
   logger.info("File deleted", { fileId, userId: req.user!.id });
-  res.json({ message: "File deleted successfully" });
+  res.json({
+    success: true,
+    data: { message: "File deleted successfully"}
+  });
 };
