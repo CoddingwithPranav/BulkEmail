@@ -118,15 +118,57 @@ export const forgotPassword = async (email: string): Promise<void> => {
   await sendOTPEmail(email, otp);
 };
 
-export const resetPassword = async (email: string, otp: string, newPassword: string): Promise<User> => {
-  const user = await verifyOTP(email, otp);
+// services/authService.ts
+export const changePassword = async (
+  userId: string,
+  currentPassword: string,
+  newPassword: string
+): Promise<User> => {
+  const user = await dbClient.user.findUnique({
+    where: { id: userId },
+    select: { id: true, hashedPassword: true, isAccountVerified: true }
+  });
+
+  if (!user) throw new Error("User not found");
+  if (!user.isAccountVerified) throw new Error("Account not verified");
+
+  // Verify old password
+  const isMatch = await comparePassword(currentPassword, user.hashedPassword!);
+  if (!isMatch) throw new Error("Current password is incorrect");
+
+  // Optional: prevent reuse of old password
+  const isSame = await comparePassword(newPassword, user.hashedPassword!);
+  if (isSame) throw new Error("New password must be different");
 
   const hashedPassword = await hashPassword(newPassword);
 
   return dbClient.user.update({
-    where: { id: user.id },
-    data: { hashedPassword, otp: null, otpExpires: null },
+    where: { id: userId },
+    data: { hashedPassword },
   });
+};
+
+
+// services/authService.ts → add this function
+export const resetPassword = async (email: string, otp: string, newPassword: string): Promise<void> => {
+  const user = await dbClient.user.findUnique({ where: { email } });
+  if (!user) throw new Error("Invalid request");
+  if (!user.otp || !user.otpExpires) throw new Error("No reset request found");
+  if (isOTPExpired(user.otpExpires)) throw new Error("OTP expired");
+  if (!(await compareOTP(otp, user.otp))) throw new Error("Invalid OTP");
+
+  const hashedPassword = await hashPassword(newPassword);
+
+  await dbClient.user.update({
+    where: { id: user.id },
+    data: {
+      hashedPassword,
+      otp: null,
+      otpExpires: null,
+    },
+  });
+
+  logger.info("Password reset successful", { email });
 };
 
 export const login = async (name: string, password: string): Promise<User> => {

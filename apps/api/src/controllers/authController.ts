@@ -4,8 +4,9 @@ import {
   verifyOTP,
   resendOTP,
   forgotPassword,
-  resetPassword,
   login,
+  changePassword,
+  resetPassword,
 } from "../services/authService";
 import { signToken } from "../utils/jwt";
 import { cookieOptions } from "../utils/cookieOptions";
@@ -58,16 +59,58 @@ export const forgotPasswordController = async (req: Request, res: Response) => {
   }
 };
 
+export const changePasswordController = async (
+  req: AuthRequest,
+  res: Response
+) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const user = await changePassword(
+      req.user.id,
+      currentPassword,
+      newPassword
+    );
+
+    res.clearCookie("jwt", cookieOptions);
+
+    res.json({
+      message: "Password changed successfully. Please log in again.",
+      data: { user: { id: user.id, email: user.email } },
+    });
+  } catch (err: any) {
+    res.status(400).json({ message: err.message });
+  }
+};
 export const resetPasswordController = async (req: Request, res: Response) => {
   try {
     const { email, otp, newPassword } = req.body;
-    const user = await resetPassword(email, otp, newPassword);
-    const token = signToken({ id: user.id, role: user.role });
 
-    res.cookie("jwt", token, cookieOptions);
-    res.json({ message: "Password reset successful! You are logged in." });
+    // Validation
+    if (!email || !otp || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "Email, OTP, and new password are required",
+      });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: "Password must be at least 6 characters",
+      });
+    }
+
+    await resetPassword(email, otp, newPassword);
+
+    return res.json({
+      success: true,
+      message: "Password reset successfully! You can now log in.",
+    });
   } catch (err: any) {
-    res.status(400).json({ message: err.message });
+    return res.status(400).json({
+      success: false,
+      message: err.message || "Failed to reset password",
+    });
   }
 };
 
@@ -80,12 +123,12 @@ export const loginController = async (req: Request, res: Response) => {
     res.cookie("jwt", token, cookieOptions);
     res.json({
       message: "Login successful",
-      data: { user: { id: user.id, email: user.email, role: user.role },
-    token:{
-        accessToken: token
-      } },
-      
-
+      data: {
+        user: { id: user.id, email: user.email, role: user.role },
+        token: {
+          accessToken: token,
+        },
+      },
     });
   } catch (err: any) {
     res.status(401).json({ message: err.message });

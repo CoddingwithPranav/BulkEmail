@@ -12,6 +12,9 @@ const publicRoutes = [
   "/about",
   "/forgot-password",
   "/verify-otp",
+  "/verify-account",
+  "/forgot-password",
+  "/change-password",
 ];
 
 const authRoutes = ["/login"];
