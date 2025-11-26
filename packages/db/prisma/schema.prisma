@@ -66,6 +66,8 @@ model User {
   citizenshipImage  String?
   createdAt         DateTime     @default(now())
   updatedAt         DateTime     @updatedAt
+  otp             String?   // Store hashed OTP for security
+  otpExpires      DateTime? // Expiry timestamp for OTP
 
   files      Files[]
   receiver   Receiver[]

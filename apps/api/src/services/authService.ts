@@ -1,13 +1,14 @@
 import { dbClient, User } from "@repo/db/client";
-
+import { hashPassword, comparePassword } from "../utils/password";
+import { generateOTP, hashOTP, compareOTP, isOTPExpired } from "../utils/otp";
 import logger from "../config/logger";
-import { comparePassword, hashPassword } from "../utils/password";
+import { sendOTPEmail } from "@repo/email";
 
 export const register = async (data: any): Promise<User> => {
   const {
     email,
-    phoneNumber,
     password,
+    phoneNumber,
     firstName,
     lastName,
     organizationName,
@@ -15,7 +16,6 @@ export const register = async (data: any): Promise<User> => {
     citizenshipNumber,
   } = data;
 
-  // Duplicate check
   if (email) {
     const existing = await dbClient.user.findUnique({ where: { email } });
     if (existing) throw new Error("Email already registered");
@@ -38,49 +38,107 @@ export const register = async (data: any): Promise<User> => {
       accountType,
       citizenshipNumber,
       role: "USER",
+      isAccountVerified: false,
     },
   });
 
-  logger.info("New user registered", { userId: user.id });
+  const otp = generateOTP();
+  const hashedOTP = await hashOTP(otp);
+  const otpExpires = new Date(Date.now() + 10 * 60 * 1000); 
+
+  await dbClient.user.update({
+    where: { id: user.id },
+    data: { otp: hashedOTP, otpExpires },
+  });
+
+  try {
+    await sendOTPEmail(email!, otp);
+  } catch (error) {
+    logger.error("Failed to send OTP email", { error });
+  }
+
+  logger.info("User registered + OTP sent", { userId: user.id, email });
   return user;
+};
+
+export const verifyOTP = async (email: string, otp: string): Promise<User> => {
+  const user = await dbClient.user.findUnique({ where: { email } });
+  if (!user) throw new Error("User not found");
+
+  if (!user.otp || !user.otpExpires) throw new Error("No OTP found");
+  if (isOTPExpired(user.otpExpires)) throw new Error("OTP has expired");
+  if (!(await compareOTP(otp, user.otp))) throw new Error("Invalid OTP");
+
+  const verifiedUser = await dbClient.user.update({
+    where: { id: user.id },
+    data: {
+      isAccountVerified: true,
+      otp: null,
+      otpExpires: null,
+    },
+  });
+
+  logger.info("Account verified", { userId: verifiedUser.id });
+  return verifiedUser;
+};
+
+export const resendOTP = async (email: string): Promise<void> => {
+  const user = await dbClient.user.findUnique({ where: { email } });
+  if (!user) throw new Error("User not found");
+  if (user.isAccountVerified) throw new Error("Account already verified");
+
+  const otp = generateOTP();
+  const hashedOTP = await hashOTP(otp);
+  const otpExpires = new Date(Date.now() + 10 * 60 * 1000);
+
+  await dbClient.user.update({
+    where: { id: user.id },
+    data: { otp: hashedOTP, otpExpires },
+  });
+
+  await sendOTPEmail(email, otp);
+};
+
+export const forgotPassword = async (email: string): Promise<void> => {
+  const user = await dbClient.user.findUnique({ where: { email } });
+  if (!user) {
+    // Don't reveal if email exists
+    return;
+  }
+
+  const otp = generateOTP();
+  const hashedOTP = await hashOTP(otp);
+  const otpExpires = new Date(Date.now() + 10 * 60 * 1000);
+
+  await dbClient.user.update({
+    where: { id: user.id },
+    data: { otp: hashedOTP, otpExpires },
+  });
+
+  await sendOTPEmail(email, otp);
+};
+
+export const resetPassword = async (email: string, otp: string, newPassword: string): Promise<User> => {
+  const user = await verifyOTP(email, otp);
+
+  const hashedPassword = await hashPassword(newPassword);
+
+  return dbClient.user.update({
+    where: { id: user.id },
+    data: { hashedPassword, otp: null, otpExpires: null },
+  });
 };
 
 export const login = async (name: string, password: string): Promise<User> => {
   const user = await dbClient.user.findFirst({
-    where: {
-      OR: [{ email: name }, { phoneNumber: name }],
-    },
+    where: { OR: [{ email: name }, { phoneNumber: name }] },
   });
 
-  if (!user || !user.hashedPassword) {
-    throw new Error("Invalid credentials");
-  }
+  if (!user || !user.hashedPassword) throw new Error("Invalid credentials");
+  if (!user.isAccountVerified) throw new Error("Please verify your email before logging in");
 
   const isMatch = await comparePassword(password, user.hashedPassword);
   if (!isMatch) throw new Error("Invalid credentials");
 
   return user;
-};
-
-export const findUserById = async (id: string): Promise<User | null> => {
-  return dbClient.user.findUnique({
-    where: { id },
-    select: {
-      id: true,
-      email: true,
-      phoneNumber: true,
-      hashedPassword: true,
-      firstName: true,
-      lastName: true,
-      organizationName: true,
-      profileImage: true,
-      accountType: true,
-      role: true,
-      isAccountVerified: true,
-      createdAt: true,
-      updatedAt: true,
-      citizenshipNumber: true,
-      citizenshipImage: true,
-    },
-  });
 };

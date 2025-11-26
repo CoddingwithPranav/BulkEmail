@@ -1,34 +1,72 @@
-import { dbClient } from "@repo/db/client";
 import { Request, Response } from "express";
-import logger from "../config/logger";
-import { AuthRequest } from "../middleware/auth";
-import { login, register } from "../services/authService";
-import { cookieOptions } from "../utils/cookieOptions";
+import {
+  register,
+  verifyOTP,
+  resendOTP,
+  forgotPassword,
+  resetPassword,
+  login,
+} from "../services/authService";
 import { signToken } from "../utils/jwt";
-import { hashPassword } from "../utils/password";
+import { cookieOptions } from "../utils/cookieOptions";
+import { AuthRequest } from "../middleware/auth";
 
 export const registerController = async (req: Request, res: Response) => {
   try {
-    console.log("Registering user with data:", req.body);
     const user = await register(req.body);
+    res.status(201).json({
+      message: "Registration successful! Please check your email for OTP.",
+      data: { email: user.email },
+    });
+  } catch (err: any) {
+    res.status(400).json({ message: err.message });
+  }
+};
+
+export const verifyOTPController = async (req: Request, res: Response) => {
+  try {
+    const { email, otp } = req.body;
+    console.log("Verifying OTP for email:", email, "with OTP:", otp);
+    const user = await verifyOTP(email, otp);
     const token = signToken({ id: user.id, role: user.role });
 
     res.cookie("jwt", token, cookieOptions);
-    logger.info("User registered", { userId: user.id, email: user.email });
-
-    res.status(201).json({
-      message: "Registration successful",
-      data: {
-        user: {
-          id: user.id,
-          email: user.email,
-          phoneNumber: user.phoneNumber,
-          role: user.role,
-        },
-      },
+    res.json({
+      message: "Email verified! You are now logged in.",
+      data: { user: { id: user.id, email: user.email } },
     });
   } catch (err: any) {
-    logger.error("Registration failed", { error: err.message });
+    res.status(400).json({ message: err.message });
+  }
+};
+
+export const resendOTPController = async (req: Request, res: Response) => {
+  try {
+    await resendOTP(req.body.email);
+    res.json({ message: "New OTP sent to your email" });
+  } catch (err: any) {
+    res.status(400).json({ message: err.message });
+  }
+};
+
+export const forgotPasswordController = async (req: Request, res: Response) => {
+  try {
+    await forgotPassword(req.body.email);
+    res.json({ message: "If account exists, OTP has been sent to your email" });
+  } catch (err: any) {
+    res.status(400).json({ message: err.message });
+  }
+};
+
+export const resetPasswordController = async (req: Request, res: Response) => {
+  try {
+    const { email, otp, newPassword } = req.body;
+    const user = await resetPassword(email, otp, newPassword);
+    const token = signToken({ id: user.id, role: user.role });
+
+    res.cookie("jwt", token, cookieOptions);
+    res.json({ message: "Password reset successful! You are logged in." });
+  } catch (err: any) {
     res.status(400).json({ message: err.message });
   }
 };
@@ -40,22 +78,16 @@ export const loginController = async (req: Request, res: Response) => {
     const token = signToken({ id: user.id, role: user.role });
 
     res.cookie("jwt", token, cookieOptions);
-    logger.info("User logged in", { userId: user.id });
-
     res.json({
       message: "Login successful",
-      data: {
-        user: {
-          id: user.id,
-          email: user.email,
-          phoneNumber: user.phoneNumber,
-          role: user.role,
-        },
-        token: { accessToken: token },
-      },
+      data: { user: { id: user.id, email: user.email, role: user.role },
+    token:{
+        accessToken: token
+      } },
+      
+
     });
   } catch (err: any) {
-    logger.warn("Login failed", { name: req.body.name });
     res.status(401).json({ message: err.message });
   }
 };
@@ -67,39 +99,4 @@ export const logout = (_req: Request, res: Response) => {
 
 export const getMe = (req: AuthRequest, res: Response) => {
   res.json({ user: req.user });
-};
-
-export const updateProfile = async (req: AuthRequest, res: Response) => {
-  try {
-    const updates = req.body;
-    if (updates.password) {
-      updates.hashedPassword = await hashPassword(updates.password);
-      delete updates.password;
-    }
-
-    const user = await dbClient.user.update({
-      where: { id: req.user.id },
-      data: updates,
-      select: {
-        id: true,
-        email: true,
-        phoneNumber: true,
-        firstName: true,
-        lastName: true,
-        organizationName: true,
-        profileImage: true,
-        accountType: true,
-        role: true,
-      },
-    });
-
-    logger.info("Profile updated", { userId: user.id });
-    res.json({ message: "Profile updated", user });
-  } catch (err: any) {
-    logger.error("Profile update failed", {
-      userId: req.user.id,
-      error: err.message,
-    });
-    res.status(400).json({ message: err.message });
-  }
 };
