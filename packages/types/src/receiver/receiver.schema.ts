@@ -13,7 +13,8 @@ export const receiverBase = z.object({
   phoneNumber: z
     .string()
     .min(7, "Phone number is too short")
-    .max(20, "Phone number is too long"),
+    .max(20, "Phone number is too long")
+    .optional(),
 
   isDeleted: z.boolean().optional(),
 
@@ -28,6 +29,7 @@ export const receiverBase = z.object({
 export const createReceiverSchema = receiverBase;
 
 export const updateReceiverSchema = receiverBase.partial();
+
 
 export type ReceiversResponse = {
   receivers: z.infer<typeof createReceiverSchema>[];

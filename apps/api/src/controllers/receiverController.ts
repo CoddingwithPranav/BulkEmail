@@ -118,6 +118,7 @@ export const getReceiverById = async (req: AuthRequest, res: Response) => {
 };
 
 export const updateReceiver = async (req: AuthRequest, res: Response) => {
+  console.log("Updating receiver with ID:", req.params.id, "and data:", req.body);
   try {
     const receiver = await dbClient.receiver.update({
       where: { id: req.params.id },
@@ -133,18 +134,14 @@ export const updateReceiver = async (req: AuthRequest, res: Response) => {
   }
 };
 
+
 export const deleteReceiver = async (req: AuthRequest, res: Response) => {
-  try {
-    await dbClient.receiver.update({
-      where: { id: req.params.id },
-      data: { isDeleted: true },
-    });
-
-    logger.info("Receiver deleted (soft)", { receiverId: req.params.id });
-
-    res.json({ message: "Receiver deleted" });
-  } catch (err: any) {
-    logger.error("Receiver delete failed", { error: err.message });
-    res.status(400).json({ message: err.message });
-  }
+  console.log("Deleting receiver with ID:", req.params.id);
+  await dbClient.receiver.delete({
+    where: { id: req.params.id, userId: req.user.id },
+  });
+  logger.info("Receiver deleted", { receiverId: req.params.id });
+  res.json({ message: "Receiver deleted" });
 };
+
+
