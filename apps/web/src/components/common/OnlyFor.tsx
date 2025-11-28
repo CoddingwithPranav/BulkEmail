@@ -1,5 +1,5 @@
 import { useAuthStore } from "@/lib/store";
-import { SystemRole } from "@/lib/types";
+import { SystemRole } from "@repo/types";
 import React from "react";
 
 interface OnlyForProps {
