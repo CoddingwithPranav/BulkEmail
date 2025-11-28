@@ -14,14 +14,14 @@ export default async function HomePage() {
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto flex h-16 items-center justify-between px-6">
-          <Link href="/" className="flex items-center gap-3 group">
-            <div className="relative">
-              <Mountain className="h-8 w-8 text-brand rotate-12 group-hover:rotate-6 transition-transform" />
-              <Send className="h-5 w-5 text-primary absolute -bottom-1 -right-1" />
-            </div>
-            <span className="text-2xl font-bold bg-gradient-to-r from-brand to-primary bg-clip-text text-transparent">
-              MessangerNepal
-            </span>
+         <Link href="/" className="flex items-center gap-3 group">
+            <Image
+              src="/images/logo.png"
+              alt="MessangerNepal Logo"
+              width={250}
+              height={250}
+              className="rounded-md "
+            />
           </Link>
 
           <nav className="hidden lg:flex items-center gap-10">

@@ -14,10 +14,10 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { Check, ChevronsUpDown } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { BaseQueryParams } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { useDebounce } from "use-debounce";
+import { BaseQueryParams } from "@repo/types";
 
 export interface ComboBoxItem {
   label: string;
