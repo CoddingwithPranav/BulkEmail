@@ -14,14 +14,14 @@ export default async function HomePage() {
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto flex h-16 items-center justify-between px-6">
-         <Link href="/" className="flex items-center gap-3 group">
-            <Image
-              src="/images/logo.png"
-              alt="MessangerNepal Logo"
-              width={250}
-              height={250}
-              className="rounded-md "
-            />
+          <Link href="/" className="flex items-center gap-3 group">
+            <div className="relative">
+              <Mountain className="h-8 w-8 text-brand rotate-12 group-hover:rotate-6 transition-transform" />
+              <Send className="h-5 w-5 text-primary absolute -bottom-1 -right-1" />
+            </div>
+            <span className="text-2xl font-bold bg-gradient-to-r from-brand to-primary bg-clip-text text-transparent">
+              MessangerNepal
+            </span>
           </Link>
 
           <nav className="hidden lg:flex items-center gap-10">
@@ -138,8 +138,8 @@ export default async function HomePage() {
                   99.9% Delivery Rate
                 </div>
                 <div className="flex items-center gap-2">
-                  <Users className="h-4 w-4" />
-                  50,000+ Happy Users
+                  <Users className="h-4 w-4 text-primary" />
+                  Nepal’s fastest-growing SMS platform
                 </div>
               </div>
             </div>
@@ -257,6 +257,7 @@ export default async function HomePage() {
         </div>
       </section>
 
+
       {/* Testimonials */}
       <section id="testimonials" className="py-24 bg-muted/50">
         <div className="container mx-auto px-6">
@@ -270,38 +271,26 @@ export default async function HomePage() {
           <div className="grid md:grid-cols-3 gap-8">
             {[
               {
-                name: "Sabina Karki",
-                role: "Kathmandu Tech Hub",
+                title: "Business Owner",
                 text: "Best bulk SMS service in Nepal. Our open rate increased 300%!",
               },
               {
-                name: "Rajan Adhikari",
-                role: "Pokhara Events",
+                title: "Event Organizer",
                 text: "Guest mode saves us every time. No more waiting for approvals.",
               },
               {
-                name: "Bimala Rai",
-                role: "Himalayan Charity",
+                title: "Nonprofit Leader",
                 text: "Personalized messages helped us raise 45% more donations.",
               },
-            ].map((t) => (
+            ].map((t, i) => (
               <Card
-                key={t.name}
+                key={i}
                 className="p-8 bg-card/80 backdrop-blur border-border/50"
               >
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="w-14 h-14 rounded-full bg-gradient-to-br from-brand to-primary flex items-center justify-center text-white font-bold text-xl">
-                    {t.name
-                      .split(" ")
-                      .map((n) => n[0])
-                      .join("")}
-                  </div>
-                  <div>
-                    <p className="font-bold">{t.name}</p>
-                    <p className="text-sm text-muted-foreground">{t.role}</p>
-                  </div>
+                <div className="mb-6">
+                  <p className="font-bold">{t.title}</p>
                 </div>
-                <p className="text-lg italic text-foreground/90">"{t.text}"</p>
+                <p className="text-lg italic text-foreground/90">{t.text}</p>
               </Card>
             ))}
           </div>
@@ -317,7 +306,7 @@ export default async function HomePage() {
               Start Connecting Nepal Today
             </h2>
             <p className="text-xl text-muted-foreground">
-              Join 50,000+ users sending millions of messages every month.
+              Trusted by teams who need fast, reliable messaging every day.
             </p>
             <div className="flex flex-col sm:flex-row gap-6 justify-center pt-8">
               <Button
@@ -345,7 +334,7 @@ export default async function HomePage() {
         <div className="container mx-auto px-6 text-center">
           <p className="text-muted-foreground">
             © 2025 MessagingNepal. Made with{" "}
-            <span className="text-red-500">♥</span> in Nepal
+            <span className="text-red-500">Love</span> in Nepal
           </p>
           <div className="mt-6 flex justify-center gap-8 text-sm">
             <Link
