@@ -4,6 +4,7 @@ export * from "./src/file";
 export * from "./src/quickSms";
 export * from "./src/receiver";
 export * from "./src/users";
+export * from "./src/categories";
 
 export type InitialResponse<T> = {
   success: boolean;

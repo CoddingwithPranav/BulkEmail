@@ -5,6 +5,7 @@ import fileRoutes from "./file";
 import quickSmsRoutes from "./quickSms";
 import userRoutes from "./user";
 import receiverRoutes from "./receiver";
+import categoriesRoutes from "./categories";
 import { protect } from "../../middleware/auth";
 
 const router: Router = Router();
@@ -15,5 +16,6 @@ router.use("/files", fileRoutes);
 router.use("/campaigns", campaignRoutes);
 router.use("/quick-sms", quickSmsRoutes);
 router.use("/receiver", receiverRoutes);
+router.use("/categories", categoriesRoutes);
 
 export default router;
