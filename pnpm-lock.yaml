@@ -74,9 +74,6 @@ importers:
       multer:
         specifier: ^2.0.2
         version: 2.0.2
-      nodemailer:
-        specifier: ^7.0.11
-        version: 7.0.11
       winston:
         specifier: ^3.18.3
         version: 3.18.3
@@ -120,9 +117,6 @@ importers:
       '@types/node':
         specifier: ^24.10.1
         version: 24.10.1
-      '@types/nodemailer':
-        specifier: ^7.0.4
-        version: 7.0.4
       nodemon:
         specifier: ^3.1.11
         version: 3.1.11
@@ -4285,10 +4279,6 @@ packages:
 
   nodemailer@6.10.1:
     resolution: {integrity: sha512-Z+iLaBGVaSjbIzQ4pX6XV41HrooLsQ10ZWPUehGmuantvzWoDVBnmsdUcOIDM1t+yPor5pDhVlDESgOMEGxhHA==}
-    engines: {node: '>=6.0.0'}
-
-  nodemailer@7.0.11:
-    resolution: {integrity: sha512-gnXhNRE0FNhD7wPSCGhdNh46Hs6nm+uTyg+Kq0cZukNQiYdnCsoQjodNP9BQVG9XrcK/v6/MgpAPBUFyzh9pvw==}
     engines: {node: '>=6.0.0'}
 
   nodemon@3.1.11:
@@ -9448,8 +9438,6 @@ snapshots:
   node-releases@2.0.27: {}
 
   nodemailer@6.10.1: {}
-
-  nodemailer@7.0.11: {}
 
   nodemon@3.1.11:
     dependencies:

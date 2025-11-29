@@ -1,0 +1,295 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = "postgresql://admin:admin@localhost:5432/sms_platform?schema=public"
+}
+
+enum Role {
+  USER
+  ADMIN
+  SUPERADMIN
+}
+
+enum AccountType {
+  INDIVIDUAL
+  ORGANIZATION
+}
+
+enum FileType {
+  CSV
+  XLSX
+}
+
+enum UploadStatus {
+  PENDING
+  PROCESSING
+  UPLOADED
+  FAILED
+}
+
+enum CampaignStatus {
+  PENDING
+  CANCELLED
+  APPROVED
+}
+
+enum DeliveryStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+}
+
+enum QuickSendStatus {
+  PENDING
+  SENT
+  FAILED
+}
+
+model User {
+  id                String       @id @default(uuid())
+  email             String?      @unique
+  phoneNumber       String?      @unique
+  hashedPassword    String?
+  firstName         String?
+  lastName          String?
+  organizationName  String?
+  profileImage      String?
+  accountType       AccountType?
+  isAccountVerified Boolean      @default(false)
+  role              Role         @default(USER)
+  citizenshipNumber String?
+  citizenshipImage  String?
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+  otp               String? // Store hashed OTP for security
+  otpExpires        DateTime? // Expiry timestamp for OTP
+
+  files      Files[]
+  receiver   Receiver[]
+  campaigns  Campaign[]
+  quickSends QuickSMSSend[]
+  payments   Payment[]
+
+  @@map("users")
+}
+
+model Files {
+  id                String       @id @default(uuid())
+  userId            String
+  name              String
+  path              String
+  numberOfReceivers Int?
+  invalidRowsPath   String?
+  sizeInBytes       BigInt
+  type              FileType
+  uploadStatus      UploadStatus @default(PENDING)
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  user                   User                      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  receivers              Upload_Receiver[]
+  campaigns              Campaign[]
+  invalidUploadReceivers Invalid_Upload_Receiver[]
+
+  @@map("files")
+}
+
+model Upload_Receiver {
+  id           String   @id @default(uuid())
+  fileId       String
+  firstName    String?
+  lastName     String?
+  province     String?
+  district     String?
+  municipality String?
+  phoneNumber  String
+  isDeleted    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  file Files @relation(fields: [fileId], references: [id], onDelete: Cascade)
+
+  @@unique([fileId, phoneNumber])
+  @@map("upload_receiver")
+}
+
+model Invalid_Upload_Receiver {
+  id           String   @id @default(uuid())
+  fileId       String
+  firstName    String?
+  lastName     String?
+  province     String?
+  district     String?
+  municipality String?
+  phoneNumber  String
+  isDeleted    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  file Files @relation(fields: [fileId], references: [id], onDelete: Cascade)
+
+  @@unique([fileId, phoneNumber])
+  @@map("invalid_upload_receiver")
+}
+
+model Receiver {
+  id                String            @id @default(uuid())
+  firstName         String?
+  lastName          String?
+  province          String?
+  district          String?
+  municipality      String?
+  phoneNumber       String
+  isDeleted         Boolean           @default(false)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  receiverMessageId String?
+  userId            String
+  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  receiverMessage   Receiver_Message? @relation(fields: [receiverMessageId], references: [id], onDelete: Cascade)
+
+  @@map("receiver")
+}
+
+model Receiver_Message {
+  id          String         @id @default(uuid())
+  textMessage String
+  status      DeliveryStatus @default(NOT_STARTED)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  receiver    Receiver[]
+
+  @@map("receiver_message")
+}
+
+model Campaign {
+  id                  String         @id @default(uuid())
+  userId              String
+  name                String
+  messageText         String
+  status              CampaignStatus @default(PENDING)
+  deliveryStatus      DeliveryStatus @default(NOT_STARTED)
+  province            String?
+  district            String?
+  municipality        String?
+  fileId              String?
+  recipientsNumber    Int?
+  deliveredNumber     Int            @default(0)
+  failedNumber        Int            @default(0)
+  deliveryRate        Float          @default(0)
+  totalSmsCost        Float?
+  paymentReceiptImage String?
+  paid                Boolean        @default(false)
+  submitDate          DateTime?
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+
+  user User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  file Files? @relation(fields: [fileId], references: [id], onDelete: SetNull)
+
+  @@map("campaign")
+}
+
+model QuickSMSSend {
+  id            String          @id @default(uuid())
+  userId        String
+  toPhoneNumber String
+  message       String
+  status        QuickSendStatus @default(PENDING)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("quick_sms_send")
+}
+
+model Payment {
+  id        String   @id @default(uuid())
+  userId    String
+  paidOn    DateTime @default(now())
+  isPaid    Boolean  @default(false)
+  isSmsSent Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("payment")
+}
+
+model Guest {
+  id        String   @id @default(uuid())
+  ipAddress String?
+  userAgent String?
+  sessionId String?
+  createdAt DateTime @default(now())
+  expiresAt DateTime @default(dbgenerated("NOW() + INTERVAL '48 hours'"))
+
+  files GuestFile[]
+
+  @@index([createdAt])
+  @@index([expiresAt])
+  @@map("guests")
+}
+
+model GuestFile {
+  id                String       @id @default(uuid())
+  guestId           String
+  name              String
+  path              String
+  sizeInBytes       BigInt
+  type              FileType
+  uploadStatus      UploadStatus @default(PENDING)
+  numberOfReceivers Int?
+  invalidRowsPath   String?
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  guest                 Guest                  @relation(fields: [guestId], references: [id], onDelete: Cascade)
+  receivers             GuestReceiver[]
+  invalidGuestReceivers InvalidGuestReceiver[]
+
+  @@map("guest_files")
+}
+
+model GuestReceiver {
+  id           String   @id @default(uuid())
+  guestFileId  String
+  firstName    String?
+  lastName     String?
+  province     String?
+  district     String?
+  municipality String?
+  phoneNumber  String
+  isDeleted    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+
+  file GuestFile @relation(fields: [guestFileId], references: [id], onDelete: Cascade)
+
+  @@unique([guestFileId, phoneNumber])
+  @@map("guest_receivers")
+}
+
+model InvalidGuestReceiver {
+  id           String   @id @default(uuid())
+  guestFileId  String
+  firstName    String?
+  lastName     String?
+  province     String?
+  district     String?
+  municipality String?
+  phoneNumber  String
+  isDeleted    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+
+  file GuestFile @relation(fields: [guestFileId], references: [id], onDelete: Cascade)
+
+  @@unique([guestFileId, phoneNumber])
+  @@map("invalid_guest_receivers")
+}
