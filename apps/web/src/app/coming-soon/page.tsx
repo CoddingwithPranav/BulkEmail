@@ -15,15 +15,15 @@ export default function ComingSoonPage() {
 
         <header className="relative shrink-0 border-b border-border/40 bg-background/70 backdrop-blur-xl z-50">
           <div className="container mx-auto flex h-16 items-center justify-between px-6">
-          <Link href="/" className="flex items-center gap-3 group">
-             <div className="relative">
-              <Mountain className="h-8 w-8 text-brand rotate-12 group-hover:rotate-6 transition-transform" />
-              <Send className="h-5 w-5 text-primary absolute -bottom-1 -right-1" />
-            </div>
-            <span className="text-2xl font-bold bg-gradient-to-r from-brand to-primary bg-clip-text text-transparent">
-              MessangerNepal
-            </span>
-          </Link>
+            <Link href="/" className="flex items-center gap-3 group">
+              <div className="relative">
+                <Mountain className="h-8 w-8 text-brand rotate-12 group-hover:rotate-6 transition-transform" />
+                <Send className="h-5 w-5 text-primary absolute -bottom-1 -right-1" />
+              </div>
+              <span className="text-2xl font-bold bg-gradient-to-r from-brand to-primary bg-clip-text text-transparent">
+                MessangerNepal
+              </span>
+            </Link>
             <ThemeToggle />
           </div>
         </header>
@@ -46,9 +46,9 @@ export default function ComingSoonPage() {
             </h1>
 
             <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto font-medium">
-              From Sagarmatha to Terai — send bulk SMS, campaigns & alerts with unmatched speed.
+              From Sagarmatha to Terai — send bulk SMS, campaigns & alerts with
+              unmatched speed.
             </p>
-
           </div>
         </main>
       </div>
