@@ -83,10 +83,12 @@ model Category {
   id        String   @id @default(uuid())
   name      String   @unique
   userId    String
+  description String?
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   myContacts My_Contact[]
   files     Files[]
   campaigns Campaign[]
+  isDeleted Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
