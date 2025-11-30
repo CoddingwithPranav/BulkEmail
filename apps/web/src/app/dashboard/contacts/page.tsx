@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Download, Plus } from "lucide-react";
-import CampaignsTable from "./_components/CampaignsTable";
+import CampaignsTable from "./_components/ContactTable";
 
 export const metadata = {
   title: "Campaigns",

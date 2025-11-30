@@ -15,7 +15,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import MyContactFormFields from "../../_components/CampaignsCardsForm";
+import MyContactFormFields from "../../_components/ContactCardForm";
 import { queryClient } from "@/lib/query-client";
 
 

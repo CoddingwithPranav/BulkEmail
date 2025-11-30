@@ -17,18 +17,18 @@ export default function CreateCampaign() {
     defaultValues: {
       name: "",
       messageText: "",
+      categoryId: "",
+      province: undefined,
       district: undefined,
       municipality: undefined,
     },
   });
 
-  const { mutateAsync: createCampaign, isPending } =
-    useCampaignCreateMutation();
+  const { mutateAsync: createCampaign, isPending } = useCampaignCreateMutation();
 
   const onSubmit = async (values: Campaign) => {
     try {
       await createCampaign(values);
-      form.reset();
       router.push("/dashboard/campaigns");
     } catch (error) {
       console.error("Failed to create campaign:", error);
@@ -36,23 +36,17 @@ export default function CreateCampaign() {
   };
 
   return (
-    <div className="mx-auto p-6">
+    <div className="mx-auto p-6 max-w-5xl">
       <h1 className="text-3xl font-bold mb-8">Create New Campaign</h1>
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <CampaignForm form={form} />
 
-          <div className="flex justify-end gap-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => router.back()}
-              disabled={isPending}
-            >
+          <div className="flex justify-end gap-4 pt-6 border-t">
+            <Button type="button" variant="outline" onClick={() => router.back()} disabled={isPending}>
               Cancel
             </Button>
-
             <Button type="submit" variant="brand" disabled={isPending}>
               {isPending ? "Creating..." : "Create Campaign"}
             </Button>
