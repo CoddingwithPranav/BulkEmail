@@ -6,6 +6,7 @@ import { SystemRole } from "@repo/types";
 const navItems = [
   { name: "Dashboard", href: "/dashboard", icon: "Home" },
   { name: "Campaigns", href: "/dashboard/campaigns", icon: "Megaphone" },
+  { name: "Contacts", href: "/dashboard/contacts", icon: "ContactRound" },
   { name: "Receiver List", href: "/dashboard/receiver-list", icon: "Users" }, 
 ];
 

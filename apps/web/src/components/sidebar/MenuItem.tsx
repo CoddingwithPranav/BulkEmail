@@ -16,6 +16,7 @@ import {
   Receipt,
   User,
   Wrench,
+  ContactRound,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -41,6 +42,7 @@ const iconMap = {
   Car,
   CarFront,
   Receipt,
+  ContactRound,
   User,
   Wrench,
 } as const;

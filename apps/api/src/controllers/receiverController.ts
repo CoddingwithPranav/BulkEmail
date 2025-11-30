@@ -1,7 +1,7 @@
 import { dbClient } from "@repo/db/client";
 import { Request, Response } from "express";
-import logger from "../config/logger";
 import { AuthRequest } from "../middleware/auth";
+import logger from "@repo/config/logger";
 
 export const createReceiver = async (req: AuthRequest, res: Response) => {
   try {

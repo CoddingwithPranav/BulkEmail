@@ -19,7 +19,7 @@ const publicRoutes = [
 
 const authRoutes = ["/login"];
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const cookieStore = await cookies();
   const token = cookieStore.get("jwt")?.value;

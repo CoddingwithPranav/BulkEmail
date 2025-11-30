@@ -1,8 +1,8 @@
 import { dbClient, User } from "@repo/db/client";
 import { hashPassword, comparePassword } from "../utils/password";
 import { generateOTP, hashOTP, compareOTP, isOTPExpired } from "../utils/otp";
-import logger from "../config/logger";
 import { sendOTPEmail } from "@repo/email";
+import logger from "@repo/config/logger";
 
 export const register = async (data: any): Promise<User> => {
   const {
