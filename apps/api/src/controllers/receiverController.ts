@@ -1,147 +1,64 @@
-import { dbClient } from "@repo/db/client";
-import { Request, Response } from "express";
 import { AuthRequest } from "../middleware/auth";
+import { Response } from "express";
+import * as receiverService from "../services/receiverService";
 import logger from "@repo/config/logger";
+import { GetMyReceiversQuery } from "@repo/types";
+
 
 export const createReceiver = async (req: AuthRequest, res: Response) => {
   try {
-    console.log("Creating receiver with data:", req.body);
-    const receiver = await dbClient.receiver.create({
-      data: {
-        ...req.body,
-        userId: req.user.id,
-      },
-    });
-
-    logger.info("Receiver created", {
-      receiverId: receiver.id,
-      userId: req.user.id,
-    });
-
-    res.status(201).json({
-      message: "Receiver created successfully",
-      receiver,
-    });
+    const receiver = await receiverService.createReceiver(req.user!.id, req.body);
+    res.status(201).json({ success: true, data: receiver });
   } catch (err: any) {
-    logger.error("Receiver creation failed", { error: err.message });
-    res.status(400).json({ message: err.message });
+    logger.error("Create receiver failed", { error: err.message });
+    res.status(400).json({ success: false, message: err.message });
   }
 };
 
-export const getMyReceivers = async (req: AuthRequest, res: Response) => {
-  const query = req.query;
-
-  const page = Number(query.page) || 1;
-  const limit = Math.min(Number(query.limit) || 10, 100);
-  const skip = (page - 1) * limit;
-  const search = query.q as string | undefined;
-
-  const whereClause: any = {
-    userId: req.user.id,
-    isDeleted: false,
-    ...(search && {
-      OR: [
-        { firstName: { contains: search, mode: "insensitive" } },
-        { lastName: { contains: search, mode: "insensitive" } },
-        { phoneNumber: { contains: search } },
-        { province: { contains: search, mode: "insensitive" } },
-        { district: { contains: search, mode: "insensitive" } },
-      ],
-    }),
-  };
-
+export const getReceivers = async (req: AuthRequest, res: Response) => {
   try {
-    const [receivers, totalReceivers] = await dbClient.$transaction([
-      dbClient.receiver.findMany({
-        skip,
-        take: limit,
-        orderBy: { createdAt: "desc" },
-        where: whereClause,
-      }),
-      dbClient.receiver.count({ where: whereClause }),
-    ]);
-
-    const totalPages = Math.ceil(totalReceivers / limit);
-
-    res.json({
-      status: "success",
-      data: {
-        receivers,
-        count: totalReceivers,
-        pagination: {
-          currentPage: page,
-          totalPages,
-          totalItems: totalReceivers,
-          perPage: limit,
-          hasNext: page < totalPages,
-          hasPrev: page > 1,
-        },
-      },
-    });
-  } catch (err) {
-    logger.error("Failed to fetch receivers", { error: err });
-    res.status(500).json({ message: "Failed to fetch receivers" });
+    const result = await receiverService.getReceivers(req.user!.id, req.query as any);
+    res.json({ success: true, data: result });
+  } catch (err: any) {
+    logger.error("Get receivers failed", { error: err.message });
+    res.status(500).json({ success: false, message: "Failed to fetch receivers" });
   }
 };
 
-export const getAllReceivers = async (_req: Request, res: Response) => {
-  try {
-    const receivers = await dbClient.receiver.findMany({
-      orderBy: { createdAt: "desc" },
-    });
-
-    res.status(200).json({
-      status: "success",
-      data: { receivers },
-    });
-  } catch (err) {
-    logger.error("Failed to fetch all receivers", { error: err });
-    res.status(500).json({ message: "Failed to fetch receivers" });
-  }
-};
 
 export const getReceiverById = async (req: AuthRequest, res: Response) => {
   try {
-    const receiver = await dbClient.receiver.findFirst({
-      where: { id: req.params.id, userId: req.user.id, isDeleted: false },
-    });
-
+    const receiver = await receiverService.getReceiverById(req.params.id!, req.user!.id);
     if (!receiver) {
-      return res.status(404).json({ message: "Receiver not found" });
+      return res.status(404).json({ success: false, message: "Receiver not found" });
     }
-
-    res.json({ status: "success", data: receiver });
-  } catch (err) {
-    logger.error("Failed to fetch receiver by ID", { error: err });
-    res.status(500).json({ message: "Failed to fetch receiver" });
+    res.json({ success: true, data: receiver });
+  } catch (err: any) {
+    logger.error("Get receiver failed", { error: err.message });
+    res.status(400).json({ success: false, message: err.message });
   }
 };
 
 export const updateReceiver = async (req: AuthRequest, res: Response) => {
-  console.log("Updating receiver with ID:", req.params.id, "and data:", req.body);
   try {
-    const receiver = await dbClient.receiver.update({
-      where: { id: req.params.id },
-      data: req.body,
-    });
-
-    logger.info("Receiver updated", { receiverId: receiver.id });
-
-    res.json({ message: "Receiver updated", receiver });
+    const receiver = await receiverService.updateReceiver(
+      req.params.id!,
+      req.user!.id,
+      req.body
+    );
+    res.json({ success: true, message: "Receiver updated", data: receiver });
   } catch (err: any) {
-    logger.error("Receiver update failed", { error: err.message });
-    res.status(400).json({ message: err.message });
+    logger.error("Update receiver failed", { error: err.message });
+    res.status(400).json({ success: false, message: err.message });
   }
 };
 
-
 export const deleteReceiver = async (req: AuthRequest, res: Response) => {
-  console.log("Deleting receiver with ID:", req.params.id);
-  await dbClient.receiver.delete({
-    where: { id: req.params.id, userId: req.user.id },
-  });
-  logger.info("Receiver deleted", { receiverId: req.params.id });
-  res.json({ message: "Receiver deleted" });
+  try {
+    await receiverService.deleteReceiver(req.params.id!, req.user!.id);
+    res.json({ success: true, message: "Receiver deleted" });
+  } catch (err: any) {
+    logger.error("Delete receiver failed", { error: err.message });
+    res.status(400).json({ success: false, message: err.message });
+  }
 };
-
-

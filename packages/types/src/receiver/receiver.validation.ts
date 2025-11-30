@@ -1,21 +1,27 @@
 import { z } from "zod";
-import { createReceiverSchema, receiverBase } from "./receiver.schema";
+import {
+  createReceiverSchema,
+  updateReceiverSchema,
+  getMyReceiversQuerySchema,
+} from "./receiver.schema";
 
 const paramsId = z.object({
   id: z.string().uuid(),
 });
 
-export const createReceiverValidationSchema = z.object({
+export const createReceiverValidation = z.object({
   body: createReceiverSchema,
 });
 
-
-export const updateReceiverValidationSchema = z.object({
-  body: receiverBase.partial(),
+export const updateReceiverValidation = z.object({
+  body: updateReceiverSchema,
   params: paramsId,
 });
 
-export const deleteReceiverValidationSchema = z.object({
+export const deleteReceiverValidation = z.object({
   params: paramsId,
 });
 
+export const getReceiversValidation = z.object({
+  query: getMyReceiversQuerySchema,
+});

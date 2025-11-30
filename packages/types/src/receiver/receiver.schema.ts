@@ -1,38 +1,34 @@
 import { z } from "zod";
 
-export const receiverBase = z.object({
-  id: z.string().uuid().optional(),
-
+export const createReceiverSchema = z.object({
   firstName: z.string().optional(),
   lastName: z.string().optional(),
-
   province: z.string().optional(),
   district: z.string().optional(),
   municipality: z.string().optional(),
-
   phoneNumber: z
     .string()
     .min(7, "Phone number is too short")
     .max(20, "Phone number is too long")
     .optional(),
-
-  isDeleted: z.boolean().optional(),
-
-  createdAt: z.date().optional(),
-  updatedAt: z.date().optional(),
-
-  receiverMessageId: z.string().uuid().nullable().optional(),
-
-  userId: z.string().uuid().optional(),
 });
 
-export const createReceiverSchema = receiverBase;
+export const updateReceiverSchema = createReceiverSchema;
 
-export const updateReceiverSchema = receiverBase.partial();
+export const getMyReceiversQuerySchema = z.object({
+  page: z.coerce.number().min(1).default(1),
+  limit: z.coerce.number().min(1).max(100).default(20),
+  search: z.string().optional(), 
+});
 
+
+export type Receiver = z.infer<typeof createReceiverSchema>;
+export type CreateReceiverInput = z.infer<typeof createReceiverSchema>;
+export type UpdateReceiverInput = z.infer<typeof updateReceiverSchema>;
+export type GetMyReceiversQuery = z.infer<typeof getMyReceiversQuerySchema>;
 
 export type ReceiversResponse = {
-  receivers: z.infer<typeof createReceiverSchema>[];
+  receivers: Receiver[];
   pagination: {
     currentPage: number;
     perPage: number;
@@ -42,7 +38,3 @@ export type ReceiversResponse = {
     hasPrev: boolean;
   };
 };
-
-export type Receiver = z.infer<typeof createReceiverSchema>;
-export type CreateReceiverInput = z.infer<typeof createReceiverSchema>;
-export type UpdateReceiverInput = z.infer<typeof updateReceiverSchema>;
