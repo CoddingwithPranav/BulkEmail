@@ -3,7 +3,14 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ThemeToggle } from "@/components/header/ThemeToggle";
-import { Mountain, Send, Users, Zap, Globe, MessageCircle } from "lucide-react";
+import {
+  Send,
+  Users,
+  Zap,
+  Globe,
+  MessageCircle,
+  Mail,
+} from "lucide-react";
 import { clearAuthToken, isUserLoggedIn } from "@/lib/data/cookies";
 import { redirect } from "next/navigation";
 
@@ -14,10 +21,13 @@ export default async function HomePage() {
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto flex h-16 items-center justify-between px-6">
-          <Link href="/" className="flex items-center gap-3 group">
-            <div className="relative">
+          <Link href="/" className="flex items-center group">
+            {/* <div className="relative">
               <Mountain className="h-8 w-8 text-brand rotate-12 group-hover:rotate-6 transition-transform" />
               <Send className="h-5 w-5 text-primary absolute -bottom-1 -right-1" />
+            </div> */}
+            <div className="relative">
+              <Mail className="w-7 h-7 stroke-[2.5] text-brand group-hover:rotate-6 transition-transform" />
             </div>
             <span className="text-2xl font-bold bg-gradient-to-r from-brand to-primary bg-clip-text text-transparent">
               MessangerNepal
@@ -215,7 +225,7 @@ export default async function HomePage() {
         <div className="container mx-auto px-6">
           <div className="text-center space-y-4 mb-20">
             <h2 className="text-4xl lg:text-5xl font-bold">
-              Simple. Fast. Reliable.
+              Simple.Secured. Fast. Reliable.
             </h2>
             <p className="text-xl text-muted-foreground">
               Send messages in under 60 seconds
@@ -256,7 +266,6 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
-
 
       {/* Testimonials */}
       <section id="testimonials" className="py-24 bg-muted/50">
@@ -309,20 +318,30 @@ export default async function HomePage() {
               Trusted by teams who need fast, reliable messaging every day.
             </p>
             <div className="flex flex-col sm:flex-row gap-6 justify-center pt-8">
-              <Button
+              {/* <Button
                 size="lg"
                 asChild
                 className="h-16 px-12 text-xl font-bold bg-primary hover:bg-primary/90 shadow-2xl"
               >
                 <Link href="/register">Create Free Account</Link>
-              </Button>
-              <Button
+              </Button> */}
+              {/* <Button
                 size="lg"
                 variant="outline"
                 asChild
                 className="h-16 px-12 text-xl font-medium"
               >
                 <Link href="/guest">Send as Guest →</Link>
+              </Button> */}
+              <Button
+                size="lg"
+                asChild
+                className="h-14 px-8 text-lg font-semibold bg-primary hover:bg-primary/90 shadow-xl"
+              >
+                <Link href="/send">
+                  Send SMS Now
+                  <Send className="mr-2 h-5 w-5" />
+                </Link>
               </Button>
             </div>
           </div>
