@@ -23,7 +23,7 @@ export default function ContactPage() {
           </p>
         </div>
 
-        <Link href="/dashboard/campaigns/create">
+        <Link href="/dashboard/contacts/create">
           <Button variant="brand">
             <Plus className="mr-2 h-4 w-4" />
             New Contact

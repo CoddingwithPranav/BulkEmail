@@ -101,13 +101,9 @@ export const updateContact = async (
     });
     if (!category) throw new Error("Invalid category");
   }
-
-  // Remove categoryId from data before updating
-  const { categoryId, ...updateData } = data;
-
   return await dbClient.my_Contact.update({
     where: { id, userId },
-    data: updateData,
+    data: data,
     include: { category: { select: { name: true } } },
   });
 };

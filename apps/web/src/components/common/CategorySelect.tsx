@@ -1,4 +1,5 @@
-// components/CategorySelect.tsx
+"use client";
+
 import {
   Select,
   SelectContent,
@@ -6,6 +7,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useCategoriesDDLQuery } from "@/hooks/queries/categories.query";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface CategorySelectProps {
   value?: string;
@@ -16,20 +19,24 @@ interface CategorySelectProps {
 export default function CategorySelect({
   value,
   onValueChange,
-  placeholder = "Select category",
+  placeholder = "Select a category",
 }: CategorySelectProps) {
-  const { data, isLoading } = useCategoriesQuery({});
+  const { data: categories = [], isLoading } = useCategoriesDDLQuery();
 
-  if (isLoading) return <SelectTrigger><SelectValue>Loading...</SelectValue></SelectTrigger>;
+  const isReady = !isLoading && categories.length > 0;
+
+  if (!isReady) {
+    return <Skeleton className="h-10 w-full" />;
+  }
 
   return (
-    <Select value={value} onValueChange={onValueChange}>
+    <Select key={categories.map(c => c.id).join(",")} value={value ?? ""} onValueChange={onValueChange}>
       <SelectTrigger>
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>
-        {data?.items?.map((cat) => (
-          <SelectItem key={cat.id} value={cat.id}>
+        {categories.map((cat) => (
+          <SelectItem key={cat.id} value={cat.id!}>
             {cat.name}
           </SelectItem>
         ))}

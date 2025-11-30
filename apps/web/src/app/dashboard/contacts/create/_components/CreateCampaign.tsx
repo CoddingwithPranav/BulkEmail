@@ -10,7 +10,7 @@ import {
 } from "@repo/types";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner"; // optional, but recommended
+import { toast } from "sonner"; 
 import MyContactFormFields from "../../_components/CampaignsCardsForm";
 
 export default function CreateContactPage() {
@@ -34,9 +34,8 @@ export default function CreateContactPage() {
   const onSubmit = async (values: CreateMyContactInput) => {
     try {
       await createContact(values);
-      toast.success("Contact created successfully!");
       form.reset();
-      router.push("/dashboard/my-contacts");
+      router.push("/dashboard/contacts");
     } catch (error: any) {
       toast.error(error?.message || "Failed to create contact");
       console.error("Create contact error:", error);
@@ -44,14 +43,7 @@ export default function CreateContactPage() {
   };
 
   return (
-    <div className="mx-auto max-w-3xl p-6">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-foreground">Create New Contact</h1>
-        <p className="text-muted-foreground mt-2">
-          Add a new contact to your personal contact list.
-        </p>
-      </div>
-
+    <div className="mx-auto p-6">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <MyContactFormFields form={form} />
