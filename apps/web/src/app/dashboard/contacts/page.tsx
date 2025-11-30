@@ -2,7 +2,7 @@ import { Container, Heading } from "@/components/common";
 import { Suspense } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Download, Plus } from "lucide-react";
 import CampaignsTable from "./_components/CampaignsTable";
 
 export const metadata = {
@@ -22,17 +22,24 @@ export default function ContactPage() {
             Yours contacts list
           </p>
         </div>
-
-        <Link href="/dashboard/contacts/create">
-          <Button variant="brand">
-            <Plus className="mr-2 h-4 w-4" />
-            New Contact
-          </Button>
-        </Link>
+        <div>
+          <Link href="/dashboard/contacts/upload">
+            <Button variant="outline" className="mr-5">
+              <Download className="mr-2 h-4 w-4" />
+              Import Contacts
+            </Button>
+          </Link>
+          <Link href="/dashboard/contacts/create">
+            <Button variant="brand">
+              <Plus className="mr-2 h-4 w-4" />
+              New Contact
+            </Button>
+          </Link>
+        </div>
       </div>
 
       <Container className="p-0 overflow-hidden">
-          <CampaignsTable />
+        <CampaignsTable />
       </Container>
     </div>
   );

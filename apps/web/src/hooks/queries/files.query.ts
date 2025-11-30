@@ -1,26 +1,25 @@
-// src/lib/query/files.query.ts
 import { uploadFile, getFileStatus, getUserFiles, deleteFile, FileRecord } from "@/lib/api/file";
-import { QueryFunctionContext, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 
 export const useUploadFileMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ file, isGuest }: { file: File; isGuest?: boolean }) =>
-      uploadFile(file, isGuest),
+    mutationFn: ({ file, categoryId }: { file: File; categoryId:string }) =>
+      uploadFile(file,categoryId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["files"] });
     },
   });
 };
 
-export const useFileStatusQuery = (fileId: string | null, isGuest = false) => {
+export const useFileStatusQuery = (fileId: string | null) => {
   return useQuery<FileRecord>({
-    queryKey: ["file", fileId, { isGuest }],
+    queryKey: ["file", fileId],
     queryFn: () => {
       if (!fileId) throw new Error("fileId is required");
-      return getFileStatus(fileId, isGuest);
+      return getFileStatus(fileId);
     },
     enabled: !!fileId,
     refetchInterval: (query) => {

@@ -10,7 +10,6 @@ export interface FileRecord {
   uploadStatus: FileStatus;
   numberOfReceivers: number | null;
   createdAt: string;
-  
 }
 
 export interface FileUploadResponse {
@@ -20,38 +19,42 @@ export interface FileUploadResponse {
   isGuest?: boolean;
 }
 
-// Upload file
-export const uploadFile = async (file: File, isGuest = false): Promise<FileUploadResponse> => {
+/**
+ * Upload a file with category
+ * @param file - The CSV/XLSX file
+ * @param categoryId - Required category ID for the contacts
+ */
+export const uploadFile = async (
+  file: File,
+  categoryId: string
+): Promise<FileUploadResponse> => {
   const formData = new FormData();
   formData.append("file", file);
-
-  const endpoint = isGuest ? "/files/upload" : "/files/upload";
+  formData.append("categoryId", categoryId); // Send categoryId in body
 
   const { data } = await axiosInstance.post<{
     success: true;
     data: FileUploadResponse;
-  }>(endpoint, formData, {
-    headers: { "Content-Type": "multipart/form-data" },
+  }>("/files/upload", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
   });
 
-  return data.data; // This is correct
+  return data.data;
 };
 
 // Get file status
-export const getFileStatus = async (fileId: string, isGuest = false): Promise<FileRecord> => {
-  const endpoint = isGuest
-    ? `/files/status/${fileId}`
-    : `/files/status/${fileId}`;
-
+export const getFileStatus = async (fileId: string): Promise<FileRecord> => {
   const { data } = await axiosInstance.get<{
     success: true;
     data: { file: FileRecord };
-  }>(endpoint);
+  }>(`/files/status/${fileId}`);
 
   return data.data.file;
 };
 
-// Get user's files
+// Get user's uploaded files
 export const getUserFiles = async (): Promise<FileRecord[]> => {
   const { data } = await axiosInstance.get<{
     success: true;
@@ -64,16 +67,13 @@ export const getUserFiles = async (): Promise<FileRecord[]> => {
 // Download invalid rows
 export const downloadInvalidRows = (
   fileId: string,
-  type: "csv" | "xlsx" = "csv",
-  isGuest = false
+  type: "csv" | "xlsx" = "csv"
 ) => {
-  const endpoint = isGuest
-    ? `/files/invalid/${fileId}?type=${type}`
-    : `/files/invalid/${fileId}?type=${type}`;
+  const endpoint = `/files/invalid/${fileId}?type=${type}`;
   window.open(endpoint, "_blank");
 };
 
-// Delete file
+// Delete uploaded file
 export const deleteFile = async (fileId: string) => {
   await axiosInstance.delete(`/files/${fileId}`);
 };

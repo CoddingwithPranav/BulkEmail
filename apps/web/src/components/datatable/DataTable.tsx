@@ -4,7 +4,7 @@
 
 import { cn } from '@/lib/utils';
 import isEqual from 'lodash/isEqual';
-import { memo } from 'react';
+import { memo, ReactNode } from 'react';
 import { DataTableQuery, DataTableQueryProps } from './DataTableQuery';
 import { DataTableRoot, DataTableRootProps } from './DataTableRoot';
 import { NoRecords, NoResultsProps } from './NoResult';
@@ -16,6 +16,7 @@ type DataTableProps<T> = DataTableRootProps<T> &
     pageSize: number;
     queryObject?: Record<string, any>;
     noRecords?: Pick<NoResultsProps, 'title' | 'message'>;
+    customFilters?: ReactNode;
   };
 
 const MemoizedDataTableQuery = memo(DataTableQuery);
@@ -37,6 +38,7 @@ export function DataTable<T>({
   noHeader = false,
   layout = 'fit',
   noRecords: noRecordsProps = {},
+  customFilters,
 }: DataTableProps<T>) {
   if (isLoading) {
     return (
@@ -79,13 +81,18 @@ export function DataTable<T>({
         'flex h-full flex-col overflow-hidden': layout === 'fill',
       })}
     >
-      <div className="px-4">
+      <div className="px-4 flex gap-8">
         <MemoizedDataTableQuery
           search={search}
           orderBy={orderBy}
           filters={filters}
           prefix={prefix}
         />
+          {customFilters && (
+            <div className="flex items-center gap-3 w-full sm:w-auto">
+              {customFilters}
+            </div>
+          )}
       </div>
       <DataTableRoot
         table={table}
