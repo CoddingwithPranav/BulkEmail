@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { ThemeToggle } from "@/components/header/ThemeToggle";
-import { Mountain, Send, Zap } from "lucide-react";
+import { Mail, Zap } from "lucide-react";
 
 export default function ComingSoonPage() {
   return (
@@ -15,10 +15,13 @@ export default function ComingSoonPage() {
 
         <header className="relative shrink-0 border-b border-border/40 bg-background/70 backdrop-blur-xl z-50">
           <div className="container mx-auto flex h-16 items-center justify-between px-6">
-            <Link href="/" className="flex items-center gap-3 group">
-              <div className="relative">
+            <Link href="/" className="flex items-center group">
+              {/* <div className="relative">
                 <Mountain className="h-8 w-8 text-brand rotate-12 group-hover:rotate-6 transition-transform" />
                 <Send className="h-5 w-5 text-primary absolute -bottom-1 -right-1" />
+              </div> */}
+              <div className="relative">
+                <Mail className="w-7 h-7 stroke-[2.5] text-brand group-hover:rotate-6 transition-transform" />
               </div>
               <span className="text-2xl font-bold bg-gradient-to-r from-brand to-primary bg-clip-text text-transparent">
                 MessangerNepal
@@ -38,11 +41,14 @@ export default function ComingSoonPage() {
             <h1 className="text-5xl sm:text-6xl lg:text-8xl font-black tracking-tighter leading-tight">
               <span className="block">Nepal's Fastest</span>
               <span className="block text-6xl sm:text-7xl lg:text-9xl bg-gradient-to-r from-brand  to-primary bg-clip-text text-transparent animate-gradient-x">
-                SMS Platform
+                SMS Delivery
               </span>
               <span className="block mt-3 text-5xl sm:text-6xl text-foreground/80">
-                is <span className="text-primary">Coming</span>
+                Service <span className="text-primary">Provider</span>
               </span>
+              {/* <span className="block mt-3 text-5xl sm:text-6xl text-foreground/80">
+                is <span className="text-primary">Coming</span>
+              </span> */}
             </h1>
 
             <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto font-medium">
