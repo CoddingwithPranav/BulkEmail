@@ -1,7 +1,7 @@
 import { dbClient } from "@repo/db/client";
 import { Response } from "express";
-import logger from "../config/logger";
 import { AuthRequest } from "../middleware/auth";
+import logger from "@repo/config/logger";
 
 export const sendQuickSms = async (req: AuthRequest, res: Response) => {
   const { toPhoneNumber, message } = req.body;

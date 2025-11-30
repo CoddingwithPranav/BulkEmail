@@ -3,10 +3,10 @@ import cors from 'cors';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import expressWinston from 'express-winston';
-import logger from './config/logger'; 
 import routes from './routes/v1';
 import { errorHandler } from './middleware/errorHandler';
 import { generateImageKitAuth } from './utils/imageKit';
+import logger from '@repo/config/logger';
 
 const app:express.Application = express();
 
@@ -16,6 +16,7 @@ app.use(cors({
 }));
 app.use(helmet());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
   

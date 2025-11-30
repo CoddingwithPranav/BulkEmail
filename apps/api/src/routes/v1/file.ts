@@ -13,8 +13,6 @@ const router: Router = Router();
 
 router.use(protect);
 router.post("/upload", upload.single("file"), uploadFile);
-// router.get("/progress/:jobId", getFileProgressSSE);
-
 router.get("/list", getUserFiles);
 router.get("/status/:id", getFileStatus);
 router.get("/invalid/:id", downloadInvalidRows);

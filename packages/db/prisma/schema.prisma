@@ -66,34 +66,37 @@ model User {
   citizenshipImage  String?
   createdAt         DateTime     @default(now())
   updatedAt         DateTime     @updatedAt
-  otp             String?   // Store hashed OTP for security
-  otpExpires      DateTime? // Expiry timestamp for OTP
+  otp               String? // Store hashed OTP for security
+  otpExpires        DateTime? // Expiry timestamp for OTP
 
-  files      Files[]
-  receiver   Receiver[]
-  campaigns  Campaign[]
-  quickSends QuickSMSSend[]
-  myContacts My_Contact[]
-  categories Category[]
+  files             Files[]
+  receiver          Receiver[]
+  campaigns         Campaign[]
+  quickSends        QuickSMSSend[]
+  myContacts        My_Contact[]
+  categories        Category[]
+  invalidMyContacts Invalid_My_Contact[]
 
   @@map("users")
 }
 
 model Category {
-  id        String   @id @default(uuid())
-  name      String   @unique
-  userId    String
-  description String?
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  myContacts My_Contact[]
-  files     Files[]
-  campaigns Campaign[]
-  isDeleted Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                String               @id @default(uuid())
+  name              String               @unique
+  userId            String
+  description       String?
+  user              User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  myContacts        My_Contact[]
+  files             Files[]
+  campaigns         Campaign[]
+  isDeleted         Boolean              @default(false)
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+  invalidMyContacts Invalid_My_Contact[]
 
   @@map("categories")
 }
+
 model Files {
   id                String       @id @default(uuid())
   userId            String
@@ -107,15 +110,17 @@ model Files {
   uploadStatus      UploadStatus @default(PENDING)
   createdAt         DateTime     @default(now())
   updatedAt         DateTime     @updatedAt
-  
-  category              Category                @relation(fields: [CategoryId], references: [id], onDelete: SetNull)
-  user                   User                      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  myContact              My_Contact[]
+
+  category           Category             @relation(fields: [CategoryId], references: [id], onDelete: SetNull)
+  user               User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  myContact          My_Contact[]
+  Invalid_My_Contact Invalid_My_Contact[]
+
   @@map("files")
 }
 
 model My_Contact {
-  id           String   @id @default(uuid())
+  id           String  @id @default(uuid())
   fileId       String?
   firstName    String?
   lastName     String?
@@ -126,16 +131,39 @@ model My_Contact {
   categoryId   String?
   userId       String
 
-  isDeleted    Boolean  @default(false)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  
+  isDeleted Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   category Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
-  file Files? @relation(fields: [fileId], references: [id], onDelete: Cascade)
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  file     Files?    @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, categoryId, phoneNumber])
   @@map("my_contacts")
+}
+
+model Invalid_My_Contact {
+  id           String  @id @default(uuid())
+  fileId       String?
+  firstName    String?
+  lastName     String?
+  province     String?
+  district     String?
+  municipality String?
+  phoneNumber  String?
+  categoryId   String?
+  userId       String
+  errorReason  String?  
+  isDeleted Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  category Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  file     Files?    @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("invalid_my_contacts")
 }
 
 model Receiver {
@@ -189,8 +217,8 @@ model Campaign {
   submitDate          DateTime?
   createdAt           DateTime       @default(now())
   updatedAt           DateTime       @updatedAt
-  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  user User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category            Category       @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  user                User           @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("campaign")
 }
@@ -208,7 +236,6 @@ model QuickSMSSend {
 
   @@map("quick_sms_send")
 }
-
 
 model Guest {
   id        String   @id @default(uuid())

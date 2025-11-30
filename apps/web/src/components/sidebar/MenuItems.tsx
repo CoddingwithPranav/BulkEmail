@@ -4,7 +4,6 @@ import { MenuItem } from "./MenuItem";
 
 export const MenuItems = async () => {
   const { navItems } = await getNavGroupsByRole();
-  console.log("Nav Items in MenuItems:", navItems);
   return (
     <>
       <SidebarGroup>

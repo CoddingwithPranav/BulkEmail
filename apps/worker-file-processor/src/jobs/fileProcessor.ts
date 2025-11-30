@@ -1,290 +1,150 @@
+// src/jobs/fileProcessor.ts
+
 import logger from "@repo/config/logger";
-import { dbClient } from "@repo/db";
+import { dbClient } from "@repo/db/client";
 import { uploadFileSchema } from "@repo/types";
 import { Job } from "bullmq";
 import csv from "csv-parser";
 import fs from "fs";
 import XLSX from "xlsx";
 
+const normalizePhone = (phone: string): string => phone.replace(/\D/g, "").trim();
+
 export const processFileJob = async (job: Job) => {
-  const {
-    fileId,
-    filePath,
-    isGuest = false,
-  } = job.data as {
+  const { fileId, filePath, categoryId, userId } = job.data as {
     fileId: string;
     filePath: string;
-    isGuest?: boolean;
+    categoryId: string;
+    userId: string;
   };
-
-  logger.info("Starting file processing", {
-    jobId: job.id,
-    fileId,
-    filePath,
-    isGuest,
-  });
 
   let validCount = 0;
   let invalidCount = 0;
+  const validContacts: any[] = [];
+  const invalidContacts: any[] = [];
+
+  const processRow = (row: any) => {
+    const rawFirstName = String(row.FirstName || row.firstname || "").trim();
+    const rawLastName = String(row.LastName || row.lastname || "").trim();
+    const rawProvince = String(row.Province || row.province || "").trim();
+    const rawDistrict = String(row.District || row.district || "").trim();
+    const rawMunicipality = String(row.Municipality || row.municipality || "").trim();
+
+    const phoneRaw = [
+      row.PhoneNumber,
+      row.phone,
+      row.mobile,
+      row.Phone,
+      row.Mobile,
+      row.phoneNumber,
+    ].find(Boolean) || "";
+
+    const phoneNumber = normalizePhone(phoneRaw);
+    const isValidPhone = phoneNumber.length === 10;
+
+    let errorReason = "";
+    if (!phoneRaw.trim()) errorReason = "Phone number is missing";
+    else if (!isValidPhone) errorReason = "Invalid format (must be exactly 10 digits)";
+
+    const parsed = uploadFileSchema.safeParse({
+      FirstName: rawFirstName,
+      LastName: rawLastName,
+      Province: rawProvince,
+      District: rawDistrict,
+      Municipality: rawMunicipality,
+      PhoneNumber: phoneNumber,
+    });
+
+    console.log("Parsed row:", parsed.success);
+    if(parsed.success==false){
+      console.log("Errors:", parsed.error.issues);
+    }
+
+    const contactData = {
+      userId,
+      categoryId,
+      fileId,
+      firstName: rawFirstName || null,
+      lastName: rawLastName || null,
+      province: rawProvince || null,
+      district: rawDistrict || null,
+      municipality: rawMunicipality || null,
+      phoneNumber: phoneNumber || null,
+    
+    };
+
+    // === 6. Decide valid vs invalid ===
+    if (parsed.success && isValidPhone) {
+      validContacts.push(contactData);
+      validCount++;
+    } else {
+      invalidContacts.push({...contactData ,  errorReason: errorReason || (!parsed.success ? "Invalid data format" : "")});
+      invalidCount++;
+    }
+  };
 
   try {
     if (filePath.endsWith(".csv")) {
       await new Promise<void>((resolve, reject) => {
-        const validReceivers: any[] = [];
-        const invalidReceivers: any[] = [];
-
         fs.createReadStream(filePath)
           .pipe(csv())
-          .on("data", (row) => {
-            const parsed = uploadFileSchema.safeParse({
-              FirstName: String(row.FirstName || row.firstname || "").trim(),
-              LastName: String(row.LastName || row.lastname || "").trim(),
-              Province: String(row.Province || row.province || "").trim(),
-              District: String(row.District || row.district || "").trim(),
-              Municipality: String(
-                row.Municipality || row.municipality || ""
-              ).trim(),
-              PhoneNumber: String(
-                row.phone ||
-                  row.mobile ||
-                  row.Phone ||
-                  row.Mobile ||
-                  row.PhoneNumber ||
-                  ""
-              )
-                .replace(/\D/g, "")
-                .trim(),
-            });
-
-            const baseData = {
-              fileId,
-              firstName: parsed.success
-                ? parsed.data.FirstName
-                : String(row.FirstName || row.firstname || "").trim() || null,
-              lastName: parsed.success
-                ? parsed.data.LastName
-                : String(row.LastName || row.lastname || "").trim() || null,
-              province: parsed.success
-                ? parsed.data.Province
-                : String(row.Province || row.province || "").trim() || null,
-              district: parsed.success
-                ? parsed.data.District
-                : String(row.District || row.district || "").trim() || null,
-              municipality: parsed.success
-                ? parsed.data.Municipality
-                : String(row.Municipality || row.municipality || "").trim() ||
-                  null,
-              phoneNumber: parsed.success
-                ? parsed.data.PhoneNumber
-                : String(
-                    row.phone || row.mobile || row.Phone || row.Mobile || ""
-                  )
-                    .replace(/\D/g, "")
-                    .trim(),
-            };
-            console.log("Parsed row:", parsed.success); // Debug log
-            console.log("Base data:", parsed.error?.cause); // Debug log
-            if (parsed.success) {
-              validReceivers.push(baseData);
-              validCount++;
-            } else {
-              invalidReceivers.push(baseData);
-              invalidCount++;
-            }
-
-            // // Optional: progress update every 50 rows
-            // const processed = validCount + invalidCount;
-            // if (processed % 50 === 0) {
-            //   job.updateProgress(
-            //     Math.min(90, Math.round((processed / 10000) * 90))
-            //   );
-            // }
-          })
-          .on("end", async () => {
-            try {
-              logger.info("validReceivers length:", validReceivers); // Debug log
-              if (validReceivers.length > 0) {
-                if (isGuest) {
-                  await dbClient.guestReceiver.createMany({
-                    data: validReceivers,
-                    skipDuplicates: true,
-                  });
-                } else {
-                  await dbClient.upload_Receiver.createMany({
-                    data: validReceivers,
-                    skipDuplicates: true,
-                  });
-                }
-              }
-
-              // Insert invalid ones
-              logger.info("invalidReceivers length:", invalidReceivers); // Debug log
-              if (invalidReceivers.length > 0) {
-                if (isGuest) {
-                  await dbClient.invalidGuestReceiver.createMany({
-                    data: invalidReceivers,
-                    skipDuplicates: true,
-                  });
-                } else {
-                  await dbClient.invalid_Upload_Receiver.createMany({
-                    data: invalidReceivers,
-                    skipDuplicates: true,
-                  });
-                }
-              }
-
-              resolve();
-            } catch (err) {
-              reject(err);
-            }
-          })
+          .on("data", processRow)
+          .on("end", resolve)
           .on("error", reject);
       });
-    }
-    // Excel handling (same logic)
-    else if (filePath.match(/\.(xlsx|xls)$/i)) {
-      // Handle Excel files
+    } else {
+      // Excel
       const workbook = XLSX.readFile(filePath);
-      const firstSheetName = workbook.SheetNames[0];
-      if (!firstSheetName) {
-        throw new Error("No sheets found in Excel file");
+      const sheetName = workbook.SheetNames[0];
+      if (!sheetName) {
+        throw new Error("No sheet found in the Excel file.");
       }
-      const sheet = workbook.Sheets[firstSheetName];
+      const sheet = workbook.Sheets[sheetName];
       if (!sheet) {
-        throw new Error("Sheet not found in Excel file");
+        throw new Error("Sheet not found in the workbook.");
       }
-      const rows: any[] = XLSX.utils.sheet_to_json(sheet, { defval: "" });
-
-      const validReceivers: any[] = [];
-      const invalidReceivers: any[] = [];
-
-      rows.forEach((row) => {
-        const parsed = uploadFileSchema.safeParse({
-          FirstName: String(row.FirstName || row.firstname || "").trim(),
-          LastName: String(row.LastName || row.lastname || "").trim(),
-          Province: String(row.Province || row.province || "").trim(),
-          District: String(row.District || row.district || "").trim(),
-          Municipality: String(
-            row.Municipality || row.municipality || ""
-          ).trim(),
-          PhoneNumber: String(
-            row.phone || row.mobile || row.Phone || row.Mobile || ""
-          )
-            .replace(/\D/g, "")
-            .trim(),
-        });
-
-        const baseData = {
-          fileId,
-          firstName: parsed.success
-            ? parsed.data.FirstName
-            : String(row.FirstName || "").trim() || null,
-          lastName: parsed.success
-            ? parsed.data.LastName
-            : String(row.LastName || "").trim() || null,
-          province: parsed.success
-            ? parsed.data.Province
-            : String(row.Province || "").trim() || null,
-          district: parsed.success
-            ? parsed.data.District
-            : String(row.District || "").trim() || null,
-          municipality: parsed.success
-            ? parsed.data.Municipality
-            : String(row.Municipality || "").trim() || null,
-          phoneNumber: parsed.success
-            ? parsed.data.PhoneNumber
-            : String(row.phone || "")
-                .replace(/\D/g, "")
-                .trim(),
-        };
-
-        if (parsed.success && baseData.phoneNumber.length >= 10) {
-          validReceivers.push(baseData);
-          validCount++;
-        } else {
-          invalidReceivers.push(baseData);
-          invalidCount++;
-        }
-      });
-
-      if (validReceivers.length > 0) {
-        if (isGuest) {
-          await dbClient.guestReceiver.createMany({
-            data: validReceivers,
-            skipDuplicates: true,
-          });
-        } else {
-          await dbClient.upload_Receiver.createMany({
-            data: validReceivers,
-            skipDuplicates: true,
-          });
-        }
-      }
-
-      if (invalidReceivers.length > 0) {
-        if (isGuest) {
-          await dbClient.invalidGuestReceiver.createMany({
-            data: invalidReceivers,
-            skipDuplicates: true,
-          });
-        } else {
-          await dbClient.invalid_Upload_Receiver.createMany({
-            data: invalidReceivers,
-            skipDuplicates: true,
-          });
-        }
-      }
-    } else {
-      throw new Error("Unsupported file format");
+      const rows = XLSX.utils.sheet_to_json(sheet, { defval: "" });
+      rows.forEach(processRow);
     }
 
-    // Update file status
-    if (isGuest) {
-      await dbClient.guestFile.update({
-        where: { id: fileId },
-        data: {
-          uploadStatus: "UPLOADED",
-          numberOfReceivers: validCount,
-        },
-      });
-    } else {
-      await dbClient.files.update({
-        where: { id: fileId },
-        data: {
-          uploadStatus: "UPLOADED",
-          numberOfReceivers: validCount,
-        },
+    console.log("Valid contacts →", validContacts);
+    console.log("Invalid contacts →", invalidContacts);
+
+    // Save to DB
+    if (validContacts.length > 0) {
+      await dbClient.my_Contact.createMany({
+        data: validContacts,
+        skipDuplicates: true,
       });
     }
 
-    // job.updateProgress(100);
+    if (invalidContacts.length > 0) {
+      await dbClient.invalid_My_Contact.createMany({
+        data: invalidContacts,
+        skipDuplicates: true,
+      });
+    }
+
+    await dbClient.files.update({
+      where: { id: fileId },
+      data: {
+        uploadStatus: "UPLOADED",
+        numberOfReceivers: validCount,
+      },
+    });
+
     logger.info("File processed successfully", {
-      jobId: job.id,
       fileId,
-      isGuest,
       validCount,
       invalidCount,
+      total: validCount + invalidCount,
     });
   } catch (err: any) {
-    logger.error("File processing failed", {
-      jobId: job.id,
-      fileId,
-      isGuest,
-      error: err.message,
+    await dbClient.files.update({
+      where: { id: fileId },
+      data: { uploadStatus: "FAILED" },
     });
-
-    if (isGuest) {
-      await dbClient.guestFile.update({
-        where: { id: fileId },
-        data: { uploadStatus: "FAILED" },
-      });
-    } else {
-      await dbClient.files.update({
-        where: { id: fileId },
-        data: { uploadStatus: "FAILED" },
-      });
-    }
-
+    logger.error("File processing failed", { fileId, error: err.message });
     throw err;
   }
 };

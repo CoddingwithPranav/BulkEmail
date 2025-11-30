@@ -7,8 +7,8 @@ const campaignBase = z.object({
     .string()
     .min(1, "Message cannot be empty")
     .max(1600, "Message too long (max ~10 SMS parts)"),
-  fileId: z.number().int().positive().optional(),
   province: z.string().optional(),
+  categoryId: z.string().uuid("Invalid category ID"),
   district: z.string().optional(),
   municipality: z.string().optional(),
   totalSmsCost: z.number().min(0).optional(),
@@ -19,6 +19,7 @@ const campaignBase = z.object({
   paid: z.boolean().optional(),
   status: z.enum(["PENDING", "APPROVED", "SENT", "CANCELLED"]).optional(),
   paymentReceiptImage: z.string().url().optional(),
+
 });
 
 export const approveCampaignSchema = z.object({
@@ -40,4 +41,5 @@ export type CampaignsResponse = {
   };
 };
 export type Campaign = z.infer<typeof createCampaignSchema>;
+
 export type ApproveCampaignInput = z.infer<typeof approveCampaignSchema>;

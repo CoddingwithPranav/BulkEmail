@@ -1,125 +1,76 @@
 import logger from "@repo/config/logger";
 import { dbClient } from "@repo/db/client";
 import { Response } from "express";
-import fs from "fs";
 import XLSX from "xlsx";
-import { fileProcessingQueue, fileProcessingQueueEvents } from "../jobs/queues";
+import { fileProcessingQueue } from "../jobs/queues";
 import { AuthRequest } from "../middleware/auth";
-import { success } from "zod/v4";
 
 export const uploadFile = async (req: AuthRequest, res: Response) => {
-  if (!req.file) return res.status(400).json({ message: "No file uploaded" });
+  if (!req.file) {
+    return res.status(400).json({ success: false, message: "No file uploaded" });
+  }
 
-  const { originalname, filename, size, path: filePath } = req.file;
-  const isGuest = !req.user;
+  const { categoryId } = req.body;
+  if (!categoryId) {
+    return res.status(400).json({ success: false, message: "Category ID is required" });
+  }
+
+  const { originalname, path: filePath, size } = req.file;
+  const userId = req.user!.id;
+  logger.info("File upload initiated", { userId, originalname, filePath, size, categoryId });
 
   try {
-    let fileRecord;
-    if (isGuest) {
-      // For guests – you might want to track via session/cookie later
-      fileRecord = await dbClient.guestFile.create({
-        data: {
-          name: originalname,
-          path: filePath,
-          sizeInBytes: BigInt(size),
-          type: originalname.endsWith(".csv") ? "CSV" : "XLSX",
-          uploadStatus: "PROCESSING",
-          guest: {
-            // Provide required guest data here, e.g. create or connect
-            // Example: create: { /* guest fields */ }
-            // If you have a guestId, use: connect: { id: guestId }
-            // Replace the below line with actual guest creation/connection logic
-            create: {},
-          },
-        },
-      });
-    } else {
-      fileRecord = await dbClient.files.create({
-        data: {
-          userId: req.user.id,
-          name: originalname,
-          path: filePath,
-          sizeInBytes: BigInt(size),
-          type: originalname.endsWith(".csv") ? "CSV" : "XLSX",
-          uploadStatus: "PROCESSING",
-        },
-      });
-    }
+    const fileRecord = await dbClient.files.create({
+      data: {
+        userId,
+        name: originalname,
+        path: filePath,
+        sizeInBytes: BigInt(size),
+        type: originalname.toLowerCase().endsWith(".csv") ? "CSV" : "XLSX",
+        uploadStatus: "PROCESSING",
+        CategoryId: categoryId,
+      },
+    });
 
     const job = await fileProcessingQueue.add("process-file", {
       fileId: fileRecord.id,
       filePath,
-      isGuest,
+      categoryId,
+      userId,
     });
 
-    logger.info("File queued", {
-      fileId: fileRecord.id,
-      jobId: job.id,
-      isGuest,
-    });
+    logger.info("File upload queued", { fileId: fileRecord.id, jobId: job.id, userId, categoryId });
 
-    res.status(202).json({
+    return res.status(202).json({
       success: true,
-      data:{
-         message: "File uploaded and processing started",
-      fileId: fileRecord.id,
-      jobId: job.id,
-      progressUrl: `/api/files/progress/${job.id}`,
-      isGuest,
-      }
+      data: {
+        message: "File uploaded and processing started",
+        fileId: fileRecord.id,
+        jobId: job.id,
+      },
     });
   } catch (err: any) {
-    logger.error("Upload failed", { error: err.message });
-    res.status(500).json({ success: false, data:{
-      message: "Failed to upload file",
-    }});
+    logger.error("Upload failed", { error: err.message, userId });
+    return res.status(500).json({ success: false, message: "Failed to upload file" });
   }
 };
 
-export const getFileProgressSSE = (req: AuthRequest, res: Response) => {
-  const jobId = req.params.jobId;
-
-  res.set({
-    "Content-Type": "text/event-stream",
-    "Cache-Control": "no-cache",
-    Connection: "keep-alive",
+export const getUserFiles = async (req: AuthRequest, res: Response) => {
+  const files = await dbClient.files.findMany({
+    where: { userId: req.user!.id },
+    orderBy: { createdAt: "desc" },
+    select: {
+      id: true,
+      name: true,
+      type: true,
+      uploadStatus: true,
+      numberOfReceivers: true,
+      createdAt: true,
+      category: { select: { name: true } },
+    },
   });
-  res.flushHeaders();
 
-  const send = (data: any) => res.write(`data: ${JSON.stringify(data)}\n\n`);
-
-  send({ progress: 0, status: "queued" });
-
-  const onProgress = (event: any) => {
-    if (event.jobId === jobId) {
-      send({ progress: event.data, status: "processing" });
-    }
-  };
-  const onCompleted = (event: any) => {
-    if (event.jobId === jobId) {
-      send({ progress: 100, status: "completed" });
-      cleanup();
-    }
-  };
-  const onFailed = (event: any) => {
-    if (event.jobId === jobId) {
-      send({ progress: 0, status: "failed", error: event.failedReason });
-      cleanup();
-    }
-  };
-
-  const cleanup = () => {
-    fileProcessingQueueEvents.removeListener("progress", onProgress);
-    fileProcessingQueueEvents.removeListener("completed", onCompleted);
-    fileProcessingQueueEvents.removeListener("failed", onFailed);
-    res.end();
-  };
-
-  fileProcessingQueueEvents.on("progress", onProgress);
-  fileProcessingQueueEvents.on("completed", onCompleted);
-  fileProcessingQueueEvents.on("failed", onFailed);
-
-  req.on("close", cleanup);
+  res.json({ success: true, data: { files } });
 };
 
 export const getFileStatus = async (req: AuthRequest, res: Response) => {
@@ -134,37 +85,18 @@ export const getFileStatus = async (req: AuthRequest, res: Response) => {
     },
   });
 
-  if (!file) return res.status(404).json({success: false, data:{ message: "File not found" }});
-  res.json({
-    success: true,
-    data: { file },
-  });
-};
+  if (!file) {
+    return res.status(404).json({ success: false, message: "File not found" });
+  }
 
-export const getUserFiles = async (req: AuthRequest, res: Response) => {
-  const files = await dbClient.files.findMany({
-    where: { userId: req.user!.id },
-    orderBy: { createdAt: "desc" },
-    select: {
-      id: true,
-      name: true,
-      type: true,
-      uploadStatus: true,
-      numberOfReceivers: true,
-      createdAt: true,
-    },
-  });
-  res.json({
-    success: true,
-    data: { files },
-  });
+  res.json({ success: true, data: { file } });
 };
 
 export const downloadInvalidRows = async (req: AuthRequest, res: Response) => {
   const fileId = req.params.id;
   const format = (req.query.type as string)?.toLowerCase() || "csv";
 
-  let invalidRows = await dbClient.invalid_Upload_Receiver.findMany({
+  const invalidRows = await dbClient.invalid_My_Contact.findMany({
     where: { fileId },
     select: {
       firstName: true,
@@ -177,32 +109,12 @@ export const downloadInvalidRows = async (req: AuthRequest, res: Response) => {
   });
 
   if (invalidRows.length === 0) {
-    const guestRows = await dbClient.invalidGuestReceiver.findMany({
-      where: { guestFileId: fileId },
-      select: {
-        firstName: true,
-        lastName: true,
-        province: true,
-        district: true,
-        municipality: true,
-        phoneNumber: true,
-      },
-    });
-
-    // Map to same shape (fileId is just for consistency)
-    invalidRows = guestRows.map((r) => ({ ...r, fileId }));
-  }
-
-  if (invalidRows.length === 0) {
     return res.status(404).json({
       success: false,
-      data:{
-        message: "No invalid rows found for this file",
-      }
+      message: "No invalid rows found for this file",
     });
   }
 
-  // Add helpful error hint (optional but very user-friendly)
   const rowsWithError = invalidRows.map((r) => ({
     FirstName: r.firstName || "",
     LastName: r.lastName || "",
@@ -215,82 +127,58 @@ export const downloadInvalidRows = async (req: AuthRequest, res: Response) => {
       : "Phone number is missing",
   }));
 
-  // ——————— CSV Export ———————
   if (format === "csv") {
-    const headers =
-      rowsWithError.length > 0 && rowsWithError[0]
-        ? Object.keys(rowsWithError[0]!).join(",")
-        : "";
-    const csvContent = [
-      headers,
-      ...rowsWithError.map((row) => Object.values(row).join(",")),
-    ].join("\n");
+    const headers = rowsWithError.length > 0 && rowsWithError[0] ? Object.keys(rowsWithError[0]!).join(",") : "";
+    const csv = [headers, ...rowsWithError.map((r) => Object.values(r).join(","))].join("\n");
 
     res.setHeader("Content-Type", "text/csv");
-    res.setHeader(
-      "Content-Disposition",
-      `attachment; filename="invalid-rows-${fileId}.csv"`
-    );
-    return res.send(csvContent);
+    res.setHeader("Content-Disposition", `attachment; filename="invalid-rows-${fileId}.csv"`);
+    return res.send(csv);
   }
 
-  // ——————— XLSX Export ———————
   if (format === "xlsx") {
     const ws = XLSX.utils.json_to_sheet(rowsWithError);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Invalid Rows");
 
-    // Style header row
+    // Style header
     const range = XLSX.utils.decode_range(ws["!ref"]!);
     for (let C = range.s.c; C <= range.e.c; ++C) {
-      const address = XLSX.utils.encode_cell({ r: 0, c: C });
-      if (!ws[address]) continue;
-      ws[address].s = {
+      const addr = XLSX.utils.encode_cell({ r: 0, c: C });
+      if (!ws[addr]) continue;
+      ws[addr].s = {
         font: { bold: true, color: { rgb: "FFFFFF" } },
         fill: { fgColor: { rgb: "D73B3E" } },
       };
     }
 
     const buffer = XLSX.write(wb, { type: "buffer", bookType: "xlsx" });
-
-    res.setHeader(
-      "Content-Type",
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    );
-    res.setHeader(
-      "Content-Disposition",
-      `attachment; filename="invalid-rows-${fileId}.xlsx"`
-    );
+    res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+    res.setHeader("Content-Disposition", `attachment; filename="invalid-rows-${fileId}.xlsx"`);
     return res.send(buffer);
   }
 
-  // Invalid format
-  return res
-    .status(400)
-    .json({ message: "Invalid format. Use ?type=csv or ?type=xlsx" });
+  return res.status(400).json({ message: "Invalid format. Use ?type=csv or ?type=xlsx" });
 };
 
 export const deleteFile = async (req: AuthRequest, res: Response) => {
   const fileId = req.params.id;
+  const userId = req.user!.id;
 
   const file = await dbClient.files.findFirst({
-    where: { id: fileId, userId: req.user!.id },
-    include: { receivers: true },
+    where: { id: fileId, userId },
   });
 
-  if (!file) return res.status(404).json({ message: "File not found" });
-
-  // Delete from DB
-  await dbClient.files.delete({ where: { id: fileId } });
-
-  // Delete physical file
-  if (fs.existsSync(file.path)) {
-    fs.unlinkSync(file.path);
+  if (!file) {
+    return res.status(404).json({ success: false, message: "File not found" });
   }
 
-  logger.info("File deleted", { fileId, userId: req.user!.id });
-  res.json({
-    success: true,
-    data: { message: "File deleted successfully"}
-  });
+  await dbClient.$transaction([
+    dbClient.my_Contact.deleteMany({ where: { fileId } }),
+    dbClient.invalid_My_Contact.deleteMany({ where: { fileId } }),
+    dbClient.files.delete({ where: { id: fileId } }),
+  ]);
+
+  logger.info("File and contacts deleted", { fileId, userId });
+  res.json({ success: true, message: "File deleted successfully" });
 };

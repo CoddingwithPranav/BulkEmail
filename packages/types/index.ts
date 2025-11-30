@@ -5,6 +5,7 @@ export * from "./src/quickSms";
 export * from "./src/receiver";
 export * from "./src/users";
 export * from "./src/categories";
+export * from "./src/myContact";
 
 export type InitialResponse<T> = {
   success: boolean;

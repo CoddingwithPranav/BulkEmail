@@ -1,5 +1,5 @@
+import logger from "@repo/config/logger";
 import { dbClient } from "@repo/db/client";
-import logger from "../config/logger";
 
 export const getUserProfile = async (userId: string) => {
   const user = await dbClient.user.findUnique({
