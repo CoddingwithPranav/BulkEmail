@@ -3,9 +3,38 @@ import { Request, Response } from "express";
 import logger from "../config/logger";
 import { AuthRequest } from "../middleware/auth";
 
-export const getMyProfile = (req: AuthRequest, res: Response) => {
-  res.json({ user: req.user });
+// export const getMyProfile = (req: AuthRequest, res: Response) => {
+//   res.json({ user: req.user });
+// };
+
+
+export const getMyProfile = async (req: AuthRequest, res: Response) => {
+  try {
+    const user = await dbClient.user.findUnique({
+      where: { id: req.user.id },
+      select: {
+        id: true,
+        email: true,
+        phoneNumber: true,
+        firstName: true,
+        lastName: true,
+        organizationName: true,
+        profileImage: true,
+        accountType: true,
+        role: true,
+        isAccountVerified: true,
+        createdAt: true,
+      },
+    });
+
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    res.json({ user });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to load profile" });
+  }
 };
+
 
 export const updateMyProfile = async (req: AuthRequest, res: Response) => {
   try {

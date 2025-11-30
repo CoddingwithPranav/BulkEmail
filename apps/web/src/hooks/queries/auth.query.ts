@@ -12,8 +12,10 @@ import {
 import { clearAuthToken } from "@/lib/data/cookies";
 import { useAuthStore } from "@/lib/store";
 import { LoginForm, RegisterForm } from "@repo/types";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+
+import { getMyProfile, updateMyProfile } from "@/lib/api/auth";
 
 export const useLoginMutation = () => {
   return useMutation({
@@ -103,5 +105,30 @@ export const useLogout = () => {
       toast.success("Logged out successfully");
     },
     onError: () => toast.error("Logout failed"),
+  });
+};
+
+
+
+
+export const useUserProfile = () => {
+  return useQuery({
+    queryKey: ["my-profile"],
+    queryFn: getMyProfile,
+  });
+};
+
+export const useUpdateMyProfile = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: updateMyProfile,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["my-profile"] });
+      toast.success("Profile updated!");
+    },
+    onError: (err: any) => {
+      toast.error(err.response?.data?.message || "Update failed");
+    },
   });
 };

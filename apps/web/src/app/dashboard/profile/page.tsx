@@ -1,5 +1,6 @@
 "use client";
 
+import { useCallback, useEffect, useState } from "react";
 import ImageCropper from "@/components/common/ImageCopper";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -15,19 +16,21 @@ import { Input } from "@/components/ui/input";
 import { uploadImage } from "@/lib/data/uploadImage";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Mail, Phone, Save, User } from "lucide-react";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import {
+  useUserProfile,
+  useUpdateMyProfile,
+} from "@/hooks/queries/auth.query";
 
-// Zod Schema (Nepali phone: starts with 97/98, 10 digits)
 const profileSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
   email: z.string().email("Invalid email address"),
   phoneNumber: z
     .string()
-    .regex(/^9[78]\d{8}$/, "Invalid Nepali number (e.g. 9841234567)")
+    .regex(/^9[78]\d{8}$/, "Invalid Nepali number")
     .optional()
     .or(z.literal("")),
 });
@@ -35,11 +38,14 @@ const profileSchema = z.object({
 type ProfileFormValues = z.infer<typeof profileSchema>;
 
 export default function ProfilePage() {
-  const [profileImage, setProfileImage] = useState<string>("");
+  const [profileImage, setProfileImage] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [cropperOpen, setCropperOpen] = useState(false);
   const [pendingImageSrc, setPendingImageSrc] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const { data: user, isLoading: userLoading } = useUserProfile();
+  const updateProfile = useUpdateMyProfile();
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
@@ -51,87 +57,95 @@ export default function ProfilePage() {
     },
   });
 
-  const handleImageChange = (file: File | null, preview: string) => {
-    setImageFile(file);
-    setProfileImage(preview);
-  };
+  useEffect(() => {
+    if (!user) return;
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    form.reset({
+      firstName: user.firstName ?? "",
+      lastName: user.lastName ?? "",
+      email: user.email ?? "",
+      phoneNumber: user.phoneNumber ?? "",
+    });
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      setPendingImageSrc(reader.result?.toString() || "");
-      setCropperOpen(true);
-    };
-    reader.readAsDataURL(file);
-    e.target.value = ""; // reset input
-  };
+    setProfileImage(user.profileImage ?? "");
+  }, [user, form]);
 
-  const onSubmit = async (data: ProfileFormValues) => {
-    setLoading(true);
+  const handleFileSelect = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        setPendingImageSrc(reader.result?.toString() ?? "");
+        setCropperOpen(true);
+      };
+      reader.readAsDataURL(file);
+
+      e.target.value = ""; 
+    },
+    []
+  );
+
+  // Handle cropped image
+  const handleImageChange = useCallback(
+    (file: File | null, preview: string) => {
+      setImageFile(file);
+      setProfileImage(preview);
+    },
+    []
+  );
+
+  const onSubmit = useCallback(
+  async (data: ProfileFormValues) => {
     try {
+      setLoading(true);
+
       let finalImageUrl = profileImage;
 
       if (imageFile) {
         finalImageUrl = await uploadImage(imageFile, "Profile Picture");
-        setProfileImage(finalImageUrl);
-        setImageFile(null);
       }
+      const payload = {
+        ...data,
+        email: user?.email, 
+        profileImage: finalImageUrl,
+      };
 
-      // TODO: Save profile data to backend here
-      console.log("Saving profile:", { ...data, profileImage: finalImageUrl });
+      await updateProfile.mutateAsync(payload);
 
       toast.success("Profile updated successfully!");
-    } catch (err: any) {
-      toast.error(err.message || "Failed to save profile");
+      setImageFile(null);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Failed to update profile";
+      toast.error(message);
     } finally {
       setLoading(false);
     }
-  };
+  },
+  [imageFile, profileImage, updateProfile, user?.email]
+);
+
+
+  if (userLoading) {
+    return <div className="text-center py-10">Loading profile...</div>;
+  }
 
   return (
     <div className="min-h-screen bg-background p-5">
       <div className="max-w-4xl mx-auto">
-        {/* Header + Avatar */}
+
+        {/* Avatar Section */}
         <div className="flex items-center gap-8 mb-10">
           <div className="relative group">
-            <Avatar className="w-32 h-32 ring-4 ring-background shadow-2xl transition-all duration-300 group-hover:ring-primary/40 group-hover:scale-105">
-              <AvatarImage
-                src={profileImage}
-                alt="Profile"
-                className="object-cover"
-              />
+            <Avatar className="w-32 h-32 ring-4 shadow-2xl transition-all duration-300 group-hover:ring-primary/40 group-hover:scale-105">
+              <AvatarImage src={profileImage} alt="Profile" className="object-cover" />
               <AvatarFallback className="bg-primary/10 text-5xl">
                 <User className="w-16 h-16" />
               </AvatarFallback>
             </Avatar>
 
-            {/* Edit Icon */}
-            <div className="absolute -top-3 -right-3 opacity-0 group-hover:opacity-100 transition-all duration-400 pointer-events-none">
-              <div className="bg-primary text-white rounded-full p-2.5 shadow-2xl border-4 border-white">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-5 h-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2.5}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                  />
-                </svg>
-              </div>
-            </div>
-
-            {/* Hover Overlay */}
-            <div className="absolute inset-0 rounded-full bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-
-            {/* Hidden File Input */}
+            {/* Hidden file input */}
             <input
               type="file"
               accept="image/*"
@@ -141,14 +155,14 @@ export default function ProfilePage() {
           </div>
 
           <div>
-            <h1 className="text-3xl font-bold text-foreground">Edit Profile</h1>
-            <p className="text-muted-foreground">
-              Update your photo and personal details
-            </p>
+            <h1 className="text-3xl font-bold">
+              {user?.firstName} {user?.lastName}
+            </h1>
+            <p className="text-muted-foreground text-lg">{user?.email}</p>
           </div>
         </div>
 
-        {/* Image Cropper Modal */}
+        {/* Cropper Modal */}
         <ImageCropper
           value={profileImage}
           onChange={handleImageChange}
@@ -161,20 +175,17 @@ export default function ProfilePage() {
         {/* Form */}
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <div className="bg-card border border-border/60 rounded-2xl p-8 shadow-lg">
+            <div className="bg-card border rounded-2xl p-8 shadow-lg">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-7">
+
                 {/* First Name */}
                 <FormField
                   control={form.control}
                   name="firstName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="flex items-center gap-2">
-                        <User className="w-4 h-4" /> First Name
-                      </FormLabel>
-                      <FormControl>
-                        <Input placeholder="Ram" className="h-11" {...field} />
-                      </FormControl>
+                      <FormLabel><User className="w-4 h-4 inline mr-1" /> First Name</FormLabel>
+                      <FormControl><Input placeholder="Ram" {...field} /></FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -186,16 +197,8 @@ export default function ProfilePage() {
                   name="lastName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="flex items-center gap-2">
-                        <User className="w-4 h-4" /> Last Name
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="Bahadur"
-                          className="h-11"
-                          {...field}
-                        />
-                      </FormControl>
+                      <FormLabel><User className="w-4 h-4 inline mr-1" /> Last Name</FormLabel>
+                      <FormControl><Input placeholder="Bahadur" {...field} /></FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -207,73 +210,39 @@ export default function ProfilePage() {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="flex items-center gap-2">
-                        <Mail className="w-4 h-4" /> Email Address
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          type="email"
-                          placeholder="ram@example.com"
-                          className="h-11"
-                          {...field}
-                        />
-                      </FormControl>
+                      <FormLabel><Mail className="w-4 h-4 inline mr-1" /> Email</FormLabel>
+                      <FormControl><Input placeholder="ram@example.com" disabled readOnly  {...field} /></FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
 
-                {/* Phone (Optional) */}
+                {/* Phone */}
                 <FormField
                   control={form.control}
                   name="phoneNumber"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="flex items-center gap-2">
-                        <Phone className="w-4 h-4" /> Phone Number
-                        <span className="text-xs text-muted-foreground">
-                          (Optional)
-                        </span>
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="9841234567"
-                          className="h-11"
-                          {...field}
-                          value={field.value ?? ""}
-                        />
-                      </FormControl>
+                      <FormLabel><Phone className="w-4 h-4 inline mr-1" /> Phone</FormLabel>
+                      <FormControl><Input placeholder="9841234567" {...field} /></FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
+
               </div>
 
-              {/* Submit Button */}
+              {/* Submit button */}
               <div className="flex justify-end mt-8">
-                <Button
-                  type="submit"
-                  size="lg"
-                  disabled={loading}
-                  className="px-12 font-semibold"
-                >
-                  {loading ? (
-                    "Saving..."
-                  ) : (
-                    <>
-                      <Save className="w-5 h-5 mr-2" />
-                      Save Changes
-                    </>
-                  )}
+                <Button type="submit" size="lg" disabled={loading}>
+                  {loading ? "Saving..." : <><Save className="w-5 h-5 mr-2" /> Save Changes</>}
                 </Button>
               </div>
+
             </div>
           </form>
         </Form>
 
-        <p className="text-center text-xs text-muted-foreground mt-8">
-          Your data is secure • Changes are saved instantly
-        </p>
       </div>
     </div>
   );

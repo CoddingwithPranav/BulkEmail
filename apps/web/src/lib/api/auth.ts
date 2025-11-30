@@ -1,6 +1,7 @@
 // src/lib/api/auth.ts
 import axiosInstance from "@/axios";
 import { LoginForm, RegisterForm } from "@repo/types";
+import { ProfileForm } from "../schemas/profile.schema";
 
 export const login = async (data: LoginForm) => {
   const { data: result } = await axiosInstance.post("/auth/login", data);
@@ -45,4 +46,14 @@ export const resetPassword = async (data: {
 }) => {
   const response = await axiosInstance.post("/auth/reset-password", data);
   return response.data;
+};
+
+export const getMyProfile = async () => {
+  const { data } = await axiosInstance.get("/users/profile");
+  return data.user;
+};
+
+export const updateMyProfile = async (payload: ProfileForm) => {
+  const { data } = await axiosInstance.patch("/users/profile", payload);
+  return data.user;
 };

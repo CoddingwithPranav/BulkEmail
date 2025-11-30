@@ -18,7 +18,11 @@ export default function ChangePasswordPage() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [showPass, setShowPass] = useState({ current: false, new: false, confirm: false });
+  const [showPass, setShowPass] = useState({
+    current: false,
+    new: false,
+    confirm: false,
+  });
 
   const router = useRouter();
   const { clearAuth } = useAuthStore();
@@ -48,7 +52,9 @@ export default function ChangePasswordPage() {
           }, 2000);
         },
         onError: (error: any) => {
-          toast.error(error.response?.data?.message || "Current password is incorrect");
+          toast.error(
+            error.response?.data?.message || "Current password is incorrect"
+          );
         },
       }
     );
@@ -62,13 +68,17 @@ export default function ChangePasswordPage() {
             <MessageCircle className="h-8 w-8 text-primary" />
             <h1 className="text-2xl font-bold text-foreground">NepalSMS</h1>
           </div>
-          <p className="text-muted-foreground mb-8">Reliable Bulk SMS for Nepal.</p>
+          <p className="text-muted-foreground mb-8">
+            Reliable Bulk SMS for Nepal.
+          </p>
 
           <div className="text-center mb-8">
             <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
               <Lock className="h-10 w-10 text-primary" />
             </div>
-            <h2 className="text-3xl font-bold text-foreground">Change Password</h2>
+            <h2 className="text-3xl font-bold text-foreground">
+              Change Password
+            </h2>
             <p className="text-muted-foreground mt-2 text-sm">
               Enter your current password and choose a new secure one.
             </p>
@@ -87,10 +97,16 @@ export default function ChangePasswordPage() {
                 />
                 <button
                   type="button"
-                  onClick={() => setShowPass({ ...showPass, current: !showPass.current })}
+                  onClick={() =>
+                    setShowPass({ ...showPass, current: !showPass.current })
+                  }
                   className="absolute right-3 top-4 text-muted-foreground"
                 >
-                  {showPass.current ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  {showPass.current ? (
+                    <EyeOff className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
                 </button>
               </div>
             </div>
@@ -107,10 +123,16 @@ export default function ChangePasswordPage() {
                 />
                 <button
                   type="button"
-                  onClick={() => setShowPass({ ...showPass, new: !showPass.new })}
+                  onClick={() =>
+                    setShowPass({ ...showPass, new: !showPass.new })
+                  }
                   className="absolute right-3 top-4 text-muted-foreground"
                 >
-                  {showPass.new ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  {showPass.new ? (
+                    <EyeOff className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
                 </button>
               </div>
             </div>
@@ -127,21 +149,34 @@ export default function ChangePasswordPage() {
                 />
                 <button
                   type="button"
-                  onClick={() => setShowPass({ ...showPass, confirm: !showPass.confirm })}
+                  onClick={() =>
+                    setShowPass({ ...showPass, confirm: !showPass.confirm })
+                  }
                   className="absolute right-3 top-4 text-muted-foreground"
                 >
-                  {showPass.confirm ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  {showPass.confirm ? (
+                    <EyeOff className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
                 </button>
               </div>
             </div>
 
-            <Button type="submit" className="w-full h-12 text-lg" disabled={isPending}>
+            <Button
+              type="submit"
+              className="w-full h-12 text-lg"
+              disabled={isPending}
+            >
               {isPending ? "Updating..." : "Update Password"}
             </Button>
           </form>
 
           <div className="text-center mt-8">
-            <Link href="/login" className="text-sm text-primary hover:underline">
+            <Link
+              href="/login"
+              className="text-sm text-primary hover:underline"
+            >
               ← Back to Login
             </Link>
           </div>
@@ -150,10 +185,17 @@ export default function ChangePasswordPage() {
 
       <div className="hidden lg:flex w-1/2 p-8 lg:p-12">
         <div className="relative w-full h-full rounded-2xl overflow-hidden shadow-lg">
-          <Image src="/images/potrate.jpg" alt="Himalayas" fill className="object-cover" />
+          <Image
+            src="/images/potrate.jpg"
+            alt="Himalayas"
+            fill
+            className="object-cover"
+          />
           <div className="absolute bottom-0 left-0 p-8 text-white">
             <h1 className="text-3xl font-bold leading-tight">
-              Connect with Everyone.<br />Instantly.
+              Connect with Everyone.
+              <br />
+              Instantly.
             </h1>
             <p className="mt-3 text-sm text-white/80 max-w-sm">
               Your reliable partner for bulk SMS communication across Nepal.
