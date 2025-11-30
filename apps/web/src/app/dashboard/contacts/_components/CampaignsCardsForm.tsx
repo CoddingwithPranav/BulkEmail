@@ -11,11 +11,12 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { UseFormReturn } from "react-hook-form";
-import { CreateMyContactInput, MyContact } from "@repo/types";
+import { UpdateMyContactInput } from "@repo/types";
 import CategorySelect from "@/components/common/CategorySelect";
 
 interface MyContactFormFieldsProps {
-  form: UseFormReturn<MyContact>;
+  form: UseFormReturn<UpdateMyContactInput>;
+
 }
 
 const MyContactFormFields = ({ form }: MyContactFormFieldsProps) => {
@@ -39,7 +40,6 @@ const MyContactFormFields = ({ form }: MyContactFormFieldsProps) => {
                   <Input
                     placeholder="Ram"
                     {...field}
-                    value={field.value ?? ""}
                   />
                 </FormControl>
                 <FormMessage />
@@ -57,7 +57,6 @@ const MyContactFormFields = ({ form }: MyContactFormFieldsProps) => {
                   <Input
                     placeholder="Bahadur"
                     {...field}
-                    value={field.value ?? ""}
                   />
                 </FormControl>
                 <FormMessage />
@@ -82,7 +81,6 @@ const MyContactFormFields = ({ form }: MyContactFormFieldsProps) => {
                     className="pl-10"
                     maxLength={10}
                     {...field}
-                    value={field.value ?? ""}
                   />
                 </div>
               </FormControl>
@@ -113,7 +111,6 @@ const MyContactFormFields = ({ form }: MyContactFormFieldsProps) => {
                   <Input
                     placeholder="e.g. Bagmati"
                     {...field}
-                    value={field.value ?? ""}
                   />
                 </FormControl>
                 <FormMessage />
@@ -131,7 +128,6 @@ const MyContactFormFields = ({ form }: MyContactFormFieldsProps) => {
                   <Input
                     placeholder="e.g. Kathmandu"
                     {...field}
-                    value={field.value ?? ""}
                   />
                 </FormControl>
                 <FormMessage />
@@ -149,7 +145,6 @@ const MyContactFormFields = ({ form }: MyContactFormFieldsProps) => {
                   <Input
                     placeholder="e.g. Kathmandu Metropolitan"
                     {...field}
-                    value={field.value ?? ""}
                   />
                 </FormControl>
                 <FormMessage />

@@ -16,6 +16,7 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import MyContactFormFields from "../../_components/CampaignsCardsForm";
+import { queryClient } from "@/lib/query-client";
 
 
 
@@ -25,38 +26,27 @@ export default function EditContactPage ({ id }: { id: string }) {
   const { data: contact, isLoading, isSuccess } = useMyContactByIdQuery(id);
   const { mutateAsync: updateContact, isPending } = useUpdateMyContactMutation(id);
 
+  const formValues = contact ? {
+    firstName: contact.firstName ?? "",
+    lastName: contact.lastName ?? "",
+    phoneNumber: contact.phoneNumber,
+    province: contact.province ?? "",
+    district: contact.district ?? "",
+    municipality: contact.municipality ?? "",
+    categoryId: contact.categoryId ?? "",
+  } : undefined; // Pass undefined when data is loading
+
   const form = useForm<UpdateMyContactInput>({
     resolver: zodResolver(updateMyContactSchema),
-    defaultValues: {
-      firstName: "",
-      lastName: "",
-      phoneNumber: "",
-      province: "",
-      district: "",
-      municipality: "",
-      categoryId: "",
-    },
+    values: formValues, 
   });
-
-  // Populate form when contact is fetched
-  useEffect(() => {
-    if (isSuccess && contact) {
-      form.reset({
-        firstName: contact.firstName ?? "",
-        lastName: contact.lastName ?? "",
-        phoneNumber: contact.phoneNumber,
-        province: contact.province ?? "",
-        district: contact.district ?? "",
-        municipality: contact.municipality ?? "",
-        categoryId: contact.categoryId,
-      });
-    }
-  }, [contact, isSuccess, form]);
 
   const onSubmit = async (values: UpdateMyContactInput) => {
     try {
       await updateContact(values);
-      toast.success("Contact updated successfully!");
+      await queryClient.invalidateQueries({ 
+        queryKey: ["my-contacts"] //It refreshes the contacts list after update
+      });
       router.back();
     } catch (error: any) {
       toast.error(error?.message || "Failed to update contact");
@@ -82,17 +72,9 @@ export default function EditContactPage ({ id }: { id: string }) {
       </div>
     );
   }
-
   return (
-    <div className="mx-auto max-w-3xl p-6">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-foreground">Edit Contact</h1>
-        <p className="text-muted-foreground mt-2">
-          Update contact details below.
-        </p>
-      </div>
-
-      <Form {...form}>
+    <div className="mx-auto  p-6">
+      <Form {...form} >
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <MyContactFormFields form={form} />
 
@@ -115,3 +97,4 @@ export default function EditContactPage ({ id }: { id: string }) {
     </div>
   );
 }
+

@@ -9,6 +9,7 @@ const router: Router = Router();
 router.use(protect);
 
 router.get("/", categoriesCtrl.getAllCategories);
+router.get("/ddl", categoriesCtrl.getDropDownList); //dropdown list
 router.post("/",validate(createCategoriesSchema), categoriesCtrl.createCategories);
 router.get("/:id", categoriesCtrl.getCategoryById);
 router.patch("/:id",validate(updateCategoriesSchema), categoriesCtrl.updateCategory);

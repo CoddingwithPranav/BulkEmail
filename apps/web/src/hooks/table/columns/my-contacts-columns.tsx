@@ -80,7 +80,7 @@ export const useMyContactsTableColumns = () => {
         return (
           <div className="flex items-center gap-2">
             <Button asChild size="sm" variant="outline">
-              <Link href={`/dashboard/contact/${contact.id}/edit`}>
+              <Link href={`/dashboard/contacts/${contact.id}`}>
                 <Edit className="w-4 h-4 mr-1" />
                 Edit
               </Link>

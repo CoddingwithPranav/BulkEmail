@@ -32,6 +32,19 @@ export const getAllCategories = async (_req: Request, res: Response) => {
     res.status(500).json({ message: "Failed to fetch categories" });
   }
 };
+export const getDropDownList = async (_req: Request, res: Response) => {
+  try {
+    const categories = await categoriesService.getAllCategories();
+
+    res.status(200).json({
+      status: "success",
+      data: { categories },
+    });
+  } catch (err: any) {
+    res.status(500).json({ message: "Failed to fetch categories" });
+  }
+};
+
 
 export const getCategoryById = async (req: AuthRequest, res: Response) => {
   try {
