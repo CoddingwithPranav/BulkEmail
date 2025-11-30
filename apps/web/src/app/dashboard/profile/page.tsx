@@ -114,7 +114,6 @@ export default function ProfilePage() {
 
       await updateProfile.mutateAsync(payload);
 
-      toast.success("Profile updated successfully!");
       setImageFile(null);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Failed to update profile";

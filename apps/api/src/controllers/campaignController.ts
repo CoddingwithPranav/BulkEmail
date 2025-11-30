@@ -25,7 +25,7 @@ export const getMyCampaigns = async (req: AuthRequest, res: Response) => {
       limit: Math.min(Number(req.query.limit) || 10, 100),
       search: req.query.q as string,
     });
-    res.json({ success: true,pagination: result.pagination, data: result.campaigns  });
+    res.json({ success: true, data: result  });
   } catch (err: any) {
     res.status(500).json({ success: false, message: "Failed to fetch campaigns" });
   }
