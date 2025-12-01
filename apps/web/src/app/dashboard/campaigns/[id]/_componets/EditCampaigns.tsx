@@ -9,72 +9,91 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Campaign, createCampaignSchema } from "@repo/types";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import CampaignsCardsForm from "../../_components/CampaignsCardsForm";
+import { toast } from "sonner";
+import { queryClient } from "@/lib/query-client";
 
-const EditCampaigns = ({ id }: { id: string }) => {
+export default function EditCampaigns({ id }: { id: string }) {
   const router = useRouter();
+
+  const { data: campaign, isLoading, isSuccess } = useCampaignsQueryById(id);
+  const { mutateAsync: updateCampaign, isPending } = useCampaignUpdateMutation(id);
+
+  const formValues = campaign
+    ? {
+        name: campaign.name ?? "",
+        messageText: campaign.messageText ?? "",
+        province: campaign.province ?? "",
+        district: campaign.district ?? "",
+        municipality: campaign.municipality ?? "",
+        categoryId: campaign.categoryId ?? "",
+      }
+    : undefined;
+
   const form = useForm<Campaign>({
     resolver: zodResolver(createCampaignSchema),
-    defaultValues: {
-      name: "",
-      messageText: "",
-      province: "",
-      district: "",
-      municipality: "",
-    },
+    values: formValues,
   });
-
-  const { mutateAsync: updateCampaignAsync, isPending } =
-    useCampaignUpdateMutation(id);
 
   const onSubmit = async (values: Campaign) => {
     try {
-      const payload = {
-        name: values.name,
-        messageText: values.messageText,
-        province: values.province,
-        district: values.district,
-        municipality: values.municipality,
-      };
-      await updateCampaignAsync(payload);
-      form.reset();
+      await updateCampaign(values);
+
+      await queryClient.invalidateQueries({
+        queryKey: ["campaigns"],
+      });
+
       router.back();
-    } catch (e) {
-      console.log(e);
+    } catch (error: any) {
+      toast.error(error?.message || "Failed to update campaign");
+      console.error("Update Error:", error);
     }
   };
 
-  const { data, isSuccess } = useCampaignsQueryById(id);
+  // Loader UI
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <p className="text-muted-foreground">Loading campaign...</p>
+      </div>
+    );
+  }
 
-  useEffect(() => {
-    console.log("Fetched campaign data:", data);
-    if (isSuccess && data) {
-      const campaign = data;
-      console.log("Populating form with campaign data:", campaign);
-
-      form.reset({
-        name: campaign.name,
-        messageText: campaign.messageText,
-        province: campaign.province || "",
-        district: campaign.district || "",
-        municipality: campaign.municipality || "",
-      });
-    }
-  }, [data, isSuccess, form]);
+  // If no campaign found
+  if (!campaign) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-destructive">Campaign not found</p>
+        <Button variant="outline" onClick={() => router.back()} className="mt-4">
+          Go Back
+        </Button>
+      </div>
+    );
+  }
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <CampaignsCardsForm form={form}>
-          <Button variant={"brand"} type="submit">
-            {isPending ? "Updating..." : "Update"}
-          </Button>
-        </CampaignsCardsForm>
-      </form>
-    </Form>
-  );
-};
+    <div className="mx-auto p-6">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <CampaignsCardsForm form={form} />
 
-export default EditCampaigns;
+          <div className="flex justify-end gap-4 pt-8 border-t">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => router.back()}
+              disabled={isPending}
+            >
+              Cancel
+            </Button>
+
+            <Button type="submit" variant="brand" disabled={isPending}>
+              {isPending ? "Updating..." : "Update Campaign"}
+            </Button>
+          </div>
+        </form>
+      </Form>
+    </div>
+  );
+}

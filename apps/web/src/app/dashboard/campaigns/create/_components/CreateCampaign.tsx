@@ -36,9 +36,7 @@ export default function CreateCampaign() {
   };
 
   return (
-    <div className="mx-auto p-6 max-w-5xl">
-      <h1 className="text-3xl font-bold mb-8">Create New Campaign</h1>
-
+    <div className="mx-auto p-6">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <CampaignForm form={form} />

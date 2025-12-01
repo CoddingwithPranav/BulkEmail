@@ -25,14 +25,6 @@ interface CampaignFormProps {
 
 const CampaignForm = ({ form, children }: CampaignFormProps) => {
   const selectedCategoryId = form.watch("categoryId");
-
-  const hasLocationTargeting =
-    !!form.watch("province") ||
-    !!form.watch("district") ||
-    !!form.watch("municipality");
-
-  const hasReceivers = selectedCategoryId || hasLocationTargeting;
-
   return (
     <>
       {/* Campaign Details */}
@@ -121,7 +113,7 @@ const CampaignForm = ({ form, children }: CampaignFormProps) => {
             )}
           </div>
 
-          {/* OR Divider */}
+          {/* OR Divider
           <div className="relative my-8">
             <div className="absolute inset-0 flex items-center">
               <span className="w-full border-t" />
@@ -131,7 +123,6 @@ const CampaignForm = ({ form, children }: CampaignFormProps) => {
             </div>
           </div>
 
-          {/* Location Targeting (Optional) */}
           <div className="border rounded-lg p-6">
             <h3 className="text-lg font-medium mb-4 flex items-center gap-2">
               <MapPin className="h-5 w-5" />
@@ -199,16 +190,9 @@ const CampaignForm = ({ form, children }: CampaignFormProps) => {
                 </Badge>
               </div>
             )}
-          </div>
+          </div> */}
 
-          {/* Validation Alert */}
-          {!hasReceivers && (
-            <Alert variant="destructive">
-              <AlertDescription>
-                Please select a category or specify a location to target recipients.
-              </AlertDescription>
-            </Alert>
-          )}
+         
         </div>
       </Container>
 
