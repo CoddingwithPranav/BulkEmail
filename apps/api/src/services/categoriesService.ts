@@ -1,5 +1,9 @@
 import { dbClient } from "@repo/db/client";
-import { CreateCategoriesInput, UpdateCategoriesInput } from "@repo/types";
+import {
+  GetCategoriesQuery,
+  GetMyContactsQuery,
+  UpdateCategoriesInput,
+} from "@repo/types";
 
 export const createCategory = async (userId: string, data: any) => {
   return await dbClient.category.create({
@@ -10,7 +14,10 @@ export const createCategory = async (userId: string, data: any) => {
   });
 };
 
-export const getCategories = async (userId: string, query: { page: number; limit: number; search?: string }) => {
+export const getCategories = async (
+  userId: string,
+  query: GetCategoriesQuery
+) => {
   const { page, limit, search } = query;
   const skip = (page - 1) * limit;
 
@@ -21,8 +28,8 @@ export const getCategories = async (userId: string, query: { page: number; limit
       OR: [
         { name: { contains: search, mode: "insensitive" } },
         { description: { contains: search, mode: "insensitive" } },
-      ]
-    })
+      ],
+    }),
   };
 
   const [categories, total] = await dbClient.$transaction([
@@ -32,7 +39,7 @@ export const getCategories = async (userId: string, query: { page: number; limit
       take: parseInt(limit.toString()),
       orderBy: { createdAt: "desc" },
     }),
-    dbClient.category.count({ where })
+    dbClient.category.count({ where }),
   ]);
 
   return {
@@ -44,8 +51,16 @@ export const getCategories = async (userId: string, query: { page: number; limit
       totalPages: Math.ceil(total / limit),
       hasNext: page < Math.ceil(total / limit),
       hasPrev: page > 1
-    }
+    },
   };
+};
+
+export const getCategoryList = async (userId: string) => {
+  return await dbClient.category.findMany({
+    where: { userId, isDeleted: false },
+    select: { id: true, name: true },
+    orderBy: { name: "asc" },
+  });
 };
 
 export const getCategoryById = async (id: string, userId: string) => {
@@ -54,7 +69,10 @@ export const getCategoryById = async (id: string, userId: string) => {
   });
 };
 
-export const updateCategory = async (id: string, data: UpdateCategoriesInput) => {
+export const updateCategory = async (
+  id: string,
+  data: UpdateCategoriesInput
+) => {
   return await dbClient.category.update({
     where: { id },
     data,
@@ -62,8 +80,11 @@ export const updateCategory = async (id: string, data: UpdateCategoriesInput) =>
 };
 
 export const deleteCategory = async (id: string, userId: string) => {
+  const category = await dbClient.category.findFirst({ where: { id, userId } });
+  if (!category) throw new Error("Category not found or unauthorized");
+
   return await dbClient.category.update({
-    where: { id, userId },
+    where: { id },
     data: { isDeleted: true },
   });
 };

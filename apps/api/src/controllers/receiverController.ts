@@ -2,7 +2,6 @@ import { AuthRequest } from "../middleware/auth";
 import { Response } from "express";
 import * as receiverService from "../services/receiverService";
 import logger from "@repo/config/logger";
-import { GetMyReceiversQuery } from "@repo/types";
 
 
 export const createReceiver = async (req: AuthRequest, res: Response) => {

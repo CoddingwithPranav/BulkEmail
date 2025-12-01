@@ -20,6 +20,14 @@ export const createCategoriesSchema = categoriesBase;
 
 export const updateCategoriesSchema = categoriesBase.partial();
 
+
+// Types
+export type Categories = z.infer<typeof createCategoriesSchema>;
+export type CreateCategoriesInput = z.infer<typeof createCategoriesSchema>;
+export type UpdateCategoriesInput = z.infer<typeof createCategoriesSchema>;
+export type GetCategoriesQuery = z.infer<typeof getCategoriesQuerySchema>;
+
+
 export type CategoriesResponse = {
   categories: Categories[];
   pagination: {
@@ -31,9 +39,3 @@ export type CategoriesResponse = {
     hasPrev: boolean;
   };
 };
-
-// Types
-export type Categories = z.infer<typeof createCategoriesSchema>;
-export type CreateCategoriesInput = z.infer<typeof createCategoriesSchema>;
-export type UpdateCategoriesInput = z.infer<typeof createCategoriesSchema>;
-export type GetCategoriesQuery = z.infer<typeof getCategoriesQuerySchema>;
