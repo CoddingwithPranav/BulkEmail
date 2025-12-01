@@ -59,7 +59,7 @@ export const useReceiversTableColumns = () => {
         return (
           <div className="flex items-center gap-2">
             <Button asChild size="sm" variant="outline">
-              <Link href={`/dashboard/receivers/${receiver.id}`}>
+              <Link href={`/dashboard/receiver-list/${receiver.id}`}>
                 <Edit className="w-4 h-4 mr-1" />
                 Edit
               </Link>

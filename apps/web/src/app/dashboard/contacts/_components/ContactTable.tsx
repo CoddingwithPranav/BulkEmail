@@ -60,9 +60,6 @@ const MyContactsTable = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h1 className="text-2xl font-bold p-4">My Contacts</h1>
-      </div>
 
       <DataTable
         table={table}
@@ -76,7 +73,7 @@ const MyContactsTable = () => {
         layout="fit"
         
         customFilters={
-          <div className="flex items-center gap-3 w-full sm:w-auto">
+          <div className="flex items-center gap-3 w-full sm:w-auto mt-4">
             <CategorySelect
               value={currentCategoryId}
               onValueChange={updateCategoryFilter}

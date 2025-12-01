@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import EditContactPage from "./_componets/EditCampaigns";
+import { Container } from "@/components/common/Container";
 
 const ContactEditPage = async ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = await params;
@@ -24,7 +25,10 @@ const ContactEditPage = async ({ params }: { params: Promise<{ id: string }> }) 
         </Link>
       </div>
 
+      <Container>
       <EditContactPage id={id} />
+      </Container>
+
     </div>
   );
 };

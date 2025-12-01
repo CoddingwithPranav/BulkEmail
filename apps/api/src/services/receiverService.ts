@@ -33,7 +33,7 @@ export const getReceivers = async (userId: string, query: GetMyReceiversQuery) =
     dbClient.receiver.findMany({
       where,
       skip,
-      take: limit,
+      take: parseInt(limit.toString()),
       orderBy: { createdAt: "desc" }
     }),
     dbClient.receiver.count({ where })

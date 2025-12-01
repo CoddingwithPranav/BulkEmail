@@ -1,106 +1,37 @@
-// app/dashboard/receiver-list/[id]/page.tsx
-import { Container, Heading } from "@/components/common";
-import { Suspense } from "react";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, Users, Phone, MapPin, FileText } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
+import Link from "next/link";
+import EditReceiver from "./_components/EditReceiver";
+import { Container } from "@/components/common/Container";
 
-export const metadata = {
-  title: "Receiver List Details",
-};
-
-// Dummy data for demo
-const listDetails = {
-  id: 1,
-  name: "diwali_customers_2025.csv",
-  uploadedAt: new Date("2025-11-01"),
-  totalReceivers: 2847,
-  validReceivers: 2832,
-  invalidNumbers: 15,
-};
-
-export default function ReceiverListDetailPage({ params }: { params: { id: string } }) {
+const ReceiverEditPage = async ({ params }: { params: Promise<{ id: string }> }) => {
+  const { id } = await params;
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-4">
-        <Link href="/dashboard/receiver-list">
-          <Button variant="ghost" size="icon">
-            <ChevronLeft className="h-5 w-5" />
-          </Button>
-        </Link>
+    <div className="container mx-auto">
+      <div className="flex justify-between items-center mb-6">
         <div>
-          <Heading level="h3">{listDetails.name}</Heading>
+          <h1 className="text-2xl font-semibold">Edit Receiver</h1>
           <p className="text-sm text-muted-foreground">
-            Uploaded on {listDetails.uploadedAt.toLocaleDateString()}
+            Update the details of the Receiver 
           </p>
         </div>
+        <Link href="/dashboard/receiver-list" passHref>
+          <Button
+            variant="ghost"
+            className="flex items-center border border-accent"
+          >
+            <ChevronLeft className="h-5 w-5 mr-1" /> Back
+          </Button>
+        </Link>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Container className="p-6">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-brand/10 rounded-lg">
-              <Users className="w-6 h-6 text-brand" />
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Total Receivers</p>
-              <p className="text-2xl font-bold">{listDetails.totalReceivers.toLocaleString()}</p>
-            </div>
-          </div>
+      <Container >
+      <EditReceiver id={id} />
         </Container>
 
-        <Container className="p-6">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
-              <Phone className="w-6 h-6 text-green-600 dark:text-green-400" />
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Valid Numbers</p>
-              <p className="text-2xl font-bold text-green-600 dark:text-green-400">
-                {listDetails.validReceivers.toLocaleString()}
-              </p>
-            </div>
-          </div>
-        </Container>
-
-        <Container className="p-6">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-red-100 dark:bg-red-900/30 rounded-lg">
-              <Phone className="w-6 h-6 text-red-600 dark:text-red-400" />
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Invalid</p>
-              <p className="text-2xl font-bold text-red-600 dark:text-red-400">
-                {listDetails.invalidNumbers}
-              </p>
-            </div>
-          </div>
-        </Container>
-
-        <Container className="p-6">
-          <div className="flex items-center gap-4">
-            <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-              <FileText className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Success Rate</p>
-              <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                {((listDetails.validReceivers / listDetails.totalReceivers) * 100).toFixed(1)}%
-              </p>
-            </div>
-          </div>
-        </Container>
-      </div>
-
-      <Container className="p-0">
-        <div className="p-6 border-b">
-          <Heading level="h5">All Receivers</Heading>
-        </div>
-        <div className="p-8 text-center text-muted-foreground">
-          <Users className="w-16 h-16 mx-auto mb-4 opacity-50" />
-          <p>Receiver table with pagination, search, and filters coming soon...</p>
-        </div>
-      </Container>
     </div>
   );
-}
+};
+
+export default ReceiverEditPage;
+    

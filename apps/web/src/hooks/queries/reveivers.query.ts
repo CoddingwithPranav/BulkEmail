@@ -5,7 +5,7 @@ import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query";
 
 export const useReceiversQuery = (query: BaseQueryParams) => {
   return useQuery({
-    queryKey: ["receivers", query],
+    queryKey: ["receiver", query],
     queryFn: () => getReceivers(query),
     placeholderData: keepPreviousData,
   });
@@ -13,7 +13,7 @@ export const useReceiversQuery = (query: BaseQueryParams) => {
 
 export const useReceiversQueryById = (id: string) => {
   return useQuery({
-    queryKey: ["receivers", id],
+    queryKey: ["receiver", id],
     queryFn: () => getReceiverById(id),
   });
 };
@@ -22,7 +22,7 @@ export const useReceiverCreateMutation = () => {
   return useMutation({
     mutationFn: (data: Receiver) => createReceiver(data),   
     meta: {
-        invalidateQuery: ["receivers"],
+        invalidateQuery: ["receiver"],
         successMessage: "Receiver created successfully",
         errorMessage: "Something went wrong",
       },
@@ -33,7 +33,7 @@ export const useReceiverUpdateMutation = (id: string) => {
   return useMutation({
     mutationFn: (data: Receiver) => updateReceiver(id, data),   
     meta: {
-        invalidateQuery: ["receivers"],
+        invalidateQuery: ["receiver"],
         successMessage: "Receiver updated successfully",    
         errorMessage: "Something went wrong",
       },
@@ -44,7 +44,7 @@ export const useReceiverDeleteMutation = () => {
   return useMutation({
     mutationFn: (id: string) => deleteReceiver(id),
     meta: {
-      invalidateQuery: ["receivers"],
+      invalidateQuery: ["receiver"],
       successMessage: "Receiver deleted successfully",  
         errorMessage: "Something went wrong",
     },

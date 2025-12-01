@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export const createReceiverSchema = z.object({
+   id: z.string().uuid().optional(),
   firstName: z.string().optional(),
   lastName: z.string().optional(),
   province: z.string().optional(),

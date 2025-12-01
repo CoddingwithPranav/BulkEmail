@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import CreateCampaign from "./_components/CreateContact";
+import { Container } from "@/components/common/Container";
 
 const CreateContactPage = async ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = await params;
@@ -24,7 +25,10 @@ const CreateContactPage = async ({ params }: { params: Promise<{ id: string }> }
         </Link>
       </div>
 
-      <CreateCampaign />
+      <Container >
+        <CreateCampaign />
+      </Container>
+
     </div>
   );
 };
