@@ -17,6 +17,7 @@ import {
   User,
   Wrench,
   ContactRound,
+  BaggageClaim
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -45,6 +46,7 @@ const iconMap = {
   ContactRound,
   User,
   Wrench,
+  BaggageClaim
 } as const;
 
 export const MenuItem: React.FC<MenuItemProps> = ({ item }) => {
