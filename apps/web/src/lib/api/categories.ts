@@ -1,4 +1,3 @@
-// src/lib/api/categories.ts
 import axiosInstance from "@/axios";
 import {
   Categories,
@@ -20,6 +19,10 @@ export const getCategories = async (query: BaseQueryParams) => {
 export const getCategoriesDDL = async () => {
   const { data: result } = await axiosInstance.get<CategoriesDDLResponse>("/categories/ddl");
   return result;
+};
+export const getCategoryRecipientCount = async (categoryId: string) => {
+  const { data } = await axiosInstance.get(`/categories/total-recipients/${categoryId}`);
+  return data.data; 
 };
 export const getCategoryById = async (id: string) => {
   const { data: result } = await axiosInstance.get<InitialResponse<Categories>>(

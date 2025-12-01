@@ -11,6 +11,7 @@ router.use(protect);
 
 router.get("/",validate(getCategoriesValidation), categoriesCtrl.getCategories);
 router.get("/ddl", categoriesCtrl.getDropDownList); 
+router.get("/total-recipients/:id", categoriesCtrl.getTotalRecipientByCategoryId);
 router.post("/",validate(createCategoriesSchema), categoriesCtrl.createCategories);
 router.get("/:id", categoriesCtrl.getCategoryById);
 router.patch("/:id",validate(updateCategoriesSchema), categoriesCtrl.updateCategory);

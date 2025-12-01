@@ -6,6 +6,7 @@ export * from "./src/receiver";
 export * from "./src/users";
 export * from "./src/categories";
 export * from "./src/myContact";
+export * from "./src/price";
 
 export type InitialResponse<T> = {
   success: boolean;

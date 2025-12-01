@@ -7,8 +7,7 @@ import userRoutes from "./user";
 import receiverRoutes from "./receiver";
 import categoriesRoutes from "./categories";
 import myContactRoutes from "./myContact";
-import { protect } from "../../middleware/auth";
-
+import priceRoutes from "./price";
 const router: Router = Router();
 
 router.use("/auth", authRoutes);
@@ -19,5 +18,6 @@ router.use("/quick-sms", quickSmsRoutes);
 router.use("/receiver", receiverRoutes);
 router.use("/categories", categoriesRoutes);
 router.use('/my-contacts', myContactRoutes);
+router.use('/price', priceRoutes);
 
 export default router;

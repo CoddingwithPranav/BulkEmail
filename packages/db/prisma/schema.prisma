@@ -207,12 +207,11 @@ model Campaign {
   province            String?
   district            String?
   municipality        String?
-  recipientsNumber    Int?
-  deliveredNumber     Int            @default(0)
-  failedNumber        Int            @default(0)
+  totalRecipients     Int?
+  totalDelivered      Int            @default(0)
+  totalFailed         Int            @default(0)
   deliveryRate        Float          @default(0)
   totalSmsCost        Float?
-  paymentReceiptImage String?
   paid                Boolean        @default(false)
   submitDate          DateTime?
   createdAt           DateTime       @default(now())
@@ -306,4 +305,19 @@ model InvalidGuestReceiver {
 
   @@unique([guestFileId, phoneNumber])
   @@map("invalid_guest_receivers")
+}
+
+
+model SmsPricing {
+  id            String    @id @default(cuid())
+  
+  // Store in paisa (1 NPR = 100 paisa)
+  pricePerSmsPaisa Int     // e.g. 85 = Rs. 0.85
+  currency         String  @default("NPR")
+  isActive         Boolean @default(true)
+  effectiveFrom    DateTime
+  effectiveTo      DateTime?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  @@index([isActive, effectiveFrom])
 }

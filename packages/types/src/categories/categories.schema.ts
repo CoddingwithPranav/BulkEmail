@@ -21,7 +21,6 @@ export const createCategoriesSchema = categoriesBase;
 export const updateCategoriesSchema = categoriesBase.partial();
 
 
-// Types
 export type Categories = z.infer<typeof createCategoriesSchema>;
 export type CreateCategoriesInput = z.infer<typeof createCategoriesSchema>;
 export type UpdateCategoriesInput = z.infer<typeof createCategoriesSchema>;

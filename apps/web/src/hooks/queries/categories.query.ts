@@ -3,6 +3,7 @@ import {
   deleteCategory,
   getCategoriesDDL,
   getCategoryById,
+  getCategoryRecipientCount,
   updateCategory,
 } from "@/lib/api/categories";
 import { BaseQueryParams, Categories } from "@repo/types";
@@ -15,6 +16,13 @@ export const useCategoriesQuery = (query: BaseQueryParams) => {
   return useQuery({
     queryFn: () => getCategoriesDDL(),
     queryKey: ["categories", query],
+    placeholderData: keepPreviousData,
+  });
+};
+export const useCategoryRecipientCountQuery = (categoryId: string ) => {
+  return useQuery({
+    queryFn: () => getCategoryRecipientCount(categoryId),
+    queryKey: ["categories", categoryId],
     placeholderData: keepPreviousData,
   });
 };

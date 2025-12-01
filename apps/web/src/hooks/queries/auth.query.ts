@@ -1,5 +1,3 @@
-// src/hooks/queries/auth.query.ts
-import axiosInstance from "@/axios";
 import {
   login,
   register,

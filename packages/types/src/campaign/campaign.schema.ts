@@ -12,14 +12,13 @@ const campaignBase = z.object({
   district: z.string().optional(),
   municipality: z.string().optional(),
   totalSmsCost: z.number().min(0).optional(),
-  recipientsNumber: z.number().int().min(0).optional(),
-  deliveredNumber: z.number().int().min(0).optional(),
-  failedNumber: z.number().int().min(0).optional(),
+  totalDelivered: z.number().int().min(0).optional(),
+  totalFailed: z.number().int().min(0).optional(),
+  totalRecipients: z.number().int().min(0).optional(),
   deliveryRate: z.number().min(0).max(100).optional(),
   paid: z.boolean().optional(),
   status: z.enum(["PENDING", "APPROVED", "SENT", "CANCELLED"]).optional(),
   paymentReceiptImage: z.string().url().optional(),
-
 });
 
 export const approveCampaignSchema = z.object({

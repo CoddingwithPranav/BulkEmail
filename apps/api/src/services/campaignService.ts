@@ -47,7 +47,7 @@ export const createCampaign = async (
     data: {
       ...data,
       userId,
-      recipientsNumber: recipientCount,
+      totalRecipients: recipientCount,
       submitDate: new Date(),
       status: "PENDING",
       deliveryStatus: "NOT_STARTED",
@@ -129,7 +129,7 @@ export const updateCampaign = async (
     where: { id: campaignId, userId },
     data: {
       ...data,
-      recipientsNumber,
+      totalRecipients: recipientsNumber,
     },
     include: { category: { select: { name: true } } },
   });

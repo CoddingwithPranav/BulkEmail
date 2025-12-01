@@ -55,6 +55,18 @@ export const getCategoryById = async (req: AuthRequest, res: Response) => {
     res.status(500).json({ message: "Failed to fetch category" });
   }
 };
+export const getTotalRecipientByCategoryId = async (req: AuthRequest, res: Response) => {
+  try {
+    if (!req.user?.id) return res.status(401).json({ message: "Unauthorized" });
+    if (!req.params.id) return res.status(400).json({ message: "Category ID is required" });
+
+    const total = await categoriesService.getRecipientCountByCategoryId(req.params.id, req.user.id);
+
+    res.json({ status: "success", data: total });
+  } catch (err: any) {
+    res.status(500).json({ message: "Failed to fetch category" });
+  }
+};
 
 export const updateCategory = async (req: AuthRequest, res: Response) => {
   try {

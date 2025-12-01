@@ -68,7 +68,17 @@ export const getCategoryById = async (id: string, userId: string) => {
     where: { id, userId, isDeleted: false },
   });
 };
+export const getRecipientCountByCategoryId = async (id: string, userId: string) => {
+  const count = await dbClient.my_Contact.count({
+    where: {
+      categoryId: id,
+      userId,
+      isDeleted: false,
+    },
+  });
 
+  return { recipientCount: count };
+};
 export const updateCategory = async (
   id: string,
   data: UpdateCategoriesInput

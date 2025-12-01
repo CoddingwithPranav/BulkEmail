@@ -1,11 +1,13 @@
+// app/dashboard/campaigns/create/_components/CampaignsCardsForm.tsx
 "use client";
 
-import { Briefcase, CheckCircle, MapPin, Tag, Users } from "lucide-react";
+import { CheckCircle, Tag, Users } from "lucide-react";
 import React from "react";
 import { UseFormReturn } from "react-hook-form";
 import { Container } from "@/components/common/Container";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   FormControl,
   FormField,
@@ -16,7 +18,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import CategorySelect from "@/components/common/CategorySelect";
+import { useCategoryRecipientCountQuery } from "@/hooks/queries/categories.query";
 import type { Campaign } from "@repo/types";
+import { useSMSPriceQuery } from "@/hooks/queries/price.query";
 
 interface CampaignFormProps {
   form: UseFormReturn<Campaign>;
@@ -25,10 +29,26 @@ interface CampaignFormProps {
 
 const CampaignForm = ({ form, children }: CampaignFormProps) => {
   const selectedCategoryId = form.watch("categoryId");
+
+  // Fetch recipient count for selected category
+  const { data: countData, isLoading: loadingCount } = useCategoryRecipientCountQuery(
+    selectedCategoryId
+  );
+
+  // Get current SMS price
+  const { data: priceData } = useSMSPriceQuery();
+  const pricePerSms = priceData?.pricePerSms || 0.85;
+
+  const recipientCount = countData?.recipientCount || 0;
+  const totalCost = recipientCount > 0 ? recipientCount * pricePerSms : 0;
+
   return (
     <>
       {/* Campaign Details */}
       <Container className="mb-8">
+        <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+          Campaign Details
+        </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormField
             control={form.control}
@@ -75,8 +95,8 @@ const CampaignForm = ({ form, children }: CampaignFormProps) => {
         </h2>
 
         <div className="space-y-6">
-          {/* Select Category */}
-          <div className="border rounded-lg p-6 bg-muted/20">
+          {/* Category Selection */}
+          <div className="border rounded-xl p-6 bg-card shadow-sm">
             <h3 className="font-medium flex items-center gap-2 mb-4">
               <Tag className="h-5 w-5" />
               Send to Contact Category
@@ -103,100 +123,61 @@ const CampaignForm = ({ form, children }: CampaignFormProps) => {
               )}
             />
 
+            {/* Live Preview: Recipient Count & Cost */}
             {selectedCategoryId && (
-              <Alert className="mt-4 border-green-200 bg-green-50 dark:bg-green-950/20">
-                <CheckCircle className="h-5 w-5 text-green-600" />
-                <AlertDescription className="ml-2">
-                  All contacts in this category will receive your message.
-                </AlertDescription>
-              </Alert>
-            )}
-          </div>
+              <div className="mt-6 pt-6 border-t">
+                <div className="space-y-4">
+                  {loadingCount ? (
+                    <div className="space-y-3">
+                      <Skeleton className="h-5 w-48" />
+                      <Skeleton className="h-10 w-full rounded-lg" />
+                    </div>
+                  ) : recipientCount > 0 ? (
+                    <>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-muted-foreground">Total Recipients</span>
+                        <span className="text-2xl font-bold text-primary">
+                          {recipientCount.toLocaleString()}
+                        </span>
+                      </div>
 
-          {/* OR Divider
-          <div className="relative my-8">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-3 text-muted-foreground">Or</span>
-            </div>
-          </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-muted-foreground">Price per SMS</span>
+                        <span className="font-semibold">Rs. {pricePerSms.toFixed(2)}</span>
+                      </div>
 
-          <div className="border rounded-lg p-6">
-            <h3 className="text-lg font-medium mb-4 flex items-center gap-2">
-              <MapPin className="h-5 w-5" />
-              Location Targeting (Optional)
-            </h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              Narrow down recipients by location. Leave blank to send to entire category.
-            </p>
+                      <div className="flex items-center justify-between py-3 px-4 bg-brand/10 rounded-lg">
+                        <span className="font-medium">Total Estimated Cost</span>
+                        <span className="text-2xl font-bold text-brand">
+                          Rs. {totalCost.toFixed(2)}
+                        </span>
+                      </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <FormField
-                control={form.control}
-                name="province"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Province</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g. Bagmati" {...field} value={field.value ?? ""} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="district"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>District</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g. Kathmandu" {...field} value={field.value ?? ""} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="municipality"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Municipality / VDC</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g. Kathmandu Metropolitan" {...field} value={field.value ?? ""} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            {hasLocationTargeting && (
-              <div className="mt-4">
-                <Badge variant="secondary" className="text-sm">
-                  Targeting users in{" "}
-                  {[
-                    form.watch("province"),
-                    form.watch("district"),
-                    form.watch("municipality"),
-                  ]
-                    .filter(Boolean)
-                    .join(", ")}
-                </Badge>
+                      <Alert className="border-green-200 bg-green-50 dark:bg-green-950/30">
+                        <CheckCircle className="h-5 w-5 text-green-600" />
+                        <AlertDescription>
+                          All <strong>{recipientCount.toLocaleString()}</strong> contacts in this category will receive your message.
+                        </AlertDescription>
+                      </Alert>
+                    </>
+                  ) : (
+                    <Alert variant="destructive" className="bg-orange-50 border-orange-200">
+                      <AlertDescription>
+                        No contacts found in this category. Please add contacts first.
+                      </AlertDescription>
+                    </Alert>
+                  )}
+                </div>
               </div>
             )}
-          </div> */}
+          </div>
 
-         
+          {/* Future: Location Targeting (commented but ready) */}
+          {/* ... keep your location fields here when you enable them */}
         </div>
       </Container>
 
-      {/* Submit Buttons */}
+      {/* Submit Buttons – passed from parent */}
       {children}
     </>
   );
