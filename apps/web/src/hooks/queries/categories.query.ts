@@ -23,7 +23,7 @@ export const useCategoriesDDLQuery = () => {
     queryKey: ["categories", "ddl"], 
     queryFn: async () => {
       const response = await getCategoriesDDL();
-      return response.data.categories;
+      return response.data;
     }, 
     staleTime: 1000 * 60 * 10, // 10 minutes — categories rarely change
   });

@@ -7,6 +7,7 @@ import {
   UpdateCategoriesInput,
   InitialResponse,
   BaseQueryParams,
+  CategoriesDDLResponse,
 } from "@repo/types";
 
 
@@ -17,7 +18,7 @@ export const getCategories = async (query: BaseQueryParams) => {
   return result.data;
 };
 export const getCategoriesDDL = async () => {
-  const { data: result } = await axiosInstance.get<InitialResponse<CategoriesResponse>>("/categories/ddl");
+  const { data: result } = await axiosInstance.get<CategoriesDDLResponse>("/categories/ddl");
   return result;
 };
 export const getCategoryById = async (id: string) => {

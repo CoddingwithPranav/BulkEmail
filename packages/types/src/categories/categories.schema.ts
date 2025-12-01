@@ -39,3 +39,10 @@ export type CategoriesResponse = {
     hasPrev: boolean;
   };
 };
+export type CategoriesDDLResponse = {
+  success: string;
+  data: {
+    id: string;
+    name: string;
+  }[];
+};
