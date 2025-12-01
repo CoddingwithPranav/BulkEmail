@@ -16,6 +16,7 @@ export const getCategories = async (query: BaseQueryParams) => {
   });
   return result.data;
 };
+
 export const getCategoriesDDL = async () => {
   const { data: result } = await axiosInstance.get<CategoriesDDLResponse>("/categories/ddl");
   return result;

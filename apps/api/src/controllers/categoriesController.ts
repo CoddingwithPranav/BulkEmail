@@ -35,6 +35,7 @@ export const getDropDownList = async (req: AuthRequest, res: Response) => {
 export const getCategories = async (req: AuthRequest, res: Response) => {
   try {
     const result = await categoriesService.getCategories(req.user!.id, req.query as any);
+    console.log(result);
     res.json({ success: true, data: result });
   } catch (err: any) {
     logger.error("Get receivers failed", { error: err.message });
