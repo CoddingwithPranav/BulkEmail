@@ -10,6 +10,12 @@ export const categoriesBase = z.object({
   updatedAt: z.date().optional(),
 });
 
+export const getCategoriesQuerySchema = z.object({
+  page: z.coerce.number().min(1).default(1),
+  limit: z.coerce.number().min(1).max(100).default(20),
+  search: z.string().optional()
+});
+
 export const createCategoriesSchema = categoriesBase;
 
 export const updateCategoriesSchema = categoriesBase.partial();
@@ -30,3 +36,4 @@ export type CategoriesResponse = {
 export type Categories = z.infer<typeof createCategoriesSchema>;
 export type CreateCategoriesInput = z.infer<typeof createCategoriesSchema>;
 export type UpdateCategoriesInput = z.infer<typeof createCategoriesSchema>;
+export type GetCategoriesQuery = z.infer<typeof getCategoriesQuerySchema>;

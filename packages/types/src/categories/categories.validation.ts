@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { createCategoriesSchema, categoriesBase } from "./categories.schema";
+import { createCategoriesSchema, categoriesBase, getCategoriesQuerySchema } from "./categories.schema";
 
 const paramsId = z.object({
   id: z.string().uuid(),
@@ -16,4 +16,8 @@ export const updateCategoriesValidationSchema = z.object({
 
 export const deleteCategoriesValidationSchema = z.object({
   params: paramsId,
+});
+
+export const getCategoriesValidation = z.object({
+  query: getCategoriesQuerySchema,
 });
