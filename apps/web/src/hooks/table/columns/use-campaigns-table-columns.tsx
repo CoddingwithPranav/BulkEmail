@@ -103,7 +103,7 @@ export const useCampaignsTableColumns = () => {
         const isUnpaid = !campaign.paid && campaign.status === "PENDING";
 
         return (
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-2 ">
             {/* Pay Now Button - Only if unpaid */}
             {isUnpaid && (
               <Button size="sm" className="gap-1.5" asChild>

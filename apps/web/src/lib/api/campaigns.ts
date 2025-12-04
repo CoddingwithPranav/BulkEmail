@@ -32,6 +32,11 @@ export const updateCampaign = async (id: string, data: Campaign) => {
   return result.data;
 };
 
+export const updatePaidStatusCampaign = async (id: string) => {
+  const { data: result } = await axiosInstance.patch(`/campaigns/${id}/paid`);
+  return result;
+};
+
 export const deleteCampaign = async (id: string) => {
   const { data: result } = await axiosInstance.delete(`/campaigns/${id}`);
   return result.data;

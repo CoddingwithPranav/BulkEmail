@@ -2,8 +2,9 @@ import {
   createCampaign,
   deleteCampaign,
   getCampaignById,
-  getCampaigns,
+  getCampaignsAction,
   updateCampaign,
+  updatePaidStatusCampaign,
 } from "@/lib/api/campaigns";
 import { BaseQueryParams, Campaign } from "@repo/types";
 import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query";
@@ -11,7 +12,7 @@ import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query";
 export const useCampaignsQuery = (query: BaseQueryParams) => {
   return useQuery({
     queryKey: ["campaigns", query],
-    queryFn: () => getCampaigns(query),
+    queryFn: () => getCampaignsAction(query),
     placeholderData: keepPreviousData,
   });
 };
@@ -40,6 +41,16 @@ export const useCampaignUpdateMutation = (id: string) => {
     meta: {
       invalidateQuery: ["campaigns"],
       successMessage: "Campaign updated successfully",
+      errorMessage: "Something went wrong",
+    },
+  });
+};
+export const useCampaignUpdatePaidStatusMutation = (id: string) => {
+  return useMutation({
+    mutationFn: () => updatePaidStatusCampaign(id),
+    meta: {
+      invalidateQuery: ["campaigns"],
+      successMessage: "Campaign marked as paid successfully",
       errorMessage: "Something went wrong",
     },
   });

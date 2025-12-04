@@ -63,7 +63,6 @@ export default function AuthPage() {
         await setAuthToken(token.accessToken, user.role);
         setToken(token.accessToken);
         setUser(user);
-        // Redirect
         router.push("/");
         toast.success("Login successful!");
       },
@@ -73,39 +72,7 @@ export default function AuthPage() {
     });
   };
 
-  // const onRegister = async (data: RegisterForm) => {
-  //   const trimmedName = (data.fullName ?? "").trim();
-  //   const nameParts = trimmedName.split(/\s+/);
-  //   const firstName = nameParts[0] || "";
-  //   const lastName = nameParts.slice(1).join(" ") || firstName;
-
-  //   const payload = {
-  //     firstName,
-  //     lastName,
-  //     email: data.email,
-  //     phoneNumber: data.phoneNumber,
-  //     password: data.password,
-  //     accountType: data.accountType,
-  //   };
-
-  //   registerMutate(payload, {
-  //     onSuccess: async (response) => {
-  //       const { user, token } = response.data;
-  //       await setAuthToken(token.accessToken, user.role);
-  //       setToken(token.accessToken);
-  //       setUser(user);
-  //       // Redirect
-  //       router.push("/");
-  //       toast.success("Login successful!");
-  //     },
-  //     onError: (error) => {
-  //       console.log(error);
-  //     },
-  //   });
-  //   setActiveTab("login");
-  //   registerForm.reset();
-  // };
-
+  
   // Inside your AuthPage component → replace onRegister function
 const onRegister = async (data: RegisterForm) => {
   const trimmedName = (data.fullName ?? "").trim();
@@ -126,7 +93,6 @@ const onRegister = async (data: RegisterForm) => {
   registerMutate(payload, {
     onSuccess: () => {
       toast.success("Account created! Please verify your email.");
-      // Redirect with email in URL
       router.push(`/verify-account?email=${encodeURIComponent(data.email!)}`);
       
     },
@@ -141,10 +107,8 @@ const onRegister = async (data: RegisterForm) => {
 
   return (
     <div className="flex min-h-screen bg-background">
-      {/* LEFT SIDE - FORM */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8 lg:p-12">
         <div className="w-full max-w-md border border-border rounded-lg shadow-md p-8 bg-card">
-          {/* Logo */}
           <div className="flex items-center gap-3 mb-6">
             <MessageCircle className="h-8 w-8 text-primary" />
             <h1 className="text-2xl font-bold text-foreground">NepalSMS</h1>
@@ -282,7 +246,6 @@ const onRegister = async (data: RegisterForm) => {
               </form>
             </TabsContent>
 
-            {/* ====================== LOGIN ====================== */}
             <TabsContent value="login">
               <form
                 onSubmit={loginForm.handleSubmit(onLogin)}

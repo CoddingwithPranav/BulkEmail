@@ -1,4 +1,3 @@
-// app/dashboard/campaigns/pay/[id]/page.tsx
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -6,52 +5,61 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { 
-  CheckCircle2, 
-  ArrowLeft, 
-  Phone, 
-  Mail, 
-  QrCode, 
-  Wallet, 
-  Users, 
+import {
+  CheckCircle2,
+  ArrowLeft,
+  Phone,
+  Mail,
+  QrCode,
+  Users,
   MessageSquare,
   IndianRupee,
-  AlertCircle
+  AlertCircle,
+  Check
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useCampaignsQueryById } from "@/hooks/queries/campaigns.query";
 import { useSMSPriceQuery } from "@/hooks/queries/price.query";
+import { useCampaignUpdatePaidStatusMutation } from "@/hooks/queries/campaigns.query";
 
 export default function PaymentPage() {
   const params = useParams();
   const id = params.id as string;
 
-  const { data: campaign, isLoading, isError, error } = useCampaignsQueryById(id);
+  const { data: campaign, isLoading, isError } = useCampaignsQueryById(id);
   const { data: priceData } = useSMSPriceQuery();
+
+  const updatePaidMutation = useCampaignUpdatePaidStatusMutation(id);
 
   const pricePerSms = priceData?.pricePerSms || 0.85;
   const totalAmount = campaign?.totalSmsCost || 0;
   const recipientCount = campaign?.totalRecipients || 0;
 
-  // QR Code with real amount
-  const qrData = `khaltipay://pay?amt=${totalAmount.toFixed(2)}&id=YOUR_MERCHANT_ID&ref=${id}`;
-  const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(qrData)}`;
+  const qrImageUrl = "/images/qr.png"; 
 
-  const khaltiUrl = `https://khalti.com/pay/?amount=${Math.round(totalAmount * 100)}&merchant=YOUR_MERCHANT_CODE&return_url=${encodeURIComponent("/dashboard/campaigns")}`;
-  const esewaUrl = `https://esewa.com.np/#/pay?amt=${totalAmount.toFixed(2)}&pid=YOUR_ESEWA_ID&ref=${id}`;
+  const handleIHavePaid = () => {
+    updatePaidMutation.mutate(undefined, {
+      onSuccess: () => {
+      },
+      onError: () => {
+      },
+    });
+  };
 
   if (isLoading) return <PaymentSkeleton />;
   if (isError || !campaign) return <ErrorState />;
 
+  const isAlreadyPaid = campaign.paid === true;
+
   return (
     <>
-      {/* Top Bar with Back Button */}
+      {/* Top Bar */}
       <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container mx-auto max-w-5xl px-4 py-4">
-          <Button variant="ghost" size="sm" asChild className="gap-2">
-            <Link href="/dashboard/campaigns">
+          <Button variant="ghost" size="sm" asChild>
+            <Link href="/dashboard/campaigns" className="gap-2">
               <ArrowLeft className="h-4 w-4" />
               Back to Campaigns
             </Link>
@@ -59,70 +67,96 @@ export default function PaymentPage() {
         </div>
       </div>
 
-      <div className="container mx-auto max-w-5xl py-10 px-4">
-        {/* Success Header */}
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full mb-6">
-            <CheckCircle2 className="h-12 w-12 text-green-600 dark:text-green-400" />
+      <div className="container mx-auto max-w-4xl py-12 px-4">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-primary/10 mb-6">
+            <CheckCircle2 className="h-12 w-12 text-primary" />
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold">Campaign Ready for Launch!</h1>
-          <p className="text-muted-foreground mt-3 text-lg max-w-2xl mx-auto">
-            Complete payment to send your message to <strong>{recipientCount.toLocaleString()} recipients</strong>
+          <h1 className="text-4xl font-bold mb-4">Pay & Launch Campaign</h1>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Scan the QR code using <strong>Khalti, eSewa, IME Pay</strong> or any banking app to pay{" "}
+            <span className="font-bold text-brand">Rs. {totalAmount.toFixed(2)}</span> and reach{" "}
+            <strong>{recipientCount.toLocaleString()} recipients</strong>.
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
-          {/* Left: QR Code & Payment Buttons */}
-          <Card className="border-2 shadow-lg">
+        <div className="grid md:grid-cols-2 gap-10 items-start">
+          {/* QR Code Card */}
+          <Card className="border-2 shadow-xl">
             <CardHeader className="text-center pb-8">
-              <div className="inline-flex items-center gap-3 mx-auto">
+              <div className="flex items-center justify-center gap-3 mb-4">
                 <QrCode className="h-8 w-8 text-brand" />
-                <CardTitle className="text-2xl">Scan & Pay Instantly</CardTitle>
+                <CardTitle className="text-2xl">Scan to Pay</CardTitle>
               </div>
-              <CardDescription className="text-base mt-2">
-                Use <strong>Khalti</strong>, <strong>eSewa</strong>, <strong>IME Pay</strong>, or any banking app
+              <CardDescription className="text-base">
+                Use any mobile banking app
               </CardDescription>
             </CardHeader>
+
             <CardContent className="space-y-8">
               <div className="flex justify-center">
-                <div className="p-4 bg-white rounded-3xl shadow-2xl border-8 border-gray-100 dark:border-gray-800">
+                <div className="p-6 bg-card rounded-3xl shadow-2xl border-8 border-border">
                   <Image
                     src={qrImageUrl}
-                    alt="Scan to pay with Khalti/eSewa"
-                    width={300}
-                    height={300}
+                    alt={`Pay Rs. ${totalAmount.toFixed(2)}`}
+                    width={320}
+                    height={320}
                     className="rounded-2xl"
                     priority
                   />
                 </div>
               </div>
 
-              <div className="space-y-3">
-                <Button size="lg" className="w-full text-lg h-14 font-medium" asChild>
-                  <Link href={khaltiUrl} target="_blank" rel="noopener">
-                    <Wallet className="mr-3 h-6 w-6" />
-                    Pay with Khalti
-                  </Link>
-                </Button>
-                <Button size="lg" variant="outline" className="w-full text-lg h-14" asChild>
-                  <Link href={esewaUrl} target="_blank" rel="noopener">
-                    <span className="text-green-600 text-2xl font-bold mr-2">e</span>
-                    Sewa Pay
-                  </Link>
-                </Button>
+              <div className="text-center">
+                <div className="text-4xl font-bold text-brand">
+                  Rs. {totalAmount.toFixed(2)}
+                </div>
+                <p className="text-sm text-muted-foreground mt-2">
+                  Pay exactly this amount
+                </p>
               </div>
 
-              <div className="text-center">
-                <Badge variant="secondary" className="px-4 py-2 text-sm">
-                  Campaign activates in 2–5 minutes after payment
-                </Badge>
-              </div>
+              {/* I Have Paid Button */}
+              {isAlreadyPaid ? (
+                <Alert className="border-primary/20 bg-primary/5">
+                  <CheckCircle2 className="h-5 w-5 text-primary" />
+                  <AlertDescription className="text-foreground">
+                    Payment already confirmed. Your campaign is being processed.
+                  </AlertDescription>
+                </Alert>
+              ) : (
+                <Button
+                  size="lg"
+                  className="w-full h-14 text-lg font-semibold"
+                  onClick={handleIHavePaid}
+                  disabled={updatePaidMutation.isPending}
+                >
+                  {updatePaidMutation.isPending ? (
+                    <>Processing...</>
+                  ) : (
+                    <>
+                      <Check className="mr-2 h-5 w-5" />
+                      I Have Paid
+                    </>
+                  )}
+                </Button>
+              )}
+
+              {/* Success Message after click */}
+              {updatePaidMutation.isSuccess && !isAlreadyPaid && (
+                <Alert className="border-primary/20 bg-primary/5">
+                  <CheckCircle2 className="h-5 w-5 text-primary" />
+                  <AlertDescription className="text-foreground">
+                    Thank you! Payment reported. Admin will verify and launch your campaign within <strong>5–30 minutes</strong>.
+                  </AlertDescription>
+                </Alert>
+              )}
             </CardContent>
           </Card>
 
-          {/* Right: Summary */}
+          {/* Campaign Summary */}
           <div className="space-y-6">
-            {/* Campaign Summary */}
             <Card className="border-2 shadow-lg">
               <CardHeader>
                 <CardTitle className="text-2xl flex items-center gap-3">
@@ -130,49 +164,53 @@ export default function PaymentPage() {
                   Campaign Summary
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-6">
+              <CardContent className="space-y-7">
                 <div>
                   <p className="text-sm text-muted-foreground">Campaign Name</p>
                   <p className="text-xl font-semibold mt-1">{campaign.name}</p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-6 py-4">
-                  <div className="text-center p-4 bg-blue-50 dark:bg-blue-950/30 rounded-xl">
-                    <Users className="h-8 w-8 text-blue-600 mx-auto mb-2" />
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="text-center p-6 bg-muted/50 rounded-2xl">
+                    <Users className="h-10 w-10 text-primary mx-auto mb-3" />
                     <p className="text-sm text-muted-foreground">Recipients</p>
-                    <p className="text-3xl font-bold text-blue-600">
+                    <p className="text-3xl font-bold text-primary">
                       {recipientCount.toLocaleString()}
                     </p>
                   </div>
-                  <div className="text-center p-4 bg-purple-50 dark:bg-purple-950/30 rounded-xl">
-                    <IndianRupee className="h-8 w-8 text-purple-600 mx-auto mb-2" />
+                  <div className="text-center p-6 bg-muted/50 rounded-2xl">
+                    <IndianRupee className="h-10 w-10 text-brand mx-auto mb-3" />
                     <p className="text-sm text-muted-foreground">Price per SMS</p>
-                    <p className="text-3xl font-bold">Rs. {pricePerSms.toFixed(2)}</p>
+                    <p className="text-3xl font-bold text-brand">
+                      Rs. {pricePerSms.toFixed(2)}
+                    </p>
                   </div>
                 </div>
 
-                <div className="text-center py-8 bg-gradient-to-r from-brand/10 via-purple-50 to-pink-50 dark:from-brand/20 dark:via-purple-950/30 dark:to-pink-950/20 rounded-2xl border-2 border-brand/20">
-                  <p className="text-lg text-muted-foreground mb-2">Total Amount to Pay</p>
+                <div className="text-center py-8 bg-brand/10 rounded-2xl border-2 border-brand/20">
+                  <p className="text-lg text-muted-foreground mb-3">Total Amount</p>
                   <p className="text-5xl font-bold text-brand">
                     Rs. {totalAmount.toFixed(2)}
                   </p>
                 </div>
 
-                <Badge variant="outline" className="w-full py-3 text-base justify-center">
-                  Campaign ID: <span className="font-mono ml-2">{id}</span>
-                </Badge>
+                <div className="flex items-center justify-between">
+                  <Badge variant="outline" className="py-2">
+                    Campaign ID: <span className="font-mono ml-2">{id}</span>
+                  </Badge>
+                </div>
               </CardContent>
             </Card>
 
-            {/* Support Card */}
-            <Card className="bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950/40 dark:to-cyan-950/30 border-blue-200">
+            {/* Support */}
+            <Card className="bg-muted/50 border">
               <CardHeader>
-                <CardTitle className="text-lg">24/7 Support Available</CardTitle>
+                <CardTitle className="text-lg">Need Help?</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-5">
                 <div className="flex items-center gap-4">
-                  <div className="p-3 bg-blue-100 dark:bg-blue-900/50 rounded-full">
-                    <Phone className="h-6 w-6 text-blue-600" />
+                  <div className="p-3 bg-primary/10 rounded-full">
+                    <Phone className="h-6 w-6 text-primary" />
                   </div>
                   <div>
                     <p className="font-semibold">+977 980-0000000</p>
@@ -180,8 +218,8 @@ export default function PaymentPage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
-                  <div className="p-3 bg-blue-100 dark:bg-blue-900/50 rounded-full">
-                    <Mail className="h-6 w-6 text-blue-600" />
+                  <div className="p-3 bg-primary/10 rounded-full">
+                    <Mail className="h-6 w-6 text-primary" />
                   </div>
                   <div>
                     <p className="font-semibold">support@yourcompany.com</p>
@@ -192,24 +230,30 @@ export default function PaymentPage() {
             </Card>
           </div>
         </div>
+
+        <div className="text-center mt-12">
+          <p className="text-sm text-muted-foreground max-w-2xl mx-auto">
+            After payment, click <strong>"I Have Paid"</strong>. Our team will verify and broadcast your SMS shortly.
+          </p>
+        </div>
       </div>
     </>
   );
 }
 
-// Loading & Error States (unchanged but improved)
+// Skeleton & Error unchanged
 function PaymentSkeleton() {
   return (
-    <div className="container mx-auto max-w-5xl py-20">
-      <div className="space-y-8">
-        <Skeleton className="h-20 w-20 rounded-full mx-auto" />
+    <div className="container mx-auto max-w-4xl py-20 space-y-12">
+      <div className="text-center">
+        <Skeleton className="h-20 w-20 rounded-full mx-auto mb-6" />
         <Skeleton className="h-10 w-96 mx-auto" />
-        <div className="grid lg:grid-cols-2 gap-8 mt-12">
-          <Skeleton className="h-96 rounded-2xl" />
-          <div className="space-y-8">
-            <Skeleton className="h-64 rounded-2xl mb-6" />
-            <Skeleton className="h-40 rounded-2xl" />
-          </div>
+      </div>
+      <div className="grid md:grid-cols-2 gap-10">
+        <Skeleton className="h-96 rounded-3xl" />
+        <div className="space-y-6">
+          <Skeleton className="h-80 rounded-3xl" />
+          <Skeleton className="h-48 rounded-3xl" />
         </div>
       </div>
     </div>
@@ -219,11 +263,11 @@ function PaymentSkeleton() {
 function ErrorState() {
   return (
     <div className="container mx-auto max-w-md py-20 text-center">
-      <Alert variant="destructive" className="mx-auto">
+      <Alert variant="destructive">
         <AlertCircle className="h-6 w-6" />
         <AlertTitle>Campaign Not Found</AlertTitle>
         <AlertDescription>
-          The campaign you're looking for doesn't exist or has been removed.
+          This campaign does not exist or has been removed.
         </AlertDescription>
       </Alert>
       <Button asChild className="mt-8">
