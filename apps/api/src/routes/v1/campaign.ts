@@ -19,6 +19,7 @@ router.post(
   validate(createCampaignValidationSchema),
   campaignCtrl.createCampaign
 );
+router.post("/:id/start", campaignCtrl.startCampaign);
 router.get("/", campaignCtrl.getMyCampaigns);
 router.get("/:id", campaignCtrl.getCampaignById);
 router.patch(

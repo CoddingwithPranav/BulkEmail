@@ -10,3 +10,13 @@ export const fileProcessingQueue = new Queue("file-processing", {
 export const fileProcessingQueueEvents = new QueueEvents("file-processing", {
   connection: redis,
 });
+export const emailSendingQueue = new Queue("send-campaign-email", {
+    connection: redis,
+    defaultJobOptions: {
+        attempts: 3, // Retry failed emails
+        backoff: {
+            type: 'exponential',
+            delay: 1000,
+        },
+    },
+});

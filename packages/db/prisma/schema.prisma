@@ -125,6 +125,7 @@ model My_Contact {
   firstName    String?
   lastName     String?
   province     String?
+  email        String?
   district     String?
   municipality String?
   phoneNumber  String
@@ -152,6 +153,7 @@ model Invalid_My_Contact {
   district     String?
   municipality String?
   phoneNumber  String?
+  email        String?
   categoryId   String?
   userId       String
   errorReason  String?  
@@ -174,6 +176,7 @@ model Receiver {
   district          String?
   municipality      String?
   phoneNumber       String
+  email             String?
   isDeleted         Boolean           @default(false)
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt

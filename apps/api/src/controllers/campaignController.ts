@@ -61,6 +61,22 @@ export const deleteCampaign = async (req: AuthRequest, res: Response) => {
   }
 };
 
+export const startCampaign = async (req: AuthRequest, res: Response) => {
+    try {
+        const result = await campaignService.startCampaign(req.params.id!, req.user!.id);
+        res.json({
+            success: true,
+            message: result.message,
+            data: {
+                campaignId: result.campaignId,
+                recipientCount: result.recipientCount
+            }
+        });
+    } catch (err: any) {
+        logger.error("Start campaign failed", { error: err.message, userId: req.user?.id, campaignId: req.params.id });
+        res.status(400).json({ success: false, message: err.message });
+    }
+};
 export const approveOrCancelCampaign = async (req: AuthRequest, res: Response) => {
   try {
     const { action, reason } = req.body;

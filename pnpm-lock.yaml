@@ -387,6 +387,43 @@ importers:
         specifier: ^5.5.4
         version: 5.9.3
 
+  apps/worker-send-email:
+    dependencies:
+      '@repo/config':
+        specifier: workspace:*
+        version: link:../../packages/config
+      '@repo/db':
+        specifier: workspace:*
+        version: link:../../packages/db
+      '@repo/email':
+        specifier: workspace:*
+        version: link:../../packages/email
+      bullmq:
+        specifier: ^5.13.0
+        version: 5.64.1
+      csv-parser:
+        specifier: ^3.0.0
+        version: 3.2.0
+      ioredis:
+        specifier: ^5.4.1
+        version: 5.8.2
+      xlsx:
+        specifier: ^0.18.5
+        version: 0.18.5
+    devDependencies:
+      '@repo/types':
+        specifier: workspace:*
+        version: link:../../packages/types
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../../packages/typescript-config
+      tsx:
+        specifier: ^4.19.0
+        version: 4.20.6
+      typescript:
+        specifier: ^5.5.4
+        version: 5.9.3
+
   packages/config:
     dependencies:
       ioredis:
