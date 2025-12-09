@@ -30,12 +30,10 @@ interface CampaignFormProps {
 const CampaignForm = ({ form, children }: CampaignFormProps) => {
   const selectedCategoryId = form.watch("categoryId");
 
-  // Fetch recipient count for selected category
   const { data: countData, isLoading: loadingCount } = useCategoryRecipientCountQuery(
     selectedCategoryId
   );
 
-  // Get current SMS price
   const { data: priceData } = useSMSPriceQuery();
   const pricePerSms = priceData?.pricePerSms || 0.85;
 
@@ -172,12 +170,9 @@ const CampaignForm = ({ form, children }: CampaignFormProps) => {
             )}
           </div>
 
-          {/* Future: Location Targeting (commented but ready) */}
-          {/* ... keep your location fields here when you enable them */}
         </div>
       </Container>
 
-      {/* Submit Buttons – passed from parent */}
       {children}
     </>
   );

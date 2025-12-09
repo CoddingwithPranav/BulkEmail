@@ -23,15 +23,14 @@ const geistMono = Geist_Mono({
 // Updated Metadata for MessagingNepal
 export const metadata: Metadata = {
   title: {
-    default: "MessagingNepal – Bulk & Guest SMS in Nepal",
+    default: "MessagingNepal – Bulk  SMS in Nepal",
     template: "%s | MessagingNepal",
   },
   description:
-    "Send instant bulk SMS, personalized messages, or use guest mode. The fastest and most reliable SMS platform for businesses and individuals in Nepal.",
+    "Send instant bulk SMS, personalized messages. The fastest and most reliable SMS platform for businesses and individuals in Nepal.",
   keywords: [
     "bulk SMS Nepal",
     "SMS marketing Nepal",
-    "guest SMS",
     "personalized messaging",
     "Nepal SMS gateway",
     "fast SMS service",
@@ -45,8 +44,8 @@ export const metadata: Metadata = {
     locale: "en_NP",
     url: "https://messagingnepal.com",
     siteName: "MessagingNepal",
-    title: "MessagingNepal – Instant Bulk & Guest SMS in Nepal",
-    description: "Reach anyone in Nepal instantly. No signup needed for guest sends.",
+    title: "MessagingNepal – Instant Bulk  SMS in Nepal",
+    description: "Reach anyone in Nepal instantly. No signup needed for sends.",
     images: [
       {
         url: "/og-image.jpg", // Add this image later in /public
@@ -59,7 +58,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "MessagingNepal – Instant SMS Across Nepal",
-    description: "Bulk SMS, guest mode, personalization – all in one platform.",
+    description: "Bulk SMS, personalization – all in one platform.",
     images: ["/og-image.jpg"],
     creator: "@messagingnepal", // Update when you have Twitter
   },

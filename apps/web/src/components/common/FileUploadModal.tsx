@@ -22,7 +22,6 @@ import { useFileStatusQuery, useUploadFileMutation } from "@/hooks/queries/files
 interface FileUploadModalProps {
   isOpen: boolean;
   onClose: () => void;
-  isGuest?: boolean;
   onSuccess?: (fileId: string, validCount: number) => void;
 }
 
@@ -31,7 +30,6 @@ const TEMPLATE_URL = "/templates/receivers-template.xlsx";
 export default function FileUploadModal({
   isOpen,
   onClose,
-  isGuest = false,
   onSuccess,
 }: FileUploadModalProps) {
   const [file, setFile] = useState<File | null>(null);
@@ -42,7 +40,7 @@ export default function FileUploadModal({
   const uploadMutation = useUploadFileMutation();
   const { data: fileStatus, isLoading: statusLoading } = useFileStatusQuery(
     uploadedFileId,
-    isGuest
+    
   );
 
   const isUploading = uploadMutation.isPending;
@@ -69,7 +67,7 @@ export default function FileUploadModal({
     if (!file) return;
 
     uploadMutation.mutate(
-      { file, isGuest },
+      { file },
       {
         onSuccess: (data) => {
           setUploadedFileId(data.fileId);

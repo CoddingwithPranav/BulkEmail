@@ -16,7 +16,6 @@ export interface FileUploadResponse {
   fileId: string;
   jobId: string;
   message?: string;
-  isGuest?: boolean;
 }
 
 /**

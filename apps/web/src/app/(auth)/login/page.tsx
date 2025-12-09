@@ -72,37 +72,32 @@ export default function AuthPage() {
     });
   };
 
-  
   // Inside your AuthPage component → replace onRegister function
-const onRegister = async (data: RegisterForm) => {
-  const trimmedName = (data.fullName ?? "").trim();
-  const nameParts = trimmedName.split(/\s+/);
-  const firstName = nameParts[0] || "";
-  const lastName = nameParts.slice(1).join(" ") || firstName;
+  const onRegister = async (data: RegisterForm) => {
+    const trimmedName = (data.fullName ?? "").trim();
+    const nameParts = trimmedName.split(/\s+/);
+    const firstName = nameParts[0] || "";
+    const lastName = nameParts.slice(1).join(" ") || firstName;
 
-  const payload = {
-    firstName,
-    lastName,
-    email: data.email,
-    phoneNumber: data.phoneNumber,
-    password: data.password,
-    accountType: data.accountType,
-    isEmailVerified: false,
-  };
+    const payload = {
+      firstName,
+      lastName,
+      email: data.email,
+      phoneNumber: data.phoneNumber,
+      password: data.password,
+      accountType: data.accountType,
+      isEmailVerified: false,
+    };
 
-  registerMutate(payload, {
-    onSuccess: () => {
-      toast.success("Account created! Please verify your email.");
-      router.push(`/verify-account?email=${encodeURIComponent(data.email!)}`);
-      
-    },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || "Registration failed");
-    },
-  });
-};
-  const handleGuest = () => {
-    router.push("/guest");
+    registerMutate(payload, {
+      onSuccess: () => {
+        toast.success("Account created! Please verify your email.");
+        router.push(`/verify-account?email=${encodeURIComponent(data.email!)}`);
+      },
+      onError: (error: any) => {
+        toast.error(error.response?.data?.message || "Registration failed");
+      },
+    });
   };
 
   return (
@@ -302,14 +297,6 @@ const onRegister = async (data: RegisterForm) => {
             <span className="flex-1 border-t border-border/50" />
           </div>
 
-          <Button
-            variant="outline"
-            className="w-full h-12"
-            onClick={handleGuest}
-          >
-            <Eye className="h-4 w-4 mr-2" />
-            Try as Guest
-          </Button>
 
           {activeTab === "login" && (
             <div className="text-center mt-6">

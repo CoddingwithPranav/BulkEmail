@@ -20,7 +20,7 @@ export const registerBodySchema = z
     message: "Either email or phoneNumber is required",
   })
   .refine((data) => data.password, {
-    message: "Password is required for non-guest accounts",
+    message: "Password is required for  accounts",
   });
 
 export type RegisterForm = z.infer<typeof registerBodySchema>;

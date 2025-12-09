@@ -12,10 +12,9 @@ const navItems = [
 ];
 
 const adminItems = [
-   { name: "Guest Payments", href: "/dashboard/guest-payments", icon: "CreditCard" },
+  { name: "User Management", href: "/dashboard/user-management", icon: "UserPlus" },
 ]
 const superAdminItems = [
-   { name: "User Management", href: "/dashboard/user-management", icon: "UserPlus" },
    { name: "System Settings", href: "/dashboard/system-settings", icon: "Settings" },
 ]
 

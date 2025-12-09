@@ -2,7 +2,7 @@ import {
   createCampaign,
   deleteCampaign,
   getCampaignById,
-  getCampaignsAction,
+  getCampaigns,
   updateCampaign,
   updatePaidStatusCampaign,
 } from "@/lib/api/campaigns";
@@ -12,7 +12,7 @@ import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query";
 export const useCampaignsQuery = (query: BaseQueryParams) => {
   return useQuery({
     queryKey: ["campaigns", query],
-    queryFn: () => getCampaignsAction(query),
+    queryFn: () => getCampaigns(query),
     placeholderData: keepPreviousData,
   });
 };

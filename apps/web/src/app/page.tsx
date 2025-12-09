@@ -135,10 +135,6 @@ export default async function HomePage() {
                   asChild
                   className="h-14 px-8 text-lg font-medium"
                 >
-                  <Link href="/guest">
-                    <MessageCircle className="mr-2 h-5 w-5" />
-                    Try Guest Mode
-                  </Link>
                 </Button>
               </div>
 
@@ -203,7 +199,7 @@ export default async function HomePage() {
               },
               {
                 icon: Zap,
-                title: "Guest Quick Send",
+                title: " Quick Send",
                 desc: "Send instantly — no signup required",
               },
             ].map((feature) => (
@@ -285,7 +281,7 @@ export default async function HomePage() {
               },
               {
                 title: "Event Organizer",
-                text: "Guest mode saves us every time. No more waiting for approvals.",
+                text: "Quick Send saves us every time. No more waiting for approvals.",
               },
               {
                 title: "Nonprofit Leader",
@@ -318,21 +314,6 @@ export default async function HomePage() {
               Trusted by teams who need fast, reliable messaging every day.
             </p>
             <div className="flex flex-col sm:flex-row gap-6 justify-center pt-8">
-              {/* <Button
-                size="lg"
-                asChild
-                className="h-16 px-12 text-xl font-bold bg-primary hover:bg-primary/90 shadow-2xl"
-              >
-                <Link href="/register">Create Free Account</Link>
-              </Button> */}
-              {/* <Button
-                size="lg"
-                variant="outline"
-                asChild
-                className="h-16 px-12 text-xl font-medium"
-              >
-                <Link href="/guest">Send as Guest →</Link>
-              </Button> */}
               <Button
                 size="lg"
                 asChild
