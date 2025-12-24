@@ -1,29 +1,25 @@
 // packages/email/src/transporter.ts
-import nodemailer from "nodemailer";
+import FormData from "form-data";
+import Mailgun from "mailgun.js";
 
-let transporter: nodemailer.Transporter | null = null;
+let mailgunClient: any = null;
 
-export const getTransporter = () => {
-  if (!transporter) {
-    if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) {  //TO Know if env variables are missing
-      console.warn("GMAIL_USER or GMAIL_APP_PASSWORD missing → emails disabled");
-      transporter = {
-        sendMail: async (mailOptions: any) => {
-          console.log("EMAIL (mock):", mailOptions.subject, "→", mailOptions.to);
-          return { messageId: "mock-123" };
-        },
-      } as any;
-    } else {
-      transporter = nodemailer.createTransport({
-        host: "smtp.gmail.com",
-        port: 587,
-        secure: false,
-        auth: {
-          user: process.env.GMAIL_USER,
-          pass: process.env.GMAIL_APP_PASSWORD,
-        },
-      });
+export const getMailgunClient = () => {
+  if (!mailgunClient) {
+    if (!process.env.MAILGUN_API_KEY || !process.env.MAILGUN_DOMAIN) {
+      console.warn("MAILGUN_API_KEY or MAILGUN_DOMAIN missing → emails disabled");
+      return null;
     }
+    
+    const mailgun = new Mailgun(FormData);
+    mailgunClient = mailgun.client({
+      username: "api",
+      key: process.env.MAILGUN_API_KEY,
+    });
   }
-  return transporter;
+  return mailgunClient;
+};
+
+export const getMailgunDomain = () => {
+  return process.env.MAILGUN_DOMAIN || "";
 };
