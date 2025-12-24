@@ -1,8 +1,8 @@
-# 📧 Messenger Nepal - Bulk Email Platform
+# 📧 Bulk Email - Bulk Email Platform
 
 A powerful, scalable **bulk email management platform** designed for businesses and organizations to send high-volume emails efficiently. Upload contacts via CSV/XLSX, organize them into categories, create targeted campaigns, send quick emails, and process everything asynchronously with reliable delivery tracking.
 
-**Project**: Messenger Nepal  
+**Project**: Bulk Email  
 **Purpose**: Enterprise-grade bulk email management and campaign orchestration  
 **Built With**: TypeScript, Node.js, React, PostgreSQL, Redis, BullMQ
 
@@ -173,7 +173,7 @@ packages/
          ┌──────────▼──────────┐
          │                     │
     ┌────┴─────────────────────┴────┐
-    │  Messenger Nepal System       │
+    │  Bulk Email System       │
     │  (Bulk Email Platform)        │
     │                               │
     │  - Manages campaigns          │
@@ -531,8 +531,8 @@ User          Frontend      API         Database    Queue      Worker    SMTP
 1. **Clone the repository**
 
 ```bash
-git clone https://github.com/yourusername/MessangerNepal.git
-cd MessangerNepal
+git clone https://github.com/yourusername/Bulk Email.git
+cd Bulk Email
 ```
 
 2. **Set up environment variables**
@@ -608,7 +608,7 @@ pnpm dev -w worker-send-email
 ## 📁 Project Structure
 
 ```
-MessangerNepal/
+Bulk Email/
 ├── apps/
 │   ├── api/                          # Express.js backend
 │   │   ├── src/
@@ -732,12 +732,12 @@ Contributions are welcome! Please follow these guidelines:
 
 ## 📄 License
 
-This project is proprietary. All rights reserved © 2025 Messenger Nepal
+This project is proprietary. All rights reserved © 2025 Bulk Email
 
 ---
 
 Built with ❤️ for reliable, large-scale email communication in Nepal and beyond.
 
-**Messenger Nepal** – Send smarter, not harder.
+**Bulk Email** – Send smarter, not harder.
 
 **Last Updated**: December 24, 2025 | **Version**: 1.0.0
