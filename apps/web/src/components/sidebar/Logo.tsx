@@ -2,6 +2,7 @@
 
 import { useSidebar } from "@/components/ui/sidebar";
 import { Mountain, Send } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
 export function Logo() {
@@ -15,16 +16,13 @@ export function Logo() {
       }`}
     >
       <div className="h-9 w-12 shrink-0">
-           <div className="container mx-auto flex h-16 items-center justify-between">
-            <div className="relative mb-5 ml-2">
-              <Mountain className="h-8 w-8 text-brand rotate-12 " />
-              <Send className="h-5 w-5 text-primary absolute -bottom-1 -right-1" />
-            </div>
+           <div className="flex items-center justify-center">
+             <Image src="/images/logo.svg" alt="Logo" width={30} height={30} />
           </div>
       </div>
       {!collapsed && (
-        <div className="text-sidebar-foreground h-full mt-3">
-          <h1 className="font-semibold text-base"> BulkEmail</h1>
+        <div className="text-sidebar-foreground h-full pr-5">
+          <h1 className="font-semibold text-base "> BulkEmail</h1>
         </div>
       )}
     </div>

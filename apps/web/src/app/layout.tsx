@@ -20,47 +20,47 @@ const geistMono = Geist_Mono({
   display: "swap",
 });
 
-// Updated Metadata for MessagingNepal
+// Updated Metadata for Bulk Email
 export const metadata: Metadata = {
   title: {
-    default: "MessagingNepal – Bulk  SMS in Nepal",
-    template: "%s | MessagingNepal",
+    default: "Bulk Email – Professional Email Marketing",
+    template: "%s | Bulk Email",
   },
   description:
-    "Send instant bulk SMS, personalized messages. The fastest and most reliable SMS platform for businesses and individuals in Nepal.",
+    "Send professional bulk emails with advanced analytics, automation, and 99.9% delivery rate. Perfect for businesses, agencies, and organizations.",
   keywords: [
-    "bulk SMS Nepal",
-    "SMS marketing Nepal",
-    "personalized messaging",
-    "Nepal SMS gateway",
-    "fast SMS service",
+    "bulk email",
+    "email marketing",
+    "email campaigns",
+    "email automation",
+    "email service provider",
   ],
-  authors: [{ name: "MessagingNepal Team" }],
-  creator: "MessagingNepal",
-  publisher: "MessagingNepal",
-  metadataBase: new URL("https://messagingnepal.com"), // Change to your domain later
+  authors: [{ name: "Bulk Email Team" }],
+  creator: "Bulk Email",
+  publisher: "Bulk Email",
+  metadataBase: new URL("https://bulkemail.com"), // Change to your domain later
   openGraph: {
     type: "website",
-    locale: "en_NP",
-    url: "https://messagingnepal.com",
-    siteName: "MessagingNepal",
-    title: "MessagingNepal – Instant Bulk  SMS in Nepal",
-    description: "Reach anyone in Nepal instantly. No signup needed for sends.",
+    locale: "en_US",
+    url: "https://bulkemail.com",
+    siteName: "Bulk Email",
+    title: "Bulk Email – Professional Email Marketing",
+    description: "Send professional bulk emails with advanced analytics and tracking.",
     images: [
       {
         url: "/og-image.jpg", // Add this image later in /public
         width: 1200,
         height: 630,
-        alt: "MessagingNepal – Fast SMS for Nepal",
+        alt: "Bulk Email – Professional Email Marketing",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "MessagingNepal – Instant SMS Across Nepal",
-    description: "Bulk SMS, personalization – all in one platform.",
+    title: "Bulk Email – Professional Email Marketing",
+    description: "Send emails at scale with advanced analytics and automation.",
     images: ["/og-image.jpg"],
-    creator: "@messagingnepal", // Update when you have Twitter
+    creator: "@bulkemail", // Update when you have Twitter
   },
   robots: {
     index: true,

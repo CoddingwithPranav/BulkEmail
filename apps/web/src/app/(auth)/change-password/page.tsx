@@ -65,8 +65,8 @@ export default function ChangePasswordPage() {
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8 lg:p-12">
         <div className="w-full max-w-md border border-border rounded-lg shadow-md p-8 bg-card">
           <div className="flex items-center gap-3 mb-6">
-            <MessageCircle className="h-8 w-8 text-primary" />
-            <h1 className="text-2xl font-bold text-foreground">NepalSMS</h1>
+            <Image src="/images/logo.svg" alt="Logo" width={30} height={30} />
+            <h1 className="text-2xl font-bold text-foreground">BulkEmail</h1>
           </div>
           <p className="text-muted-foreground mb-8">
             Reliable Bulk SMS for Nepal.
