@@ -1,5 +1,5 @@
 {
-  "name": "messengerNepal",
+  "name": "BlukEmail",
   "private": true,
   "scripts": {
     "build": "turbo run build",

@@ -114,7 +114,7 @@ export default function PremiumDashboard() {
             className="text-center space-y-6"
           >
             <h1 className="text-6xl md:text-8xl font-black tracking-tighter bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-              MessengerNepal
+              BulkEmail
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Nepal's fastest, most reliable bulk SMS platform — built for scale, trusted by thousands.
@@ -300,7 +300,7 @@ export default function PremiumDashboard() {
 
           {/* Footer */}
           <footer className="text-center py-12 border-t">
-            <p className="text-3xl font-bold text-primary">MessengerNepal</p>
+            <p className="text-3xl font-bold text-primary">BulkEmail</p>
             <p className="text-lg text-muted-foreground mt-2">
               Built in Nepal • For the World • Always Reliable
             </p>

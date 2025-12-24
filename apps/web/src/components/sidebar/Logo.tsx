@@ -24,7 +24,7 @@ export function Logo() {
       </div>
       {!collapsed && (
         <div className="text-sidebar-foreground h-full mt-3">
-          <h1 className="font-semibold text-base">Messenger Nepal</h1>
+          <h1 className="font-semibold text-base"> BulkEmail</h1>
         </div>
       )}
     </div>

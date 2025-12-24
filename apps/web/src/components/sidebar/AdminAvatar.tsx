@@ -21,7 +21,7 @@ export const AdminAvatar = ({ show }: { show?: boolean }) => {
       {(!collapsed || show) && (
         <div>
           <Text size='base'  className="text-sm">
-            Messenger Admin
+             Admin
           </Text>
         </div>
       )}

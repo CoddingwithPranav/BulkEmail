@@ -15,7 +15,7 @@ const logger = winston.createLogger({
     winston.format.errors({ stack: true }),
     winston.format.json()
   ),
-  defaultMeta: { service: "messenger-nepal" },
+  defaultMeta: { service: "bulk-email" },
   transports: [
     // Write all logs with level `error` and below to `error.log`
     new DailyRotateFile({

@@ -94,7 +94,7 @@ export default function NotAuthorizedPage() {
           {/* Footer */}
           <div className="mt-16 text-center">
             <p className="text-2xl font-bold bg-gradient-to-r from-blue-700 to-red-600 bg-clip-text text-transparent">
-              MessengerNepal
+              BulkEmail
             </p>
             <p className="text-sm text-gray-500 mt-2">
               Secure • Fast • Proudly Nepali
