@@ -170,7 +170,10 @@ import XLSX from "xlsx";
 
 
 
-const normalizePhone = (phone: string): string => phone.replace(/\D/g, "").trim();
+const normalizePhone = (phone: unknown): string => {
+  if (phone === null || phone === undefined) return "";
+  return String(phone).replace(/\D/g, "").trim();
+};
 
 
 export const processFileJob = async (job: Job) => {
@@ -192,17 +195,15 @@ export const processFileJob = async (job: Job) => {
     const rawProvince = String(row.Province || row.province || "").trim();
     const rawDistrict = String(row.District || row.district || "").trim();
     const rawMunicipality = String(row.Municipality || row.municipality || "").trim();
-
+    const rawEmail = String(row.Email || row.email || "").trim();
     const phoneRaw =
       [row.PhoneNumber, row.phone, row.mobile, row.Phone, row.Mobile, row.phoneNumber]
         .find(Boolean) || "";
 
+    console.log(`Processing row ${rowNumber}:`, row);
+    console.log(`Normalized phone:`,phoneRaw);
     const phoneNumber = normalizePhone(phoneRaw);
 
-    // Reject immediately on phone issues
-    if (!phoneRaw.trim()) {
-      throw new Error(`Row ${rowNumber}: Phone number is missing`);
-    }
     if (phoneNumber.length !== 10) {
       throw new Error(`Row ${rowNumber}: Phone number must be exactly 10 digits`);
     }
@@ -214,6 +215,7 @@ export const processFileJob = async (job: Job) => {
       District: rawDistrict,
       Municipality: rawMunicipality,
       PhoneNumber: phoneNumber,
+      Email: rawEmail,
     });
 
     if (!parsed.success) {
@@ -231,6 +233,7 @@ export const processFileJob = async (job: Job) => {
       district: rawDistrict || null,
       municipality: rawMunicipality || null,
       phoneNumber,
+      email: rawEmail || null,
     });
   };
 

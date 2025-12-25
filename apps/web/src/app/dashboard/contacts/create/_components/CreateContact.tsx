@@ -23,6 +23,7 @@ export default function CreateContactPage() {
       lastName: "",
       province: "",
       district: "",
+      email: "",
       municipality: "",
       phoneNumber: "",
       categoryId: "",

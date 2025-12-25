@@ -7,7 +7,7 @@ const navItems = [
   { name: "Dashboard", href: "/dashboard", icon: "Home" },
   { name: "Campaigns", href: "/dashboard/campaigns", icon: "Megaphone" },
   { name: "Contacts", href: "/dashboard/contacts", icon: "ContactRound" },
-  { name: "Receiver List", href: "/dashboard/receiver-list", icon: "Users" }, 
+  // { name: "Receiver List", href: "/dashboard/receiver-list", icon: "Users" }, 
 { name: "Categories", href: "/dashboard/categories", icon: "BaggageClaim" }
 ];
 

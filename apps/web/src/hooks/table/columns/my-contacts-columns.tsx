@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useDeleteMyContactMutation } from "@/hooks/queries/myContact.query";
 import { MyContact } from "@repo/types";
 import { createColumnHelper } from "@tanstack/react-table";
-import { Edit, Phone, Trash, User } from "lucide-react";
+import { Edit, Mail, Phone, Trash, User } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -39,12 +39,12 @@ export const useMyContactsTableColumns = () => {
       },
     }),
 
-    columnHelper.accessor("phoneNumber", {
-      header: "Phone Number",
+    columnHelper.accessor("email", {
+      header: "Email",
       cell: ({ row }) => (
         <div className="flex items-center gap-2 font-mono">
-          <Phone className="h-4 w-4 text-muted-foreground" />
-          {row.original.phoneNumber}
+          <Mail className="h-4 w-4 text-muted-foreground" />
+          {row.original.email}
         </div>
       ),
     }),

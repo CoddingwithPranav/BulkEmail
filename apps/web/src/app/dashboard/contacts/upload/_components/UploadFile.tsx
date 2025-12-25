@@ -88,7 +88,6 @@ export default function UploadFile() {
 
   return (
     <div className="mx-auto  p-6">
-      <h2 className="text-2xl font-bold mb-6">Upload Contacts</h2>
 
       {/* Upload Form */}
       {!uploadedFileId && (

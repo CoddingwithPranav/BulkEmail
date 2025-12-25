@@ -6,6 +6,7 @@ export const createMyContactSchema = z.object({
   firstName: z.string().optional(),
   lastName: z.string().optional(),
   province: z.string().optional(),
+  email: z.string().email("Invalid email address").optional(),
   district: z.string().optional(),
   municipality: z.string().optional(),
   phoneNumber: z
