@@ -35,8 +35,7 @@ export default function CreateCampaign() {
 
   // Fetch current SMS price
   const { data: priceData } = useSMSPriceQuery();
-  const pricePerSms = priceData?.pricePerSms || 0.85;
-
+  const pricePerSms = priceData?.pricePerSmsNPR || 0.85;
   const recipientCount = countData?.recipientCount || 0;
   const totalCost = recipientCount > 0 ? recipientCount * pricePerSms : 0;
 
@@ -86,7 +85,7 @@ export default function CreateCampaign() {
                         </p>
                       </div>
                       <div>
-                        <p className="text-muted-foreground">Price per SMS</p>
+                        <p className="text-muted-foreground">Price per Email</p>
                         <p className="text-2xl font-bold">Rs. {pricePerSms.toFixed(2)}</p>
                       </div>
                       <div>

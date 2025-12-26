@@ -13,6 +13,7 @@ export const getCurrentSmsPricePaisa = async (
 ) => {
   try {
     const price = await getCurrentPrice();
+    console.log("Fetched Current Price:", price);
     return res.json({ success: true, data: price });
   } catch (err: any) {
     logger.error("getCurrentSmsPricePaisa failed", { error: err.message });

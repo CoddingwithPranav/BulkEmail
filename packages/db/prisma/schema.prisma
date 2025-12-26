@@ -76,6 +76,7 @@ model User {
   myContacts        My_Contact[]
   categories        Category[]
   invalidMyContacts Invalid_My_Contact[]
+  campaignPayments  CampaignPayment[]
 
   @@map("users")
 }
@@ -216,6 +217,7 @@ model Campaign {
   deliveryRate        Float          @default(0)
   totalSmsCost        Float?
   paid                Boolean        @default(false)
+  payment             CampaignPayment?
   submitDate          DateTime?
   createdAt           DateTime       @default(now())
   updatedAt           DateTime       @updatedAt
@@ -251,4 +253,28 @@ model SmsPricing {
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
   @@index([isActive, effectiveFrom])
+}
+
+model CampaignPayment {
+  id                String   @id @default(uuid())
+  campaignId        String   @unique // One payment per campaign
+  userId            String
+  amount            Float    // e.g., 1250.00 NPR
+  amountInPaisa     Int      // 125000 paisa for precision
+  paymentMethod     String   // "esewa" 
+  status            String   @default("pending") // pending, paid, failed, refunded
+  transactionId     String?  // pidx from or ref_id from eSewa
+  transactionCode   String?  // From gateway
+  gatewayData       Json?    // Raw callback data for debugging
+  paidAt            DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  campaign          Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+  @@index([transactionId])
+  @@map("campaign_payments")
 }

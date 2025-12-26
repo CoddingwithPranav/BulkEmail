@@ -12,7 +12,7 @@ export async function getCurrentPrice() {
     },
     orderBy: { effectiveFrom: "desc" },
   });
-
+  console.log("Current Pricing:", pricing);
   if (!pricing) {
     logger.warn("No active pricing found → using fallback 85 paisa");
     return {

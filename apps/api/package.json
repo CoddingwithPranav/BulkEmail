@@ -12,10 +12,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@repo/email": "workspace:*",
     "@types/cors": "^2.8.18",
     "@types/express": "^4.17.21",
     "@types/jsonwebtoken": "^9.0.9",
-    "@repo/email": "workspace:*",
+    "axios": "^1.13.2",
     "bcrypt": "^6.0.0",
     "bullmq": "^5.13.0",
     "cookie-parser": "^1.4.7",

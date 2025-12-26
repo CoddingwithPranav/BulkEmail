@@ -35,7 +35,7 @@ const CampaignForm = ({ form, children }: CampaignFormProps) => {
   );
 
   const { data: priceData } = useSMSPriceQuery();
-  const pricePerSms = priceData?.pricePerSms || 0.85;
+  const pricePerSms = priceData?.pricePerSmsNPR  || 0.85;
 
   const recipientCount = countData?.recipientCount || 0;
   const totalCost = recipientCount > 0 ? recipientCount * pricePerSms : 0;
@@ -140,7 +140,7 @@ const CampaignForm = ({ form, children }: CampaignFormProps) => {
                       </div>
 
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground">Price per SMS</span>
+                        <span className="text-sm text-muted-foreground">Price per Email</span>
                         <span className="font-semibold">Rs. {pricePerSms.toFixed(2)}</span>
                       </div>
 

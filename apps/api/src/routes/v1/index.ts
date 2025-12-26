@@ -8,11 +8,13 @@ import receiverRoutes from "./receiver";
 import categoriesRoutes from "./categories";
 import myContactRoutes from "./myContact";
 import priceRoutes from "./price";
+import paymentsRoutes from "./payment";
 const router: Router = Router();
 
 router.use("/auth", authRoutes);
 router.use("/users", userRoutes);
 router.use("/files", fileRoutes);
+router.use("/payments", paymentsRoutes);
 router.use("/campaigns", campaignRoutes);
 router.use("/quick-sms", quickSmsRoutes);
 router.use("/receiver", receiverRoutes);

@@ -13,6 +13,8 @@ const publicRoutes = [
   "/verify-account",
   "/forgot-password",
   "/change-password",
+  "/payment/success",
+  "/payment/failure",
 ];
 
 const authRoutes = ["/login"];
