@@ -113,7 +113,7 @@ export const confirmPaymentSuccess = async (req: Request, res: Response) => {
       gatewayData
     );
 
-    res.redirect(`${process.env.FRONTEND_URL}/dashboard/campaigns`);
+    res.redirect(`${process.env.FRONTEND_URL}/payment/success`);
   } catch (err) {
     console.error(err);
     res.redirect(`${process.env.FRONTEND_URL}/payment/failure`);
