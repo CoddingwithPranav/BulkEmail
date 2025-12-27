@@ -8,6 +8,9 @@ const campaignBase = z.object({
     .min(1, "Message cannot be empty")
     .max(1600, "Message too long (max ~10 SMS parts)"),
   province: z.string().optional(),
+  deliveryStatus: z
+    .enum(["NOT_STARTED", "IN_PROGRESS", "COMPLETED"])
+    .optional(),
   categoryId: z.string().uuid("Invalid category ID"),
   district: z.string().optional(),
   municipality: z.string().optional(),

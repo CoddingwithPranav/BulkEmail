@@ -169,7 +169,6 @@ export const getAllCampaignsForAdmin = async () => {
   });
 };
 
-
 export const startCampaign = async (campaignId: string, userId: string) => {
     const campaign = await dbClient.campaign.findFirst({
         where: { id: campaignId, userId },
@@ -178,13 +177,11 @@ export const startCampaign = async (campaignId: string, userId: string) => {
     if (!campaign) {
         throw new Error("Campaign not found or access denied");
     }
-
     if (campaign.status !== "APPROVED") {
         throw new Error(`Campaign must be APPROVED to start. Current status: ${campaign.status}`);
     }
-
     if (campaign.deliveryStatus !== "NOT_STARTED") {
-        throw new Error(`Campaign delivery is already in progress or completed. Status: ${campaign.deliveryStatus}`);
+        throw new Error(`Campaign delivery already started or completed. Status: ${campaign.deliveryStatus}`);
     }
 
     await dbClient.campaign.update({
@@ -192,64 +189,19 @@ export const startCampaign = async (campaignId: string, userId: string) => {
         data: { deliveryStatus: "IN_PROGRESS" },
     });
 
-    const recipients = await dbClient.my_Contact.findMany({
-        where: {
-            userId,
-            categoryId: campaign.categoryId,
-            isDeleted: false,
-            phoneNumber: { not: "" },
-            ...(campaign.province && { province: campaign.province }),
-            ...(campaign.district && { district: campaign.district }),
-            ...(campaign.municipality && { municipality: campaign.municipality }),
-        },
-        select: {
-            phoneNumber: true,
-            id: true,
-            email: true,
-            firstName: true,
-            lastName: true,
-            province: true,
-            district: true,
-            municipality: true,
-        },
-    });
-
-    if (recipients.length === 0) {
-        await dbClient.campaign.update({
-            where: { id: campaignId },
-            data: { 
-                deliveryStatus: "FAILED",
-                totalRecipients: 0
-            },
-        });
-        throw new Error("No recipients found for this campaign's category/filters");
-    }
-    const emailJobs: any[] = [];
-    
-    for (const recipient of recipients) {
-        if (recipient.email) { 
-            const jobData = {
-                to: recipient.email,
-                subject: "Your Email Campaign Subject",
-                text: "Text body from campaign message",
-                html: "HTML body from campaign message",
-                campaignId: campaignId,
-                contactId: recipient.id,
-            };
-
-            emailJobs.push(
-                emailSendingQueue.add('send-campaign-email', jobData, {
-                    jobId: `${campaignId}-${recipient.id}` 
-                })
-            );
+    await emailSendingQueue.add(
+        'process-campaign',
+        { campaignId, userId },
+        {
+            jobId: `process-campaign-${campaignId}-${Math.random()}`, // Idempotent
+            attempts: 3,
+            backoff: { type: 'exponential', delay: 5000 },
         }
-    }
-
-    await Promise.all(emailJobs);
+    );
 
     return {
-        message: "Campaign delivery initiated successfully. Processing in background.",
-        recipientCount: recipients.length,
-        campaignId: campaign.id
+        message: "Campaign queued for processing. Emails will be sent in the background.",
+        campaignId,
+        recipientCount: campaign.totalRecipients,
     };
 };

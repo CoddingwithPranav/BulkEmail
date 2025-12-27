@@ -13,7 +13,6 @@ const router: Router = Router();
 
 router.use(protect);
 
-// User routes
 router.post(
   "/",
   validate(createCampaignValidationSchema),
@@ -29,7 +28,6 @@ router.patch(
 );
 router.delete("/:id", campaignCtrl.deleteCampaign);
 
-// Admin approval routes
 router.patch(
   "/:id/approve",
   restrictTo("ADMIN", "SUPERADMIN"),
@@ -37,7 +35,6 @@ router.patch(
   campaignCtrl.approveOrCancelCampaign
 );
 
-// Admin: see all campaigns
 router.get(
   "/admin/all",
   restrictTo("ADMIN", "SUPERADMIN"),

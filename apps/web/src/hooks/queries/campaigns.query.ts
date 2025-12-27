@@ -3,6 +3,7 @@ import {
   deleteCampaign,
   getCampaignById,
   getCampaigns,
+  startCampaign,
   updateCampaign,
   updatePaidStatusCampaign,
 } from "@/lib/api/campaigns";
@@ -14,6 +15,7 @@ export const useCampaignsQuery = (query: BaseQueryParams) => {
     queryKey: ["campaigns", query],
     queryFn: () => getCampaigns(query),
     placeholderData: keepPreviousData,
+    refetchInterval:5000,
   });
 };
 
@@ -23,6 +25,17 @@ export const useCampaignsQueryById = (id: string) => {
     queryFn: () => getCampaignById(id),
   });
 };
+export const useCampaignStartMutation = () => {
+  return useMutation({
+    mutationFn: (id: string) => startCampaign(id),
+    meta: {
+      invalidateQuery: ["campaigns"],
+      successMessage: "Campaign started successfully",
+      errorMessage: "Something went wrong",
+    },
+  });
+};
+
 
 export const useCampaignCreateMutation = () => {
   return useMutation({

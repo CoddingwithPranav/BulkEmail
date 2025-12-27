@@ -3,7 +3,7 @@ import FormData from "form-data";
 import Mailgun from "mailgun.js";
 
 let mailgunClient: any = null;
-
+//TODO: fix why env not working
 export const getMailgunClient = () => {
   if (!mailgunClient) {
     if (!process.env.MAILGUN_API_KEY || !process.env.MAILGUN_DOMAIN) {

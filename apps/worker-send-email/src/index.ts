@@ -1,22 +1,40 @@
 // worker-email-processor/src/index.ts
+
 import logger from "@repo/config/logger";
-import redis from "@repo/config/redis"; // Assuming this path is correct
+import redis from "@repo/config/redis";
 import { Worker } from "bullmq";
 import { processEmailJob } from "./jobs/emailProcessor";
+import { processCampaignJob } from "./jobs/processCampaignJob"; // New import
 
 const EMAIL_QUEUE_NAME = "email-sending";
 
 logger.info(`Email Worker Started, Listening to ${EMAIL_QUEUE_NAME}`);
 
-const worker = new Worker(EMAIL_QUEUE_NAME, processEmailJob, {
-  connection: redis,
-  concurrency: 5, // Process 5 emails at a time (adjust based on rate limits/performance)
+const worker = new Worker(
+    EMAIL_QUEUE_NAME,
+    async (job) => {
+        if (job.name === 'send-campaign-email') {
+            return await processEmailJob(job);
+        }
+        if (job.name === 'process-campaign') {
+            return await processCampaignJob(job);
+        }
+        throw new Error(`Unknown job type: ${job.name}`);
+    },
+    {
+        connection: redis,
+        concurrency: 10, 
+    }
+);
+
+worker.on("completed", (job) => {
+    logger.info("Job completed", { jobId: job.id, name: job.name });
 });
 
-worker.on("completed", (job) =>
-  logger.info("Email Job completed", { jobId: job.id, recipient: job.data.to })
-);
-
-worker.on("failed", (job, err) =>
-  logger.error("Email Job failed", { jobId: job?.id, error: err.message, recipient: job?.data.to })
-);
+worker.on("failed", (job, err) => {
+    logger.error("Job failed", {
+        jobId: job?.id,
+        name: job?.name,
+        error: err.message,
+    });
+});

@@ -41,3 +41,8 @@ export const deleteCampaign = async (id: string) => {
   const { data: result } = await axiosInstance.delete(`/campaigns/${id}`);
   return result.data;
 };
+export const startCampaign = async (id: string) => {
+  const { data: result } = await axiosInstance.post(`/campaigns/${id}/start`);
+  return result.data;
+};
+

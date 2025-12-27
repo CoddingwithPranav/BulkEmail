@@ -1,5 +1,3 @@
-// worker-email-processor/src/jobs/emailProcessor.ts
-
 import { Job } from "bullmq";
 import logger from "@repo/config/logger";
 import { sendBulkEmail } from "@repo/email";
@@ -8,8 +6,10 @@ interface EmailJobData {
     subject: string;
     text: string;
     html: string;
-    // You can add job tracking IDs here, e.g., campaignId
+    campaignId: string;
+    contactId: string; 
 }
+
 
 export const processEmailJob = async (job: Job) => {
     const data = job.data as EmailJobData;

@@ -8,6 +8,7 @@ import { errorHandler } from './middleware/errorHandler';
 import { generateImageKitAuth } from './utils/imageKit';
 import logger from '@repo/config/logger';
 
+import webhookRouter from "./routes/v1/webhooks";
 const app:express.Application = express();
 
 app.use(cors({
@@ -15,11 +16,15 @@ app.use(cors({
   credentials: true,
 }));
 app.use(helmet());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-  
+app.use(
+  '/api/v1/webhooks',
+  express.raw({ type: 'application/json' }), // Keep body as Buffer
+  webhookRouter
+);  
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 // HTTP Request Logging (before routes)
 app.use(expressWinston.logger({
   winstonInstance: logger,

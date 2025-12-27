@@ -48,7 +48,10 @@ export const markCampaignPaymentAsPaid = async (
 
     await tx.campaign.update({
       where: { id: campaignId },
-      data: { paid: true },
+      data: { 
+        paid: true,
+        status:"APPROVED"
+       },
     });
 
     return payment;

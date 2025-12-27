@@ -213,6 +213,7 @@ model Campaign {
   municipality        String?
   totalRecipients     Int?
   totalDelivered      Int            @default(0)
+  totalBounced        Int            @default(0)
   totalFailed         Int            @default(0)
   deliveryRate        Float          @default(0)
   totalSmsCost        Float?
