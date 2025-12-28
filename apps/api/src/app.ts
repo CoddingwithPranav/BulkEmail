@@ -11,10 +11,24 @@ import logger from '@repo/config/logger';
 import webhookRouter from "./routes/v1/webhooks";
 const app:express.Application = express();
 
-app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:3000',
-  credentials: true,
-}));
+// app.use(cors({
+//   origin: process.env.CLIENT_URL || 'http://localhost:3000',
+//   credentials: true,
+// }));
+app.use(
+  cors({
+    origin: [
+      "https://bulkemail.pranavmishra.dev",       // Main production frontend
+      "https://www.bulkemail.pranavmishra.dev",    // If you have www version
+      "http://localhost:3000",                    // For local development
+      "http://localhost:5173",                    // Vite or other local ports if needed
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+    credentials: true, // Important if you send cookies or Authorization header with token
+    optionsSuccessStatus: 200, // Optional: some browsers/legacy like 200 instead of 204
+  })
+);
 app.use(helmet());
 app.use(cookieParser());
 
