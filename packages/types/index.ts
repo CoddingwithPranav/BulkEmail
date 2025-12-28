@@ -35,3 +35,34 @@ export enum SystemRole {
 }
 
 export * from "zod";
+export interface DashboardData {
+  stats: {
+    totalContacts: number;
+    totalInvalidContacts: number;
+    totalContactsAll: number;
+    totalFilesUploaded: number;
+    totalPaidNPR: number;
+    totalMessagesSent: number;
+    avgDeliveryRate: number;
+    activeCategories: number;
+  };
+  categories: Array<{
+    id: string;
+    name: string;
+    description: string | null;
+    recipientCount: number;
+    createdAt: Date;
+  }>;
+  campaigns: Array<{
+    id: string;
+    name: string;
+    status: string;
+    deliveryStatus: string;
+    totalRecipients: number | null;
+    totalDelivered: number;
+    deliveryRate: number | null;
+    totalCost: number | null;
+    paid: boolean;
+    createdAt: Date;
+  }>;
+}

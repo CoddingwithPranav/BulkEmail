@@ -9,6 +9,7 @@ import categoriesRoutes from "./categories";
 import myContactRoutes from "./myContact";
 import priceRoutes from "./price";
 import paymentsRoutes from "./payment";
+import dashboardRoutes from "./dashboard";
 const router: Router = Router();
 
 router.use("/auth", authRoutes);
@@ -21,5 +22,6 @@ router.use("/receiver", receiverRoutes);
 router.use("/categories", categoriesRoutes);
 router.use('/my-contacts', myContactRoutes);
 router.use('/price', priceRoutes);
+router.use("/dashboard", dashboardRoutes);
 
 export default router;
