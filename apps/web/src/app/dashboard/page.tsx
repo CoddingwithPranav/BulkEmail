@@ -11,6 +11,7 @@ import {
 import Link from 'next/link';
 import { format } from 'date-fns';
 import { useDashboardQuery } from '@/hooks/queries/useDashboardQuery';
+import Image from 'next/image';
 
 export default function PremiumDashboard() {
   const { data, isLoading, error } = useDashboardQuery();
@@ -40,12 +41,15 @@ export default function PremiumDashboard() {
       <div className="max-w-7xl mx-auto px-6 py-12 space-y-16">
 
         {/* Hero */}
-        <header className="text-center space-y-6">
-          <h1 className="text-6xl md:text-8xl font-black tracking-tighter bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-            BulkSMS
-          </h1>
+        <header className="text-center space-y-6 flex flex-col">
+          <div className='flex items-end justify-center gap-1'>
+            <Image src="/images/logo.svg" alt="logo" width={120} height={120} className="" />
+            <h1 className="text-6xl md:text-8xl font-black tracking-tighter bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+              BulkEmail
+            </h1>
+          </div>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Nepal's most trusted bulk SMS platform for businesses
+            Nepal's most trusted bulk Email platform for businesses
           </p>
         </header>
 
@@ -96,7 +100,7 @@ export default function PremiumDashboard() {
                   Your Categories
                 </h2>
                 <Button asChild size="sm">
-                  <Link href="/categories">
+                  <Link href="/dashboard/categories">
                     View All <ExternalLink className="ml-2 h-4 w-4" />
                   </Link>
                 </Button>
@@ -132,7 +136,7 @@ export default function PremiumDashboard() {
                   Recent Campaigns
                 </h2>
                 <Button asChild size="sm" variant="outline">
-                  <Link href="/campaigns">
+                  <Link href="/dashboard/campaigns">
                     View All <ExternalLink className="ml-2 h-4 w-4" />
                   </Link>
                 </Button>
@@ -168,13 +172,13 @@ export default function PremiumDashboard() {
         {/* Quick Actions */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button size="lg" className="h-14 px-8 text-lg" asChild>
-            <Link href="/categories/new">
+            <Link href="/dashboard/categories">
               <FolderOpen className="mr-3 h-6 w-6" />
               Create New List
             </Link>
           </Button>
           <Button size="lg" variant="outline" className="h-14 px-8 text-lg border-2" asChild>
-            <Link href="/campaigns/new">
+            <Link href="/dashboard/campaigns">
               <Send className="mr-3 h-6 w-6" />
               New Campaign
             </Link>
@@ -183,7 +187,7 @@ export default function PremiumDashboard() {
 
         {/* Footer */}
         <footer className="text-center py-12 border-t">
-          <p className="text-3xl font-bold text-primary">BulkSMS Nepal</p>
+          <p className="text-3xl font-bold text-primary">BulkEmail Nepal</p>
           <p className="text-lg text-muted-foreground mt-2">
             Fast • Reliable • Made in Nepal
           </p>
