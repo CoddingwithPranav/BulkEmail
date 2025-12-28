@@ -3,7 +3,6 @@ import { getMailgunClient, getMailgunDomain } from "./transporter";
 import { getOTPTemplate } from "./templates/otp-template";
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-//TODO:fix why env not working
 interface BulkEmailData {
     to: string;
     subject: string;
