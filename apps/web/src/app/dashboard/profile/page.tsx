@@ -108,7 +108,7 @@ export default function ProfilePage() {
       }
       const payload = {
         ...data,
-        email: user?.email, 
+        email: user?.email || "", 
         profileImage: finalImageUrl,
       };
 

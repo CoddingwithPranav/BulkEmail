@@ -1,6 +1,6 @@
 // src/lib/api/auth.ts
 import axiosInstance from "@/axios";
-import { LoginForm, RegisterForm } from "@repo/types";
+import { LoginForm, RegisterForm, UserProfile } from "@repo/types";
 import { ProfileForm } from "../schemas/profile.schema";
 
 export const login = async (data: LoginForm) => {
@@ -48,7 +48,7 @@ export const resetPassword = async (data: {
   return response.data;
 };
 
-export const getMyProfile = async () => {
+export const getMyProfile = async (): Promise<UserProfile> => {
   const { data } = await axiosInstance.get("/users/profile");
   return data.user;
 };

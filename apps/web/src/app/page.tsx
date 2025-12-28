@@ -35,7 +35,7 @@ export default async function HomePage() {
           </Link>
 
           <nav className="hidden lg:flex items-center gap-10">
-            {["Features", "How It Works", "Pricing", "Contact"].map(
+            {["Features", "How It Works", "Try Now"].map(
               (item) => (
                 <a
                   key={item}
@@ -197,26 +197,6 @@ export default async function HomePage() {
                 desc: "Track opens, clicks, and conversions with detailed reporting",
               },
               {
-                icon: Users,
-                title: "Team Collaboration",
-                desc: "Manage multiple users, roles, and approval workflows",
-              },
-              {
-                icon: Rocket,
-                title: "Quick Send",
-                desc: "Send individual emails instantly without creating a campaign",
-              },
-              {
-                icon: Lock,
-                title: "Enterprise Security",
-                desc: "Bank-level security with encryption and compliance",
-              },
-              {
-                icon: Zap,
-                title: "Automation",
-                desc: "Triggered emails, workflows, and scheduled campaigns",
-              },
-              {
                 icon: Globe,
                 title: "Global Reach",
                 desc: "Send emails worldwide with 99.9% delivery rate",
@@ -267,7 +247,7 @@ export default async function HomePage() {
               {
                 step: "03",
                 title: "Personalize",
-                desc: "Add dynamic fields like {name} and {company}",
+                desc: "Add personalized email content for better engagement",
               },
               {
                 step: "04",
@@ -340,111 +320,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Pricing Preview */}
-      <section id="pricing" className="py-24">
-        <div className="container mx-auto px-6">
-          <div className="text-center space-y-4 mb-16">
-            <h2 className="text-4xl lg:text-5xl font-bold">
-              Simple, Transparent Pricing
-            </h2>
-            <p className="text-xl text-muted-foreground">
-              Start free. Scale as you grow.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            {[
-              {
-                name: "Starter",
-                price: "Free",
-                recipients: "Up to 1,000",
-                features: [
-                  "1 user account",
-                  "Basic analytics",
-                  "Email templates",
-                  "Community support",
-                ],
-              },
-              {
-                name: "Professional",
-                price: "$29",
-                period: "/month",
-                recipients: "Up to 100,000",
-                features: [
-                  "5 team members",
-                  "Advanced analytics",
-                  "Custom templates",
-                  "Priority support",
-                  "API access",
-                ],
-                highlighted: true,
-              },
-              {
-                name: "Enterprise",
-                price: "Custom",
-                recipients: "Unlimited",
-                features: [
-                  "Unlimited users",
-                  "Dedicated account",
-                  "White-label options",
-                  "24/7 phone support",
-                  "SLA guarantee",
-                ],
-              },
-            ].map((plan, i) => (
-              <Card
-                key={i}
-                className={`p-8 relative ${
-                  plan.highlighted
-                    ? "border-primary/50 ring-2 ring-primary/20 md:scale-105"
-                    : "border-border/50"
-                } transition-all hover:shadow-xl`}
-              >
-                {plan.highlighted && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground px-4 py-1 rounded-full text-sm font-medium">
-                    Most Popular
-                  </div>
-                )}
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="text-2xl font-bold">{plan.name}</h3>
-                    <p className="text-muted-foreground text-sm mt-1">
-                      {plan.recipients}
-                    </p>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-4xl font-bold">{plan.price}</p>
-                    {plan.period && (
-                      <p className="text-sm text-muted-foreground">{plan.period}</p>
-                    )}
-                  </div>
-                  <Button
-                    asChild
-                    className={`w-full ${
-                      plan.highlighted
-                        ? "bg-primary hover:bg-primary/90"
-                        : "bg-muted hover:bg-muted/80 text-foreground"
-                    }`}
-                  >
-                    <Link href="/login">Get Started</Link>
-                  </Button>
-                  <ul className="space-y-3">
-                    {plan.features.map((feature, j) => (
-                      <li key={j} className="flex items-start gap-3">
-                        <CheckCircle className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                        <span className="text-sm">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Final CTA */}
-      <section className="py-32 relative overflow-hidden">
+      <section id="try-now" className="py-32 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-t from-primary/5 via-transparent to-transparent" />
         <div className="container mx-auto px-6 text-center relative z-10">
           <div className="max-w-4xl mx-auto space-y-8">
@@ -484,7 +360,7 @@ export default async function HomePage() {
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <Mail className="w-6 h-6 text-brand" />
+               <Image src="/images/logo.svg" alt="Logo" width={30} height={30} /> 
                 <span className="text-lg font-bold">Bulk Email</span>
               </div>
               <p className="text-sm text-muted-foreground">
@@ -504,11 +380,6 @@ export default async function HomePage() {
                     Pricing
                   </Link>
                 </li>
-                <li>
-                  <Link href="#" className="hover:text-primary">
-                    API Docs
-                  </Link>
-                </li>
               </ul>
             </div>
             <div>
@@ -517,11 +388,6 @@ export default async function HomePage() {
                 <li>
                   <Link href="#" className="hover:text-primary">
                     About
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="hover:text-primary">
-                    Blog
                   </Link>
                 </li>
                 <li>
@@ -542,11 +408,6 @@ export default async function HomePage() {
                 <li>
                   <Link href="/terms" className="hover:text-primary">
                     Terms
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="hover:text-primary">
-                    Status
                   </Link>
                 </li>
               </ul>

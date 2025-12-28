@@ -31,3 +31,4 @@ export const updateProfileSchema = z.object({
 });
 
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
+export type UserProfile = z.infer<typeof updateProfileSchema>;

@@ -11,7 +11,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { useLogout } from "@/hooks/queries/auth.query";
+import { useLogout, useUserProfile } from "@/hooks/queries/auth.query";
 import { useAuthStore } from "@/lib/store";
 import { Separator } from "@radix-ui/react-separator";
 import { ChevronDown, LogOut, Settings, UserCircle } from "lucide-react";
@@ -71,7 +71,7 @@ const LogoutAlert = () => {
           <AlertDialogAction
             className="p-2 text-xs bg-brand gap-2 cursor-pointer hover:bg-brand/80 dark:text-white"
             onClick={onLogout}
-          >
+            >
             <LogOut className="h-4 w-4" />
             {isPending ? "Signing out..." : "Sign out"}
           </AlertDialogAction>
@@ -84,6 +84,7 @@ const LogoutAlert = () => {
 export const AdminHeader = () => {
   const user = useAuthStore((state) => state.user);
   const router = useRouter();
+  const { data: userProfile, isLoading: userLoading } = useUserProfile();
 
   const getAvatarInitials = (name: string) => {
     const initials = name
@@ -105,7 +106,7 @@ export const AdminHeader = () => {
       </div>
 
       <div className="flex items-center gap-2">
-        <NotificationDropdown />
+        {/* <NotificationDropdown /> */}
 
         <div className="h-6 w-px bg-border hidden sm:block" />
 
@@ -118,14 +119,14 @@ export const AdminHeader = () => {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="gap-2 px-2 h-8">
               <Avatar >
-                  <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+                  <AvatarImage src={userProfile?.profileImage ?? ""} alt="@shadcn" />
                 <AvatarFallback>
-                  {getAvatarInitials(user?.userFullName ?? "")}
+                  {getAvatarInitials(userProfile?.firstName ?? "")}
                 </AvatarFallback>
               </Avatar>
               <div className="text-left hidden sm:flex sm:flex-col sm:space-y-0.5">
                 <span className="text-xs font-medium">
-                  {user ? user.userFullName : <Skeleton className="h-4 w-25" />}
+                  {userProfile ? userProfile.firstName : <Skeleton className="h-4 w-25" />}
                 </span>
                 <span className="text-xs text-muted-foreground block">
                   {user ? (
@@ -142,10 +143,6 @@ export const AdminHeader = () => {
             <DropdownMenuItem className="gap-2 text-xs py-2" onClick={onProfileClick}>
               <UserCircle className="h-3 w-3" />
               Profile
-            </DropdownMenuItem>
-            <DropdownMenuItem className="gap-2 text-xs py-2">
-              <Settings className="h-3 w-3" />
-              Account
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>

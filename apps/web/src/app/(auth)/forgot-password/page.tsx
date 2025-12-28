@@ -298,7 +298,7 @@ export default function ResetPasswordPage() {
       <div className="hidden lg:flex w-1/2 p-8 lg:p-12">
         <div className="relative w-full h-full rounded-2xl overflow-hidden shadow-lg">
           <Image
-            src="/images/potrate.jpg"
+            src="/images/village.jpg"
             alt="Himalayas"
             fill
             className="object-cover"
@@ -310,7 +310,7 @@ export default function ResetPasswordPage() {
               Instantly.
             </h1>
             <p className="mt-3 text-sm text-white/80 max-w-sm">
-              Your reliable partner for bulk SMS communication across Nepal.
+              Your reliable partner for bulk Email communication across Nepal.
             </p>
           </div>
         </div>

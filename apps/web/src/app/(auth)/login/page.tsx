@@ -87,7 +87,7 @@ export default function AuthPage() {
       email: data.email,
       phoneNumber: data.phoneNumber,
       password: data.password,
-      accountType: data.accountType,
+      accountType: accountType,
       isEmailVerified: false,
     };
 
@@ -217,37 +217,13 @@ export default function AuthPage() {
                   )}
                 </div>
 
-                <div>
-                  <Label className="text-sm font-medium mb-3 block">
-                    Account Type
-                  </Label>
-                  <div className="grid grid-cols-2 gap-3">
-                    {(["INDIVIDUAL", "ORGANIZATION"] as const).map((type) => (
-                      <button
-                        key={type}
-                        type="button"
-                        onClick={() => {
-                          setAccountType(type);
-                          registerForm.setValue("accountType", type);
-                        }}
-                        className={`py-3 px-4 rounded-lg font-medium transition-all ${
-                          accountType === type
-                            ? "bg-primary text-primary-foreground border-2 border-primary"
-                            : "bg-muted text-foreground border-2 border-transparent hover:bg-muted/80"
-                        }`}
-                      >
-                        {type === "INDIVIDUAL" ? "Individual" : "Organization"}
-                      </button>
-                    ))}
-                  </div>
-                </div>
 
                 <Button
                   type="submit"
                   className="w-full h-12 text-base font-semibold rounded-lg"
-                  disabled={registerForm.formState.isSubmitting}
+                  disabled={isRegisterLoading}
                 >
-                  {registerForm.formState.isSubmitting
+                  {isRegisterLoading
                     ? "Creating Account..."
                     : "Create Account"}
                 </Button>
@@ -315,96 +291,37 @@ export default function AuthPage() {
                 <Button
                   type="submit"
                   className="w-full h-12 text-base font-semibold rounded-lg"
-                  disabled={loginForm.formState.isSubmitting}
+                  disabled={isLoginLoading}
                 >
-                  {loginForm.formState.isSubmitting ? "Signing In..." : "Sign In"}
+                  {isLoginLoading ? "Signing In..." : "Sign In"}
                 </Button>
               </form>
             </TabsContent>
           </Tabs>
-
-          {/* Divider */}
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-border/50" />
-            </div>
-            <div className="relative flex justify-center text-xs">
-              <span className="bg-background px-2 text-muted-foreground">
-                or
-              </span>
-            </div>
-          </div>
-
-          {/* Footer Links */}
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-3 text-xs text-muted-foreground">
-              <Link href="/terms" className="hover:text-primary underline">
-                Terms of Service
-              </Link>
-              <Link href="/privacy" className="hover:text-primary underline">
-                Privacy Policy
-              </Link>
-            </div>
-            <div className="text-center text-sm text-muted-foreground">
-              By signing up, you agree to our{" "}
-              <Link href="/terms" className="text-primary hover:underline">
-                Terms
-              </Link>
-            </div>
-          </div>
         </div>
       </div>
 
       {/* Right Side - Gradient Background */}
-      <div className="hidden lg:flex w-1/2 relative overflow-hidden p-12">
-        {/* Background Gradients */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-brand/10 to-primary/20">
-          <div className="absolute top-1/4 -right-1/4 w-1/2 h-1/2 bg-brand/30 rounded-full blur-3xl" />
-          <div className="absolute bottom-1/4 -left-1/4 w-1/2 h-1/2 bg-primary/30 rounded-full blur-3xl" />
-        </div>
-
-        {/* Content */}
-        <div className="relative z-10 flex flex-col justify-center items-center text-center w-full space-y-8">
-          <div className="space-y-4">
-            <Mail className="h-20 w-20 text-primary/30 mx-auto" />
-            <h2 className="text-4xl font-bold text-white">
-              Send Better Emails
-            </h2>
-            <p className="text-xl text-white/70 max-w-sm">
-              Reach your audience with professional, personalized email
-              campaigns. Fast, reliable, and built for scale.
-            </p>
-          </div>
-
-          {/* Features on Right Side */}
-          <div className="space-y-4 pt-8 w-full">
-            {[
-              {
-                icon: Mail,
-                title: "Bulk Campaigns",
-                desc: "Send to thousands instantly",
-              },
-              {
-                icon: CheckCircle,
-                title: "99.9% Delivery",
-                desc: "Industry-leading success rate",
-              },
-              {
-                icon: ArrowRight,
-                title: "Real-time Analytics",
-                desc: "Track every open and click",
-              },
-            ].map((feature, i) => (
-              <div key={i} className="flex items-center gap-4 bg-white/10 backdrop-blur-md p-4 rounded-lg">
-                <feature.icon className="h-6 w-6 text-primary flex-shrink-0" />
-                <div className="text-left">
-                  <p className="font-semibold text-white text-sm">
-                    {feature.title}
-                  </p>
-                  <p className="text-white/60 text-xs">{feature.desc}</p>
-                </div>
-              </div>
-            ))}
+      <div className="hidden lg:flex w-1/2 p-8 lg:p-12">
+        <div className="relative w-full h-full rounded-2xl overflow-hidden shadow-lg">
+          <Image
+            src="/images/village.jpg"
+            alt="Himalayas"
+            fill
+            className="object-cover"
+          />
+          <div className="absolute bottom-0 left-0 p-8 text-white">
+            <div className="space-y-4 "
+            >
+              <Image src="/images/logo.svg" alt="Logo" width={60} height={60} className="" />
+              <h2 className="text-4xl font-bold text-white">
+                Send Better Emails
+              </h2>
+              <p className="text-xl text-white/70 max-w-sm">
+                Reach your audience with professional, personalized email
+                campaigns. Fast, reliable, and built for scale.
+              </p>
+            </div>
           </div>
         </div>
       </div>
