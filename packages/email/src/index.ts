@@ -1,6 +1,8 @@
 const sgMail = require('@sendgrid/mail');
 import { getMailgunClient, getMailgunDomain } from "./transporter";
 import { getOTPTemplate } from "./templates/otp-template";
+import dotenv from "dotenv";
+dotenv.config({ debug: true }); // debug: true for more info
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 interface BulkEmailData {
