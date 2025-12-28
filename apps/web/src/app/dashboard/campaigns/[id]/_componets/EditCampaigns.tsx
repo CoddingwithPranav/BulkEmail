@@ -23,7 +23,8 @@ export default function EditCampaigns({ id }: { id: string }) {
   const formValues = campaign
     ? {
         name: campaign.name ?? "",
-        messageText: campaign.messageText ?? "",
+        subject: campaign.subject ?? "",
+        emailBody: campaign.emailBody ?? "", 
         province: campaign.province ?? "",
         district: campaign.district ?? "",
         municipality: campaign.municipality ?? "",

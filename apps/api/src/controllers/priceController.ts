@@ -39,8 +39,8 @@ export const createPriceHandler = async (req: AuthRequest, res: Response) => {
       message: "SMS price updated successfully",
       data: {
         id: newPrice.id,
-        pricePerSmsPaisa: newPrice.pricePerSmsPaisa,
-        pricePerSmsNPR: newPrice.pricePerSmsPaisa / 100,
+        pricePerEmailPaisa: newPrice.pricePerEmailPaisa,
+        pricePerEmailNPR: newPrice.pricePerEmailPaisa / 100,
         effectiveFrom: newPrice.effectiveFrom,
         effectiveTo: newPrice.effectiveTo,
       },

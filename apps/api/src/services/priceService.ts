@@ -4,7 +4,7 @@ import logger from "@repo/config/logger";
 import { CreatePriceInput } from "@repo/types";
 
 export async function getCurrentPrice() {
-  const pricing = await dbClient.smsPricing.findFirst({
+  const pricing = await dbClient.emailPricing.findFirst({
     where: {
       isActive: true,
       effectiveFrom: { lte: new Date() },
@@ -16,8 +16,8 @@ export async function getCurrentPrice() {
   if (!pricing) {
     logger.warn("No active pricing found → using fallback 85 paisa");
     return {
-      pricePerSmsPaisa: 85,
-      pricePerSmsNPR: 0.85,
+      pricePerEmailPaisa: 85,
+      pricePerEmailNPR: 0.85,
       currency: "NPR",
       source: "fallback" as const,
     };
@@ -25,8 +25,8 @@ export async function getCurrentPrice() {
 
   return {
     id: pricing.id,
-    pricePerSmsPaisa: pricing.pricePerSmsPaisa,
-    pricePerSmsNPR: pricing.pricePerSmsPaisa / 100,
+    pricePerEmailPaisa: pricing.pricePerEmailPaisa,
+    pricePerEmailNPR: pricing.pricePerEmailPaisa / 100,
     currency: pricing.currency,
     effectiveFrom: pricing.effectiveFrom,
     effectiveTo: pricing.effectiveTo,
@@ -36,14 +36,14 @@ export async function getCurrentPrice() {
 
 export async function createPrice(data: CreatePriceInput) {
   // Deactivate all previous active prices
-  await dbClient.smsPricing.updateMany({
+  await dbClient.emailPricing.updateMany({
     where: { isActive: true },
     data: { isActive: false },
   });
 
-  const newPrice = await dbClient.smsPricing.create({
+  const newPrice = await dbClient.emailPricing.create({
     data: {
-      pricePerSmsPaisa: data.pricePerSmsPaisa,
+      pricePerEmailPaisa: data.pricePerEmailPaisa,
       currency: data.currency || "NPR",
       effectiveFrom: new Date(data.effectiveFrom || new Date()),
       effectiveTo: data.effectiveTo ? new Date(data.effectiveTo) : null,
@@ -51,9 +51,9 @@ export async function createPrice(data: CreatePriceInput) {
     },
   });
 
-  logger.info("New SMS price created", {
+  logger.info("New Email price created", {
     priceId: newPrice.id,
-    pricePerSmsPaisa: newPrice.pricePerSmsPaisa,
+    pricePerEmailPaisa: newPrice.pricePerEmailPaisa,
   });
 
   return newPrice;
@@ -63,13 +63,13 @@ export async function getPricingHistory(page = 1, limit = 20) {
   const skip = (page - 1) * limit;
 
   const [items, total] = await Promise.all([
-    dbClient.smsPricing.findMany({
+    dbClient.emailPricing.findMany({
       skip,
       take: limit,
       orderBy: { effectiveFrom: "desc" },
       select: {
         id: true,
-        pricePerSmsPaisa: true,
+        pricePerEmailPaisa: true,
         currency: true,
         isActive: true,
         effectiveFrom: true,
@@ -78,13 +78,13 @@ export async function getPricingHistory(page = 1, limit = 20) {
         updatedAt: true,
       },
     }),
-    dbClient.smsPricing.count(),
+    dbClient.emailPricing.count(),
   ]);
 
   return {
     items: items.map((p) => ({
       ...p,
-      pricePerSmsNPR: p.pricePerSmsPaisa / 100,
+      pricePerEmailNPR: p.pricePerEmailPaisa / 100,
     })),
     pagination: {
       currentPage: page,

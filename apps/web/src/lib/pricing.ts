@@ -1,4 +1,4 @@
-import { getSMSPrice } from "./api/price";
+import { getEmailPrice } from "./api/price";
 
 // lib/pricing.ts
 export const PAISA_PER_RUPEE = 100;
@@ -13,12 +13,12 @@ export function rupeesToPaisa(rupees: number | string): number {
 
 // Calculate total cost
 export async function calculateCampaignCost(recipients: number) {
-  const pricePaisa = await getSMSPrice();
-  const totalPaisa = recipients * pricePaisa;
+  const pricePaisa = await getEmailPrice();
+  const totalPaisa = recipients * pricePaisa.pricePerEmailPaisa;
   const totalRupees = paisaToRupees(totalPaisa);
 
   return {
-    pricePerSms: paisaToRupees(pricePaisa),
+    pricePerEmail: paisaToRupees(pricePaisa.pricePerEmailPaisa),
     totalAmount: totalRupees,
     totalPaisa,
     recipients,

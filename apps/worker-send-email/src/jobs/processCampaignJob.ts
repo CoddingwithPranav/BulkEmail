@@ -72,9 +72,9 @@ export const processCampaignJob = async (job: Job<ProcessCampaignJobData>) => {
             'send-campaign-email',
             {
                 to: recipient.email!,
-                subject: campaign.name, 
-                text: campaign.messageText,
-                html: campaign.messageText, // TODO:Replace with proper HTML template later
+                subject: campaign.subject, 
+                text: campaign.emailBody,
+                html: campaign.emailBody, // TODO:Replace with proper HTML template later
                 campaignId,
                 contactId: recipient.id,
             },

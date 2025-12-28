@@ -75,7 +75,7 @@ export const sendBulkEmail = async ({ to, subject, text, html, campaignId, conta
                 html,
                 custom_args: {
                   campaignId: campaignId,
-                  contactId: contactId, 
+                  contactId: contactId, // optional, for future per-contact tracking
                 },
             };
 

@@ -11,12 +11,13 @@ export const createCampaign = async (
   userId: string,
   data: {
     name: string;
-    messageText: string;
+    subject: string;
+    emailBody: string;
     categoryId: string;
     province?: string;
     district?: string;
     municipality?: string;
-    totalSmsCost?: number;
+    totalCost?: number;
     paymentReceiptImage?: string;
   }
 ) => {
@@ -107,14 +108,14 @@ export const updateCampaign = async (
   userId: string,
   data: Partial<{
     name: string;
-    messageText: string;
+    subject: string;
+    emailBody: string;
     categoryId: string;
     province?: string;
     district?: string;
     municipality?: string;
   }>
 ) => {
-  // If category changed → recalculate recipients
   let recipientsNumber;
   if (data.categoryId) {
     const count = await dbClient.my_Contact.count({

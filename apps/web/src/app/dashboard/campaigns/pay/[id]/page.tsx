@@ -16,7 +16,7 @@ import {
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useCampaignsQueryById } from "@/hooks/queries/campaigns.query";
-import { useSMSPriceQuery } from "@/hooks/queries/price.query";
+import { useEmailPriceQuery } from "@/hooks/queries/price.query";
 import { useInitiatePaymentMutation } from "@/hooks/queries/payments.query";
 import { toast } from "sonner";
 import Image from "next/image";
@@ -26,12 +26,11 @@ export default function PaymentPage() {
   const id = params.id as string;
 
   const { data: campaign, isLoading: campaignLoading, isError: campaignError } = useCampaignsQueryById(id);
-  const { data: priceData } = useSMSPriceQuery();
+  const { data: priceData } = useEmailPriceQuery();
 
   const initiatePaymentMutation = useInitiatePaymentMutation();
-
-  const pricePerSms = priceData?.pricePerSms || 0.85;
-  const totalAmount = campaign?.totalSmsCost || 0;
+  const pricePerEmail = priceData?.pricePerEmailNPR || 0.85;
+  const totalAmount = campaign?.totalCost || 0;
   const recipientCount = campaign?.totalRecipients || 0;
 
   const isAlreadyPaid = campaign?.paid === true;
@@ -46,6 +45,7 @@ export default function PaymentPage() {
       },
       {
         onSuccess: (data) => {
+          debugger;
           if (data.paymentMethod === "esewa") {
             esewaCall(data.formData);
           }
@@ -178,7 +178,7 @@ export default function PaymentPage() {
                     <IndianRupee className="h-10 w-10 text-brand mx-auto mb-3" />
                     <p className="text-sm text-muted-foreground">Price per SMS</p>
                     <p className="text-3xl font-bold text-brand">
-                      Rs. {pricePerSms.toFixed(2)}
+                      Rs. {pricePerEmail.toFixed(2)}
                     </p>
                   </div>
                 </div>

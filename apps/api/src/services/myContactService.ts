@@ -1,4 +1,3 @@
-// src/services/myContactService.ts
 import { dbClient } from "@repo/db/client";
 import { GetMyContactsQuery } from "@repo/types";
 

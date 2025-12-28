@@ -40,11 +40,11 @@ export const useCampaignsTableColumns = () => {
         </div>
       ),
     }),
-    columnHelper.accessor("totalSmsCost", {
+    columnHelper.accessor("totalCost", {
       header: "Total Cost",
       cell: ({ row }) => (
         <div className="font-semibold text-brand">
-          Rs. {row.original.totalSmsCost?.toFixed(2) || "0.00"}
+          Rs. {row.original.totalCost?.toFixed(2) || "0.00"}
         </div>
       ),
     }),

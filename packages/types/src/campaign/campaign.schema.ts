@@ -3,10 +3,8 @@ import { z } from "zod";
 const campaignBase = z.object({
   id: z.string().uuid().optional(),
   name: z.string().min(3, "Campaign name must be at least 3 characters"),
-  messageText: z
-    .string()
-    .min(1, "Message cannot be empty")
-    .max(1600, "Message too long (max ~10 SMS parts)"),
+  subject: z.string().min(1, "Subject cannot be empty"),
+  emailBody: z.string().min(1, "Email body cannot be empty"),
   province: z.string().optional(),
   deliveryStatus: z
     .enum(["NOT_STARTED", "IN_PROGRESS", "COMPLETED"])
@@ -14,7 +12,7 @@ const campaignBase = z.object({
   categoryId: z.string().uuid("Invalid category ID"),
   district: z.string().optional(),
   municipality: z.string().optional(),
-  totalSmsCost: z.number().min(0).optional(),
+  totalCost: z.number().min(0).optional(),
   totalDelivered: z.number().int().min(0).optional(),
   totalFailed: z.number().int().min(0).optional(),
   totalRecipients: z.number().int().min(0).optional(),

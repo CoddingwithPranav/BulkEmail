@@ -1,9 +1,9 @@
-import { getSMSPrice } from "@/lib/api/price";
+import { getEmailPrice } from "@/lib/api/price";
 import { useQuery } from "@tanstack/react-query";
 
-export const useSMSPriceQuery = () => {
+export const useEmailPriceQuery = () => {
   return useQuery({
-    queryKey: ['smsPrice'],
-    queryFn: () => getSMSPrice()
+    queryKey: ['emailPrice'],
+    queryFn: () => getEmailPrice()
   });
 };

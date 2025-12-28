@@ -2,12 +2,12 @@
 import { z } from "zod";
 
 export const createPriceSchema = z.object({
-  pricePerSmsPaisa: z
+  pricePerEmailPaisa: z
     .number()
     .int()
     .min(1, "Price must be at least 1 paisa")
     .max(10000, "Price too high")
-    .describe("Price per SMS in paisa (e.g., 85 = Rs. 0.85)"),
+    .describe("Price per Email in paisa (e.g., 85 = Rs. 0.85)"),
 
   currency: z
     .string()
@@ -53,8 +53,8 @@ export type PriceIdParam = z.infer<typeof priceIdParamSchema>;
 
 export type PriceResponse = {
   id: string;
-  pricePerSmsPaisa: number;
-  pricePerSmsNPR: number;
+  pricePerEmailPaisa: number;
+  pricePerEmailNPR: number;
   currency: string;
   isActive: boolean;
   effectiveFrom: string;

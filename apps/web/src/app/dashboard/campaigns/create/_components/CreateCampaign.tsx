@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import { useCampaignCreateMutation } from "@/hooks/queries/campaigns.query";
 import { useCategoryRecipientCountQuery } from "@/hooks/queries/categories.query";
-import { useSMSPriceQuery } from "@/hooks/queries/price.query";
+import { useEmailPriceQuery } from "@/hooks/queries/price.query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createCampaignSchema } from "@repo/types";
 import { useRouter } from "next/navigation";
@@ -20,7 +20,8 @@ export default function CreateCampaign() {
     resolver: zodResolver(createCampaignSchema),
     defaultValues: {
       name: "",
-      messageText: "",
+      subject: "",
+      emailBody: "",
       categoryId: "",
       province: undefined,
       district: undefined,
@@ -33,11 +34,11 @@ export default function CreateCampaign() {
   // Fetch recipient count
   const { data: countData, isLoading: loadingCount } = useCategoryRecipientCountQuery(categoryId);
 
-  // Fetch current SMS price
-  const { data: priceData } = useSMSPriceQuery();
-  const pricePerSms = priceData?.pricePerSmsNPR || 0.85;
+  // Fetch current Email price
+  const { data: priceData } = useEmailPriceQuery();
+  const pricePerEmail = priceData?.pricePerEmailNPR || 0.5;
   const recipientCount = countData?.recipientCount || 0;
-  const totalCost = recipientCount > 0 ? recipientCount * pricePerSms : 0;
+  const totalCost = recipientCount > 0 ? recipientCount * pricePerEmail : 0;
 
   const { mutateAsync: createCampaign, isPending } = useCampaignCreateMutation();
 
@@ -47,7 +48,7 @@ export default function CreateCampaign() {
     const payload = {
       ...values,
       totalRecipients: recipientCount,
-      totalSmsCost: Number(totalCost.toFixed(2)),
+      totalCost: Number(totalCost.toFixed(2)),
     };
 
     try {
@@ -86,7 +87,7 @@ export default function CreateCampaign() {
                       </div>
                       <div>
                         <p className="text-muted-foreground">Price per Email</p>
-                        <p className="text-2xl font-bold">Rs. {pricePerSms.toFixed(2)}</p>
+                        <p className="text-2xl font-bold">Rs. {pricePerEmail.toFixed(2)}</p>
                       </div>
                       <div>
                         <p className="text-muted-foreground">Total Cost</p>
