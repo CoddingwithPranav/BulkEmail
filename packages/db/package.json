@@ -6,7 +6,6 @@
   "scripts": {
     "migrate:dev": "prisma migrate dev",
     "seed": "tsx src/seed.ts",
-    "dev": "tsup src/* --watch",
     "format": "prisma format",
     "generate": "prisma generate",
     "studio": "prisma studio"
