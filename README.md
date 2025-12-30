@@ -29,7 +29,7 @@ A powerful, scalable **bulk email management platform** designed for businesses 
 - **Bulk Email Campaigns**: Create and schedule professional email campaigns to thousands of recipients with rich tracking
 - **Contact Management**: Import contacts from CSV/XLSX files, automatic validation, categorization, and duplicate detection
 - **Background Processing**: Asynchronous file processing and email delivery using **BullMQ** queues for reliability and performance
-- **Quick Send**: Instantly send individual or small-batch emails without creating a full campaign
+- **eSewa Payment Integration**: Pay-per-campaign model with secure eSewa payment gateway integration for each email campaign
 - **User Roles & Security**: Role-based access (USER, ADMIN, SUPERADMIN), JWT authentication, and OTP verification
 - **Delivery Analytics**: Real-time stats including total sent, delivered, failed, bounced, and delivery rates
 - **Responsive Dashboard**: Modern, intuitive Next.js frontend with beautiful UI components (Radix UI, Tailwind CSS, shadcn/ui)
@@ -71,6 +71,7 @@ packages/
 - **File Processing**: csv-parser, xlsx
 - **Email Sending**: Nodemailer, Nodemailer-express-handlebars
 - **Authentication**: JWT, OTP verification
+- **Payment Gateway**: eSewa (Nepal's leading payment service)
 - **File Storage**: ImageKit CDN
 - **Logging**: Winston with file rotation
 - **Monitoring**: Express Winston
@@ -252,7 +253,20 @@ packages/
                   ┌──────────▼──────────┐
                   │ 2. Store Campaign   │
                   │    in Database      │
-                  │ - Set status DRAFT  │
+                  │ - Status: PENDING   │
+                  └──────────┬──────────┘
+                             │
+                  ┌──────────▼──────────┐
+                  │ 2.1 Redirect to     │
+                  │ eSewa Payment       │
+                  │ - Calculate cost    │
+                  │ - Initiate payment  │
+                  └──────────┬──────────┘
+                             │
+                  ┌──────────▼──────────┐
+                  │ 2.2 Verify Payment  │
+                  │ - Update status PAID│
+                  │ - Enable campaign   │
                   └──────────┬──────────┘
                              │
                   ┌──────────▼──────────┐
@@ -426,31 +440,38 @@ User          Frontend      API         Database    Email Service
 ### Sequence 2: Campaign Creation & Sending
 
 ```
-User          Frontend      API       Database    Queue      Worker      SMTP
- │              │           │            │        (Redis)      │        Service
- │              │           │            │          │          │           │
- ├─ Create ────>│           │            │          │          │           │
- │ Campaign     │           │            │          │          │           │
- │              ├─ POST /campaigns ─────>│         │          │           │
- │              │           │            │          │          │           │
- │              │           ├─ Validate  │          │          │           │
- │              │           ├─ Save ────────────────────────────────────────>│
- │              │           │<─ Campaign ID ─┤    │          │           │
- │              │<─ ID ──────┤            │    │          │           │
- │<─ Success ───┤           │            │    │          │           │
- │              │           │            │    │          │           │
- │              │           ├─ Add Jobs to Queue ──>│          │           │
- │              │           │            │    │ Batch Processing          │
- │              │           │            │    └──────────┬──────────────>│
- │              │           │            │          │ Send Emails       │
- │              │           │            │          │<─────────────────┤
- │              │           │ ◄─────────────────────── Update Status    │
- │              │           │ (Email Log)           │                  │
- │              │           │            │          │                  │
- │ ─ Check Stats ┤         │            │          │                  │
- │              ├─ GET /campaigns/:id ─────────────────────────────────>│
- │              │<─ Stats ──┤            │          │                  │
- │<─ Analytics ─┤           │            │          │                  │
+User          Frontend      API       Database    Queue      Worker      SMTP      eSewa
+ │              │           │            │        (Redis)      │        Service   Gateway
+ │              │           │            │          │          │           │         │
+ ├─ Create ────>│           │            │          │          │           │         │
+ │ Campaign     │           │            │          │          │           │         │
+ │              ├─ POST /campaigns ─────>│         │          │           │         │
+ │              │           │            │          │          │           │         │
+ │              │           ├─ Validate  │          │          │           │         │
+ │              │           ├─ Save ────────────────────────────────────────>│        │
+ │              │           │<─ Campaign ID ─┤    │          │           │         │
+ │              │<─ Payment URL ┤        │    │          │           │         │
+ │              │           │            │    │          │           │         │
+ ├─ Redirect ───────────────────────────────────────────────────────────────────────>│
+ │ to eSewa     │           │            │    │          │           │         │
+ │<─ Complete Payment ──────────────────────────────────────────────────────────────┤
+ │              │           │            │    │          │           │         │
+ │              ├─ GET /payment/verify ─────────────────────────────────────────────>│
+ │              │           │<─ Success ───────────────────────────────────────────┤│
+ │              │           ├─ Update Campaign Status │          │           │      │
+ │              │           ├─ Add Jobs to Queue ──>│          │           │      │
+ │              │           │            │    │ Batch Processing          │      │
+ │              │           │            │    └──────────┬──────────────>│      │
+ │              │           │            │          │ Send Emails       │      │
+ │              │           │            │          │<─────────────────┤      │
+ │              │           │ ◄─────────────────────── Update Status    │      │
+ │              │           │ (Email Log)           │                  │      │
+ │<─ Success ───┤           │            │          │                  │      │
+ │              │           │            │          │                  │      │
+ │ ─ Check Stats ┤         │            │          │                  │      │
+ │              ├─ GET /campaigns/:id ─────────────────────────────────>│      │
+ │              │<─ Stats ──┤            │          │                  │      │
+ │<─ Analytics ─┤           │            │          │                  │      │
 ```
 
 ### Sequence 3: File Upload & Processing
@@ -485,33 +506,44 @@ User          Frontend      API        DB      ImageKit    Queue     Worker
  │<─ Complete ──┤             │      │    │         │ │  └───────┘
 ```
 
-### Sequence 4: Quick Email Send
+### Sequence 4: eSewa Payment Flow
 
 ```
-User          Frontend      API         Database    Queue      Worker    SMTP
- │              │           │              │      (Redis)      │        │
- │              │           │              │          │        │        │
- ├─ Send ──────>│           │              │          │        │        │
- │ Email        │           │              │          │        │        │
- │              ├─ POST /quick-send ─────>│         │        │        │
- │              │           │              │          │        │        │
- │              │           ├─ Validate    │          │        │        │
- │              │           ├─ Create Log ────────────────────────────>│
- │              │           │ (PENDING)    │          │        │        │
- │              │           ├─ Add to Queue ────────>│        │        │
- │              │<─ Email ID ─┤            │    │    │        │        │
- │<─ Queued ────┤           │            │    │    │        │        │
- │              │           │            │    │    │        │        │
- │              │           │            │    │  ┌──▼──────────────>│
- │              │           │            │    │  │ Send via SMTP   │
- │              │           │            │    │  │<────────────────┤
- │              │           │ ◄──────────────── ─────┤ Update (SENT)
- │              │           │ (Status: SENT)  │  │                │
- │              │           │                 │  │                │
- │ ─ Check Status ┤        │                 │  │                │
- │              ├─ GET /email/:id ──────────────────────────────────>│
- │              │<─ Status ──┤              │  │                │
- │<─ Delivered ─┤           │              │  │                │
+User          Frontend      API         Database    eSewa Gateway
+ │              │           │              │            │
+ │              │           │              │            │
+ ├─ Select ────>│           │              │            │
+ │ Plan/Credits │           │              │            │
+ │              ├─ POST /payment/initiate ─>│           │
+ │              │           │              │            │
+ │              │           ├─ Create Payment Record ──>│
+ │              │           │<─ Payment ID ─┤           │
+ │              │           │              │            │
+ │              │           ├─ Generate eSewa Request ──>│
+ │              │           │<─ Payment URL & Signature ┤
+ │              │<─ Redirect URL ─┤        │            │
+ │<─ Redirect ──┤           │              │            │
+ │              │           │              │            │
+ ├──────────────────────────────────────────────────────>│
+ │              Redirects to eSewa Payment Page          │
+ │<──────────────────────────────────────────────────────┤
+ │              │           │              │            │
+ │ ─ Complete ──────────────────────────────────────────>│
+ │ Payment      │           │              │            │
+ │<─────────────────────────────────────────────────────┤
+ │ Redirect back with transaction details                │
+ │              │           │              │            │
+ │              ├─ GET /payment/verify ───────────────>│
+ │              │           │              │            │
+ │              │           ├─ Verify with eSewa ───────>│
+ │              │           │<─ Verification Response ───┤
+ │              │           │              │            │
+ │              │           ├─ Update Payment Status ───>│
+ │              │           ├─ Credit User Account ─────>│
+ │              │           │<─ Updated ────────────────┤
+ │              │<─ Success ─┤              │            │
+ │<─ Payment ───┤           │              │            │
+ │ Confirmed    │           │              │            │
 ```
 
 ---
@@ -682,9 +714,10 @@ Key entities: Users, Campaigns, Contacts, EmailLogs, Uploads, Categories, Prices
 - `POST /api/v1/uploads`
 - `GET /api/v1/uploads/:id`
 
-### Quick Send
-- `POST /api/v1/quick-send`
-- `GET /api/v1/email/:id`
+### Payment (eSewa)
+- `POST /api/v1/payment/initiate`
+- `GET /api/v1/payment/verify`
+- `GET /api/v1/payment/history`
 
 ---
 
@@ -704,6 +737,11 @@ SMTP_USER=your_email@gmail.com
 SMTP_PASSWORD=your_app_password
 IMAGEKIT_PUBLIC_KEY=your_public_key
 IMAGEKIT_PRIVATE_KEY=your_private_key
+ESEWA_MERCHANT_ID=your_esewa_merchant_id
+ESEWA_SECRET_KEY=your_esewa_secret_key
+ESEWA_ENVIRONMENT=sandbox
+ESEWA_SUCCESS_URL=http://localhost:3000/payment/success
+ESEWA_FAILURE_URL=http://localhost:3000/payment/failure
 CLIENT_URL=http://localhost:3000
 PORT=4000
 NODE_ENV=development
