@@ -8,7 +8,7 @@ set -e
 DOMAIN="bulkemail.pranavmishra.dev"
 API_PORT=3000
 WEB_PORT=3001
-EMAIL="pranav@pranavmishra.dev"  # Change if needed
+EMAIL="pranavmishra2101@gmail.com"  # Change if needed
 
 echo "🔧 Setting up Nginx and SSL for $DOMAIN"
 
