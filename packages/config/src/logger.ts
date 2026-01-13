@@ -1,11 +1,12 @@
 import path from "path";
+import fs from "fs";
 import winston from "winston";
 import DailyRotateFile from "winston-daily-rotate-file";
 
 // Ensure logs directory exists
 const logsDir = path.join(process.cwd(), "logs");
-if (!require("fs").existsSync(logsDir)) {
-  require("fs").mkdirSync(logsDir, { recursive: true });
+if (!fs.existsSync(logsDir)) {
+  fs.mkdirSync(logsDir, { recursive: true });
 }
 
 const logger = winston.createLogger({
@@ -17,7 +18,6 @@ const logger = winston.createLogger({
   ),
   defaultMeta: { service: "bulk-email" },
   transports: [
-    // Write all logs with level `error` and below to `error.log`
     new DailyRotateFile({
       filename: path.join(logsDir, "error-%DATE%.log"),
       datePattern: "YYYY-MM-DD",
@@ -27,7 +27,6 @@ const logger = winston.createLogger({
       level: "error",
     }),
 
-    // Write all logs to `combined.log`
     new DailyRotateFile({
       filename: path.join(logsDir, "combined-%DATE%.log"),
       datePattern: "YYYY-MM-DD",
@@ -36,7 +35,6 @@ const logger = winston.createLogger({
       maxFiles: "30d",
     }),
 
-    // Console output (pretty in dev)
     new winston.transports.Console({
       format: winston.format.combine(
         winston.format.colorize(),
@@ -59,3 +57,4 @@ const logger = winston.createLogger({
 });
 
 export default logger;
+
