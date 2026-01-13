@@ -56,6 +56,7 @@ const CategoriesFormFields = ({ form }: MyCategoriesFormFieldsProps) => {
                     placeholder="Write your Description here..."
                     className="min-h-48 resize-none"
                     {...field}
+                    value={field.value ?? ""}
                   />
                 </FormControl>
                 <div className="text-sm text-muted-foreground mt-1">

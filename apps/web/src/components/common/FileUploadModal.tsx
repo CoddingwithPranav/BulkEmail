@@ -34,6 +34,7 @@ export default function FileUploadModal({
 }: FileUploadModalProps) {
   const [file, setFile] = useState<File | null>(null);
   const [uploadedFileId, setUploadedFileId] = useState<string | null>(null);
+  const [categoryId, setCategoryId] = useState<string>("");
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -67,7 +68,7 @@ export default function FileUploadModal({
     if (!file) return;
 
     uploadMutation.mutate(
-      { file },
+      { file, categoryId },
       {
         onSuccess: (data) => {
           setUploadedFileId(data.fileId);

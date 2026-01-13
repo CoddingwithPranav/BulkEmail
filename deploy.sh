@@ -8,11 +8,11 @@ set -e
 echo "🚀 Starting deployment..."
 
 # Navigate to project directory
-cd ~/BulkEmail
+cd ~/projects/BulkEmail
 
 # Pull latest changes
 echo "📥 Pulling latest changes from git..."
-git pull origin master
+git pull origin main
 
 # Install dependencies
 echo "📦 Installing dependencies..."
