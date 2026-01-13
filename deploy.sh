@@ -8,7 +8,7 @@ set -e
 echo "🚀 Starting deployment..."
 
 # Navigate to project directory
-cd ~/MessangerNepal
+cd ~/BulkEmail
 
 # Pull latest changes
 echo "📥 Pulling latest changes from git..."
