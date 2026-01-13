@@ -4,6 +4,7 @@
   "private": true,
   "description": "Background file processing worker (CSV/XLSX → validate → save contacts + invalid rows)",
   "main": "dist/index.js",
+  "type": "commonjs",
   "types": "dist/index.d.ts",
   "scripts": {
     "dev": "tsx watch src/index.ts",
