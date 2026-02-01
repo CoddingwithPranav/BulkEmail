@@ -1,7 +1,8 @@
 # Development Dockerfile for Worker File Processor
 FROM node:20-alpine
 
-RUN corepack enable && corepack prepare pnpm@9.0.0 --activate
+# Install pnpm globally
+RUN npm install -g pnpm@9.0.0
 
 WORKDIR /app
 
@@ -30,6 +31,19 @@ RUN pnpm install --frozen-lockfile
 
 # Generate Prisma client
 RUN cd packages/db && npx prisma generate
+
+# Copy source files for shared packages that need to be built
+COPY packages/config ./packages/config
+COPY packages/types ./packages/types
+COPY packages/db ./packages/db
+COPY packages/email ./packages/email
+COPY packages/typescript-config ./packages/typescript-config
+
+# Build shared packages
+RUN cd packages/config && pnpm build
+RUN cd packages/types && pnpm build
+RUN cd packages/db && pnpm build
+RUN cd packages/email && pnpm build
 
 # Source code will be mounted via volumes
 
