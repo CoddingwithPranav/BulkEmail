@@ -5,10 +5,6 @@
   ],
   "compilerOptions": {
     "outDir": "dist",
-    "paths": {
-      "@repo/*": [
-        "../../packages/*/src"
-      ]
-    }
+    "rootDir": "src"
   }
 }

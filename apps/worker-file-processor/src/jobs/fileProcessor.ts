@@ -159,13 +159,21 @@
 
 
 
+console.log("[FILE-PROCESSOR] Loading modules...");
 import logger from "@repo/config/logger";
+console.log("[FILE-PROCESSOR] 1");
 import { dbClient } from "@repo/db/client";
+console.log("[FILE-PROCESSOR] 2");
 import { uploadFileSchema } from "@repo/types";
+console.log("[FILE-PROCESSOR] 3");
 import { Job } from "bullmq";
+console.log("[FILE-PROCESSOR] 4");
 import csv from "csv-parser";
+console.log("[FILE-PROCESSOR] 5");
 import fs from "fs";
+console.log("[FILE-PROCESSOR] 6");
 import XLSX from "xlsx";
+console.log("[FILE-PROCESSOR] Modules loaded");
 
 
 

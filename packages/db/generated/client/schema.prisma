@@ -1,0 +1,269 @@
+generator client {
+  provider      = "prisma-client-js"
+  output        = "../generated/client"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+  SUPERADMIN
+}
+
+enum AccountType {
+  INDIVIDUAL
+  ORGANIZATION
+}
+
+enum FileType {
+  CSV
+  XLSX
+}
+
+enum UploadStatus {
+  PENDING
+  PROCESSING
+  UPLOADED
+  FAILED
+}
+
+enum CampaignStatus {
+  PENDING
+  CANCELLED
+  APPROVED
+}
+
+enum DeliveryStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+}
+
+enum QuickSendStatus {
+  PENDING
+  SENT
+  FAILED
+}
+
+model User {
+  id                String       @id @default(uuid())
+  email             String?      @unique
+  phoneNumber       String?      @unique
+  hashedPassword    String?
+  firstName         String?
+  lastName          String?
+  organizationName  String?
+  profileImage      String?
+  accountType       AccountType?
+  isAccountVerified Boolean      @default(false)
+  role              Role         @default(USER)
+  citizenshipNumber String?
+  citizenshipImage  String?
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+  otp               String? // Store hashed OTP for security
+  otpExpires        DateTime? // Expiry timestamp for OTP
+
+  files             Files[]
+  receiver          Receiver[]
+  campaigns         Campaign[]
+  myContacts        My_Contact[]
+  categories        Category[]
+  invalidMyContacts Invalid_My_Contact[]
+  campaignPayments  CampaignPayment[]
+
+  @@map("users")
+}
+
+model Category {
+  id                String               @id @default(uuid())
+  name              String               @unique
+  userId            String
+  description       String?
+  user              User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  myContacts        My_Contact[]
+  files             Files[]
+  campaigns         Campaign[]
+  isDeleted         Boolean              @default(false)
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+  invalidMyContacts Invalid_My_Contact[]
+
+  @@map("categories")
+}
+
+model Files {
+  id                String       @id @default(uuid())
+  userId            String
+  name              String
+  path              String
+  numberOfReceivers Int?
+  invalidRowsPath   String?
+  sizeInBytes       BigInt
+  type              FileType
+  CategoryId        String
+  uploadStatus      UploadStatus @default(PENDING)
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  category           Category             @relation(fields: [CategoryId], references: [id], onDelete: SetNull)
+  user               User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  myContact          My_Contact[]
+  Invalid_My_Contact Invalid_My_Contact[]
+
+  @@map("files")
+}
+
+model My_Contact {
+  id           String  @id @default(uuid())
+  fileId       String?
+  firstName    String?
+  lastName     String?
+  province     String?
+  email        String?
+  district     String?
+  municipality String?
+  phoneNumber  String
+  categoryId   String?
+  userId       String
+
+  isDeleted Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  category Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  file     Files?    @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, categoryId, phoneNumber])
+  @@map("my_contacts")
+}
+
+model Invalid_My_Contact {
+  id           String   @id @default(uuid())
+  fileId       String?
+  firstName    String?
+  lastName     String?
+  province     String?
+  district     String?
+  municipality String?
+  phoneNumber  String?
+  email        String?
+  categoryId   String?
+  userId       String
+  errorReason  String?
+  isDeleted    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  category Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  file     Files?    @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("invalid_my_contacts")
+}
+
+model Receiver {
+  id                String            @id @default(uuid())
+  firstName         String?
+  lastName          String?
+  province          String?
+  district          String?
+  municipality      String?
+  phoneNumber       String
+  email             String?
+  isDeleted         Boolean           @default(false)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  receiverMessageId String?
+  userId            String
+  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  receiverMessage   Receiver_Message? @relation(fields: [receiverMessageId], references: [id], onDelete: Cascade)
+
+  @@map("receiver")
+}
+
+model Receiver_Message {
+  id          String         @id @default(uuid())
+  textMessage String
+  status      DeliveryStatus @default(NOT_STARTED)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  receiver    Receiver[]
+
+  @@map("receiver_message")
+}
+
+model Campaign {
+  id              String           @id @default(uuid())
+  userId          String
+  categoryId      String
+  name            String
+  subject         String           @default("")
+  emailBody       String           @default("")
+  status          CampaignStatus   @default(PENDING)
+  deliveryStatus  DeliveryStatus   @default(NOT_STARTED)
+  province        String?
+  district        String?
+  municipality    String?
+  totalRecipients Int?
+  totalDelivered  Int              @default(0)
+  totalBounced    Int              @default(0)
+  totalFailed     Int              @default(0)
+  deliveryRate    Float            @default(0)
+  totalCost       Float?
+  paid            Boolean          @default(false)
+  payment         CampaignPayment?
+  submitDate      DateTime?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  category        Category         @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("campaign")
+}
+
+model EmailPricing {
+  id String @id @default(cuid())
+
+  // Store in paisa (1 NPR = 100 paisa)
+  pricePerEmailPaisa Int // e.g. 85 = Rs. 0.85
+  currency           String    @default("NPR")
+  isActive           Boolean   @default(true)
+  effectiveFrom      DateTime
+  effectiveTo        DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  @@index([isActive, effectiveFrom])
+}
+
+model CampaignPayment {
+  id              String    @id @default(uuid())
+  campaignId      String    @unique // One payment per campaign
+  userId          String
+  amount          Float // e.g., 1250.00 NPR
+  amountInPaisa   Int // 125000 paisa for precision
+  paymentMethod   String // "esewa" 
+  status          String    @default("pending") // pending, paid, failed, refunded
+  transactionId   String? // pidx from or ref_id from eSewa
+  transactionCode String? // From gateway
+  gatewayData     Json? // Raw callback data for debugging
+  paidAt          DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  campaign Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+  @@index([transactionId])
+  @@map("campaign_payments")
+}

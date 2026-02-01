@@ -1,14 +1,24 @@
 {
   "name": "@repo/types",
   "version": "1.0.0",
-  "main": "./index.ts",
-  "types": "./index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./index.ts",
-    "./user": "./src/user.schema.ts",
-    "./service-request": "./src/service-request.schema.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./user": {
+      "types": "./dist/src/user.schema.d.ts",
+      "default": "./dist/src/user.schema.js"
+    },
+    "./service-request": {
+      "types": "./dist/src/service-request.schema.d.ts",
+      "default": "./dist/src/service-request.schema.js"
+    }
   },
   "scripts": {
+    "build": "tsc",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit"
   },

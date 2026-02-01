@@ -723,35 +723,38 @@ Key entities: Users, Campaigns, Contacts, EmailLogs, Uploads, Categories, Prices
 
 ## 🔐 Environment Variables
 
-### API (.env)
+### **🎯 Centralized Environment Management**
+
+This project uses a **single source of truth** for environment variables! No more managing multiple `.env` files.
+
+#### Quick Setup (2 steps):
 
 ```bash
-DATABASE_URL=postgresql://user:password@host:5432/dbname
-REDIS_URL=redis://user:password@host:6379
-JWT_SECRET=your_super_secret_key
-JWT_EXPIRY=7d
-OTP_EXPIRY=30m
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_USER=your_email@gmail.com
-SMTP_PASSWORD=your_app_password
-IMAGEKIT_PUBLIC_KEY=your_public_key
-IMAGEKIT_PRIVATE_KEY=your_private_key
-ESEWA_MERCHANT_ID=your_esewa_merchant_id
-ESEWA_SECRET_KEY=your_esewa_secret_key
-ESEWA_ENVIRONMENT=sandbox
-ESEWA_SUCCESS_URL=http://localhost:3000/payment/success
-ESEWA_FAILURE_URL=http://localhost:3000/payment/failure
-CLIENT_URL=http://localhost:3000
-PORT=4000
-NODE_ENV=development
+# 1. Run sync (auto-creates .env from .env.example if needed)
+npm run sync-env
+
+# 2. Edit .env with your actual values, then sync again
+nano .env && npm run sync-env
 ```
 
-### Frontend (.env)
+**That's it!** All apps (`api`, `web`, `workers`) and packages (`db`) will automatically get their required environment variables.
 
+#### How it works:
+- ✅ **Single `.env` file** at the root - edit once, apply everywhere
+- ✅ **Automatic distribution** - script syncs to all apps/packages  
+- ✅ **Smart filtering** - each location only gets what it needs
+- ✅ **Type-safe** - easy to track dependencies
+
+See [ENV-SETUP.md](./ENV-SETUP.md) for detailed documentation.
+
+#### Available Environment Variables:
+
+**Database:**
 ```bash
-NEXT_PUBLIC_API_URL=http://localhost:4000/api/v1
-NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY=your_public_key
+DATABASE_URL=postgresql://user:password@host:5432/dbname
+POSTGRES_DB=sms_platform
+POSTGRES_USER=admin
+POSTGRES_PASSWORD=admin
 ```
 
 ---

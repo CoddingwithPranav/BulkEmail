@@ -1,8 +1,6 @@
 const sgMail = require('@sendgrid/mail');
 import { getMailgunClient, getMailgunDomain } from "./transporter";
 import { getOTPTemplate } from "./templates/otp-template";
-import dotenv from "dotenv";
-dotenv.config({ debug: true }); // debug: true for more info
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 interface BulkEmailData {
@@ -17,8 +15,7 @@ const SENDGRID_FROM = process.env.SENDGRID_FROM_EMAIL  ;
 const MAILGUN_FROM = process.env.MAILGUN_FROM_EMAIL || 'noreply@bulkemail.com';
 
 export const sendOTPEmail = async (to: string, otp: string) => {
-    console.log("Preparing to send OTP email to:", to);
-
+    console.log("📧 Preparing to send OTP email to:", to);
     try {
         if (USE_SENDGRID) {
             const msg = {

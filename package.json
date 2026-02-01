@@ -9,7 +9,12 @@
     "check-types": "turbo run check-types",
     "generate": "pnpm --filter @repo/db run generate",
     "migrate:dev": "pnpm --filter @repo/db run migrate:dev",
-    "studio": "pnpm --filter @repo/db run studio"
+    "studio": "pnpm --filter @repo/db run studio",
+    "sync-env": "bash sync-env.sh",
+    "sync-env:docker": "bash sync-env.sh --docker",
+    "sync-env:js": "node sync-env.js",
+    "sync-env:js:docker": "node sync-env.js --docker",
+    "env": "bash sync-env.sh"
   },
   "devDependencies": {
     "prettier": "^3.6.2",
@@ -18,6 +23,6 @@
   },
   "packageManager": "pnpm@9.0.0",
   "engines": {
-    "node": ">=18"
+    "node": ">=20.9.0"
   }
 }

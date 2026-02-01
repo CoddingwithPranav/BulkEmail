@@ -63,6 +63,9 @@ export const register = async (data: any): Promise<User> => {
 
 export const verifyOTP = async (email: string, otp: string): Promise<User> => {
   const user = await dbClient.user.findUnique({ where: { email } });
+  console.log("Verifying OTP for email:", email, "OTP:", otp);
+    await sendOTPEmail(email!, otp);
+  console.log("OTP sent to email:", email, "OTP:", otp);
   if (!user) throw new Error("User not found");
 
   if (!user.otp || !user.otpExpires) throw new Error("No OTP found");
