@@ -553,86 +553,248 @@ User          Frontend      API         Database    eSewa Gateway
 ### Prerequisites
 
 - Node.js ≥ 20
-- Docker & Docker Compose
-- pnpm (recommended) or npm/yarn
-- PostgreSQL database (or use Docker)
-- Redis (or use Docker)
+- pnpm (recommended) or npm
+- PostgreSQL and Redis (Docker handles this automatically)
 
-### Local Development with Docker
+---
 
-1. **Clone the repository**
+### 🐳 Docker Setup (Recommended)
+
+**Fastest way to get started - everything runs in containers!**
+
+#### 1. Clone & Setup Environment
 
 ```bash
-git clone https://github.com/yourusername/Bulk Email.git
-cd Bulk Email
+git clone https://github.com/yourusername/MessengerNepal.git
+cd MessengerNepal
+
+# Copy example environment files
+cp .env.docker.example .env.docker
+
+# Edit .env.docker with your actual API keys
+nano .env.docker  # or use your favorite editor
 ```
 
-2. **Set up environment variables**
+#### 2. Sync Environment Variables
 
 ```bash
-cp apps/api/.env.example apps/api/.env
-cp apps/web/.env.example apps/web/.env
+# Distribute environment variables to all apps
+npm run sync-env:docker
 ```
 
-3. **Start all services**
+#### 3. Start All Services
 
 ```bash
-docker-compose up --build
+docker-compose up -d
 ```
 
-Services available at:
-- Frontend: http://localhost:3000
-- API: http://localhost:4000
-- PostgreSQL: localhost:5432
-- Redis: localhost:6379
+**Services will be available at:**
+- 🌐 **Frontend**: http://localhost:3000
+- 🔌 **API**: http://localhost:8000
+- 🗄️ **PostgreSQL**: localhost:5432
+- 📮 **Redis**: localhost:6379
 
-4. **Run Prisma migrations**
+#### 4. Check Logs
 
 ```bash
-cd packages/db
-npx prisma migrate dev
-npx prisma generate
+# View all logs
+docker-compose logs -f
+
+# View specific service
+docker logs messanger_api_dev -f
 ```
 
-### Manual Setup
-
-1. **Install dependencies**
+#### 5. Stop Services
 
 ```bash
+docker-compose down
+```
+
+---
+
+### 💻 Manual Setup (Local Development)
+
+**Run services directly on your machine**
+
+#### 1. Clone & Install Dependencies
+
+```bash
+git clone https://github.com/yourusername/MessengerNepal.git
+cd MessengerNepal
 pnpm install
 ```
 
-2. **Setup databases locally**
+#### 2. Setup Environment
 
 ```bash
-# macOS with Homebrew
-brew install postgresql redis
-brew services start postgresql
+# Copy example file
+cp .env.example .env
+
+# Edit with your actual values
+nano .env
+
+# Sync to all apps
+npm run sync-env
+```
+
+#### 3. Install & Start Databases
+
+```bash
+# macOS (with Homebrew)
+brew install postgresql@16 redis
+brew services start postgresql@16
 brew services start redis
+
+# Ubuntu/Debian
+sudo apt install postgresql redis-server
+sudo systemctl start postgresql redis-server
+
+# Create database
+createdb -U postgres sms_platform
 ```
 
-3. **Run Prisma migrations**
+#### 4. Setup Database Schema
 
 ```bash
-cd packages/db
-npx prisma migrate dev
-npx prisma generate
+# Run migrations
+npm run migrate:dev
+
+# Generate Prisma client
+npm run generate
 ```
 
-4. **Run services individually**
+#### 5. Start Development Servers
+
+```bash
+# Start all services concurrently
+npm run dev
+```
+
+**Or run individually:**
 
 ```bash
 # Terminal 1 - API
-pnpm dev -w api
+cd apps/api && pnpm dev
 
-# Terminal 2 - Web
-pnpm dev -w web
+# Terminal 2 - Frontend
+cd apps/web && pnpm dev
 
-# Terminal 3 - File Processor Worker
-pnpm dev -w worker-file-processor
+# Terminal 3 - File Worker
+cd apps/worker-file-processor && pnpm dev
 
-# Terminal 4 - Email Sender Worker
-pnpm dev -w worker-send-email
+# Terminal 4 - Email Worker
+cd apps/worker-send-email && pnpm dev
+```
+
+---
+
+### 📤 File Upload Configuration
+
+The application uses a **shared uploads directory** for CSV/Excel files.
+
+#### Local Development
+```bash
+# Uploads saved to:
+./uploads/
+
+# Environment variable:
+UPLOADS_DIR=./uploads
+```
+
+#### Docker
+```bash
+# Uploads mounted at:
+./uploads/ → /app/uploads (in containers)
+
+# Both API and worker access the same directory
+# Environment variable:
+UPLOADS_DIR=/app/uploads
+```
+
+**How it works:**
+1. User uploads CSV/Excel via API
+2. File saved to `UPLOADS_DIR`
+3. Job queued in Redis
+4. Worker picks up job and reads file from `UPLOADS_DIR`
+5. Worker parses and saves contacts to database
+
+**Troubleshooting uploads:**
+
+```bash
+# Check uploads directory exists
+ls -la uploads/
+
+# In Docker - verify both containers can access
+docker exec messanger_api_dev ls -la /app/uploads
+docker exec messanger_worker_file_dev ls -la /app/uploads
+
+# Check environment variable
+docker exec messanger_api_dev printenv UPLOADS_DIR
+```
+
+---
+
+### 🔧 Useful Commands
+
+```bash
+# Environment management
+npm run sync-env              # Sync .env to all apps (local)
+npm run sync-env:docker       # Sync .env.docker to all apps (Docker)
+
+# Database
+npm run migrate:dev           # Run migrations
+npm run generate              # Generate Prisma client
+npm run studio                # Open Prisma Studio
+
+# Development
+npm run dev                   # Start all services
+npm run build                 # Build all apps
+npm run lint                  # Lint code
+
+# Docker
+docker-compose up -d          # Start in background
+docker-compose down           # Stop all services
+docker-compose logs -f        # Follow logs
+docker-compose restart api    # Restart specific service
+```
+
+---
+
+### 🔐 Required Environment Variables
+
+Edit `.env` or `.env.docker` with these required values:
+
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `DATABASE_URL` | PostgreSQL connection | `postgresql://admin:admin@postgres:5432/sms_platform` |
+| `REDIS_URL` | Redis connection | `redis://redis:6379` |
+| `JWT_SECRET` | JWT signing key | `your-secret-key-change-this` |
+| `SENDGRID_API_KEY` | SendGrid API key | `SG.your_api_key` |
+| `SENDGRID_FROM_EMAIL` | Verified sender email | `noreply@yourdomain.com` |
+| `IMAGEKIT_PUBLIC_KEY` | ImageKit public key | `public_xxx` |
+| `IMAGEKIT_PRIVATE_KEY` | ImageKit private key | `private_xxx` |
+| `IMAGEKIT_URL_ENDPOINT` | ImageKit URL | `https://ik.imagekit.io/your_id` |
+| `ESEWA_SECRET_KEY` | eSewa payment secret | `your_secret` |
+
+**📝 Note:** See [ENV-SETUP.md](./ENV-SETUP.md) for complete environment documentation.
+
+---
+
+### 🧪 Testing the Setup
+
+1. **Access Frontend:** http://localhost:3000
+2. **Register an account** (OTP will be sent via email)
+3. **Create a category** for your contacts
+4. **Upload a CSV file** with contacts
+5. **Create an email campaign**
+6. **Complete payment** via eSewa
+7. **Send campaign** and track delivery
+
+**Sample CSV format:**
+```csv
+FirstName,LastName,PhoneNumber,Email,Province,District,Municipality
+John,Doe,9841234567,john@example.com,Province 1,Kathmandu,Kathmandu Metro
+Jane,Smith,9851234567,jane@example.com,Province 3,Lalitpur,Lalitpur Metro
 ```
 
 ---

@@ -108,6 +108,7 @@ services:
       - /app/node_modules
       - /app/apps/worker-file-processor/node_modules
       - /app/apps/worker-file-processor/dist
+      - ./uploads:/app/uploads
     env_file:
       - .env.docker
     environment:

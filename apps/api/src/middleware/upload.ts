@@ -3,10 +3,18 @@ import multer from "multer";
 import path from "path";
 
 const getUploadsDir = () => {
+  // Use UPLOADS_DIR environment variable if set
+  if (process.env.UPLOADS_DIR) {
+    return path.resolve(process.env.UPLOADS_DIR);
+  }
+  
+  // Fallback to TURBO_ROOT for monorepo
   const turboRoot = process.env.TURBO_ROOT;
   if (turboRoot) {
     return path.join(turboRoot, "uploads");
   }
+  
+  // Default: relative to project root
   return path.join(process.cwd(), "..", "..", "uploads"); // go up two levels from apps/api
 };
 
