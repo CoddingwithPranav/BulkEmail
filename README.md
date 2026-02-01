@@ -589,7 +589,7 @@ docker-compose up -d
 ```
 
 **Services will be available at:**
-- 🌐 **Frontend**: http://localhost:3000
+- 🌐 **Frontend**: http://localhost:30001
 - 🔌 **API**: http://localhost:8000
 - 🗄️ **PostgreSQL**: localhost:5432
 - 📮 **Redis**: localhost:6379
@@ -782,7 +782,7 @@ Edit `.env` or `.env.docker` with these required values:
 
 ### 🧪 Testing the Setup
 
-1. **Access Frontend:** http://localhost:3000
+1. **Access Frontend:** http://localhost:30001
 2. **Register an account** (OTP will be sent via email)
 3. **Create a category** for your contacts
 4. **Upload a CSV file** with contacts
