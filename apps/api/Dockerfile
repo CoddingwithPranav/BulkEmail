@@ -33,7 +33,6 @@ RUN pnpm install --frozen-lockfile
 
 
 # Generate Prisma client
-RUN cd packages/db && npx prisma migrate dev --name init --skip-seed --create-only
 RUN cd packages/db && npx prisma generate
 
 # Source code will be mounted via volumes
