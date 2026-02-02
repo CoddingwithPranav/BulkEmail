@@ -20,7 +20,7 @@ app.use(
     origin: [
       "https://bulkemail.pranavmishra.dev",       // Main production frontend
       "https://www.bulkemail.pranavmishra.dev",    // If you have www version
-      "http://localhost:3000",                    // For local development
+      "http://localhost:3001",                    // For local development
       "http://localhost:5173",                    // Vite or other local ports if needed
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],

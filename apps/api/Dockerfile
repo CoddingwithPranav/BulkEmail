@@ -51,8 +51,12 @@ RUN cd packages/email && pnpm build
 
 # Source code will be mounted via volumes
 
+# Copy entrypoint script
+COPY scripts/api-entrypoint.sh /app/scripts/api-entrypoint.sh
+RUN chmod +x /app/scripts/api-entrypoint.sh
+
 WORKDIR /app/apps/api
 
 EXPOSE 8000
 
-CMD ["pnpm", "dev"]
+CMD ["/app/scripts/api-entrypoint.sh"]

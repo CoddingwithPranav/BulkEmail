@@ -1,12 +1,12 @@
-export * from "./src/auth";
-export * from "./src/campaign";
-export * from "./src/file";
-export * from "./src/quickSms";
-export * from "./src/receiver";
-export * from "./src/users";
-export * from "./src/categories";
-export * from "./src/myContact";
-export * from "./src/price";
+export * from "./auth";
+export * from "./campaign";
+export * from "./file";
+export * from "./quickSms";
+export * from "./receiver";
+export * from "./users";
+export * from "./categories";
+export * from "./myContact";
+export * from "./price";
 
 export type InitialResponse<T> = {
   success: boolean;

@@ -97,6 +97,7 @@ services:
       - /app/packages/db/dist
       - /app/packages/email/dist
       - ./uploads:/app/uploads
+      - ./scripts:/app/scripts
     env_file:
       - .env.docker
     environment:

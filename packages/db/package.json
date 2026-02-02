@@ -6,11 +6,13 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "migrate:dev": "prisma migrate dev",
+    "migrate:dev": "prisma migrate dev --schema=./prisma/schema.prisma",
+    "migrate:deploy": "prisma migrate deploy --schema=./prisma/schema.prisma",
     "seed": "tsx src/seed.ts",
-    "format": "prisma format",
-    "generate": "prisma generate",
-    "studio": "prisma studio"
+    "format": "prisma format --schema=./prisma/schema.prisma",
+    "generate": "prisma generate --schema=./prisma/schema.prisma",
+    "studio": "prisma studio --schema=./prisma/schema.prisma",
+    "db:push": "prisma db push --schema=./prisma/schema.prisma"
   },
   "keywords": [],
   "author": "",

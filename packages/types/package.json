@@ -7,14 +7,6 @@
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
-    },
-    "./user": {
-      "types": "./dist/src/user.schema.d.ts",
-      "default": "./dist/src/user.schema.js"
-    },
-    "./service-request": {
-      "types": "./dist/src/service-request.schema.d.ts",
-      "default": "./dist/src/service-request.schema.js"
     }
   },
   "scripts": {
