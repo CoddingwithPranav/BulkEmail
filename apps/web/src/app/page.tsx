@@ -127,7 +127,7 @@ export default async function HomePage() {
                   asChild
                   className="h-14 px-8 text-lg font-semibold bg-primary hover:bg-primary/90 shadow-xl"
                 >
-                  <Link href="/login">
+                  <Link href={isLoggedIn ? "/dashboard" : "/login"}>
                     <Send className="mr-2 h-5 w-5" />
                     Start Free Trial
                   </Link>
@@ -272,54 +272,6 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section id="testimonials" className="py-24 bg-muted/30">
-        <div className="container mx-auto px-6">
-          <div className="text-center space-y-4 mb-16">
-            <h2 className="text-4xl lg:text-5xl font-bold">Trusted by Teams</h2>
-            <p className="text-xl text-muted-foreground">
-              Leading organizations use Bulk Email every day
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              {
-                title: "Marketing Director",
-                company: "Tech Startup",
-                text: "Best email marketing tool we've used. Clean interface, powerful features, and incredible support.",
-              },
-              {
-                title: "E-commerce Manager",
-                company: "Online Store",
-                text: "Our conversion rates increased 150% after switching. The analytics are exactly what we needed.",
-              },
-              {
-                title: "Campaign Manager",
-                company: "Nonprofit",
-                text: "Bulk Email helped us raise 3x more funds. Their customer success team is amazing.",
-              },
-            ].map((t, i) => (
-              <Card
-                key={i}
-                className="p-8 bg-card/80 backdrop-blur border-border/50 hover:border-primary/30 transition-colors"
-              >
-                <div className="mb-4 flex gap-1">
-                  {[...Array(5)].map((_, i) => (
-                    <span key={i} className="text-yellow-400">★</span>
-                  ))}
-                </div>
-                <p className="text-base italic text-foreground/90 mb-6">"{t.text}"</p>
-                <div className="pt-4 border-t border-border/50">
-                  <p className="font-bold text-sm">{t.title}</p>
-                  <p className="text-xs text-muted-foreground">{t.company}</p>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
       <section id="try-now" className="py-32 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-t from-primary/5 via-transparent to-transparent" />
         <div className="container mx-auto px-6 text-center relative z-10">
@@ -336,7 +288,7 @@ export default async function HomePage() {
                 asChild
                 className="h-14 px-8 text-lg font-semibold bg-primary hover:bg-primary/90 shadow-xl"
               >
-                <Link href="/login">
+                <Link href={isLoggedIn ? "/dashboard" : "/login"}>
                   Start Free Trial
                   <Send className="ml-2 h-5 w-5" />
                 </Link>
@@ -355,70 +307,12 @@ export default async function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-border/50 bg-background/50 py-12">
-        <div className="container mx-auto px-6">
-          <div className="grid md:grid-cols-4 gap-8 mb-8">
-            <div>
-              <div className="flex items-center gap-2 mb-4">
-               <Image src="/images/logo.svg" alt="Logo" width={30} height={30} /> 
-                <span className="text-lg font-bold">Bulk Email</span>
-              </div>
-              <p className="text-sm text-muted-foreground">
-                Professional email marketing for everyone.
-              </p>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Product</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li>
-                  <Link href="#features" className="hover:text-primary">
-                    Features
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#pricing" className="hover:text-primary">
-                    Pricing
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Company</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li>
-                  <Link href="#" className="hover:text-primary">
-                    About
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#contact" className="hover:text-primary">
-                    Contact
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Legal</h4>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li>
-                  <Link href="/privacy" className="hover:text-primary">
-                    Privacy
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/terms" className="hover:text-primary">
-                    Terms
-                  </Link>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t border-border/50 pt-8 text-center">
-            <p className="text-muted-foreground text-sm">
-              © 2025 Bulk Email. All rights reserved. Made with{" "}
-              <span className="text-red-500">❤️</span>
-            </p>
-          </div>
+      <footer className="border-t border-border/50 bg-background/50 py-8">
+        <div className="container mx-auto px-6 text-center">
+          <p className="text-muted-foreground text-sm">
+            © 2025 Bulk Email. All rights reserved. Made with{" "}
+            <span className="text-red-500">❤️</span>
+          </p>
         </div>
       </footer>
     </div>

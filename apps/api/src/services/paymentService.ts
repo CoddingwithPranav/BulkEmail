@@ -8,15 +8,31 @@ export const createCampaignPayment = async (data: {
 }): Promise<any> => {
   const amountInPaisa = Math.round(data.amount * 100);
 
-  return await dbClient.campaignPayment.create({
-    data: {
-      userId: data.userId,
-      campaignId: data.campaignId,
-      amount: data.amount,
-      amountInPaisa,
-      paymentMethod: data.paymentMethod,
-      status: "pending",
-    },
+  return await dbClient.$transaction(async (tx: any) => {
+    const existing = await tx.campaignPayment.findUnique({
+      where: { campaignId: data.campaignId },
+    });
+
+    // If already paid, keep the existing successful payment record.
+    if (existing?.status === "paid") {
+      return existing;
+    }
+
+    // eSewa requires unique transaction_uuid per attempt.
+    if (existing) {
+      await tx.campaignPayment.delete({ where: { id: existing.id } });
+    }
+
+    return await tx.campaignPayment.create({
+      data: {
+        userId: data.userId,
+        campaignId: data.campaignId,
+        amount: data.amount,
+        amountInPaisa,
+        paymentMethod: data.paymentMethod,
+        status: "pending",
+      },
+    });
   });
 };
 
@@ -34,7 +50,7 @@ export const markCampaignPaymentAsPaid = async (
   transactionCode: string,
   gatewayData?: any
 ): Promise<any> => {
-  return await dbClient.$transaction(async (tx) => {
+  return await dbClient.$transaction(async (tx: any) => {
     const payment = await tx.campaignPayment.update({
       where: { campaignId },
       data: {

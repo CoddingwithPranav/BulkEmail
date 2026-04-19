@@ -84,7 +84,13 @@ export default function ResetPasswordPage() {
       },
       {
         onSuccess: () => {
+          toast.success("Password changed successfully!");
           router.push("/login");
+        },
+        onError: (error: any) => {
+          toast.error(
+            error.response?.data?.message || "Failed to reset password"
+          );
         },
       }
     );
@@ -207,7 +213,12 @@ export default function ResetPasswordPage() {
                 <p className="text-muted-foreground">
                   Didn’t receive it?{" "}
                   <button
-                    onClick={() => resend(email)}
+                    onClick={() =>
+                      resend(email, {
+                        onSuccess: () => toast.success("New OTP sent!"),
+                        onError: () => toast.error("Failed to resend OTP"),
+                      })
+                    }
                     className="text-primary font-medium hover:underline"
                   >
                     Resend

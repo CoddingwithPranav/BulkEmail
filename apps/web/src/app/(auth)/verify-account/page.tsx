@@ -79,7 +79,7 @@ export default function VerifyAccountPage() {
   const handleResend = () => {
     resend(decodedEmail, {
       onSuccess: () => toast.success("New code sent!"),
-      onError: () => toast.error("Failed to resend"),
+      onError: () => toast.error("Failed to resend code"),
     });
   };
 

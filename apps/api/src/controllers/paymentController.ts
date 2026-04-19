@@ -22,10 +22,6 @@ export const initiatePayment = async (req: AuthRequest, res: Response) => {
     if (!campaignId || !amount || !["esewa"].includes(paymentMethod)) {
       return res.status(400).json({ error: "Invalid request data" });
     }
-    const existingPayment = await paymentService.findCampaignPaymentByCampaignId(campaignId);
-    if (existingPayment?.status === "paid") {
-      return res.status(400).json({ error: "Campaign already paid" });
-    }
 
     const payment = await paymentService.createCampaignPayment({
       userId,
@@ -58,7 +54,7 @@ export const initiatePayment = async (req: AuthRequest, res: Response) => {
       });
   } catch (err: any) {
     console.error("Payment initiation error:", err);
-    res.status(500).json({ error: "Failed to initiate payment" });
+    res.status(500).json({ error: err.message || "Failed to initiate payment" });
   }
 };
 

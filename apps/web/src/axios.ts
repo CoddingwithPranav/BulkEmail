@@ -36,7 +36,6 @@ axiosInstance.interceptors.response.use(
       const { clearAuth } = useAuthStore.getState();
       clearAuth();
       queryClient.clear();
-      toast.error("Invalid session. logging out...");
       await clearAuthToken();
 
       setTimeout(() => {

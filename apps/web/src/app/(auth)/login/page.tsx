@@ -70,7 +70,6 @@ export default function AuthPage() {
       },
       onError: (error) => {
         console.log(error);
-        toast.error("Login failed. Please check your credentials.");
       },
     });
   };
