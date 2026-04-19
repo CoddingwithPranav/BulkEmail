@@ -69,26 +69,6 @@ export default function PremiumDashboard() {
           ))}
         </div>
 
-        {/* Secondary Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          {[
-            { label: "Messages Sent", value: stats.totalMessagesSent.toLocaleString(), icon: MessageSquare },
-            { label: "Avg Delivery Rate", value: `${stats.avgDeliveryRate}%`, icon: Globe },
-            { label: "Valid Contacts", value: stats.totalContacts.toLocaleString(), icon: CheckCircle2 },
-            { label: "Invalid Contacts", value: stats.totalInvalidContacts, icon: AlertCircle },
-          ].map((stat, i) => (
-            <Card key={i} className="p-5 border bg-muted/30">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-2xl font-bold">{stat.value}</p>
-                  <p className="text-xs text-muted-foreground mt-1">{stat.label}</p>
-                </div>
-                <stat.icon className="h-9 w-9 text-primary opacity-70" />
-              </div>
-            </Card>
-          ))}
-        </div>
-
         {/* Categories & Campaigns */}
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Categories */}
