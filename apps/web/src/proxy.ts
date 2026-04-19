@@ -7,6 +7,7 @@ const publicRoutes = [
   "/login",
   "/privacy",
   "/terms",
+  "/contact",
   "/about",
   "/forgot-password",
   "/verify-otp",

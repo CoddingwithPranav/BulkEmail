@@ -35,20 +35,31 @@ export default async function HomePage() {
           </Link>
 
           <nav className="hidden lg:flex items-center gap-10">
-            {["Features", "How It Works", "Try Now"].map(
-              (item) => (
-                <a
-                  key={item}
-                  href={`#${item.toLowerCase().replace(/\s+/g, "-")}`}
-                  className="text-foreground/80 hover:text-primary font-medium transition-colors"
-                >
-                  {item}
-                </a>
-              )
-            )}
+            {[
+              { label: "Features", href: "#features" },
+              { label: "How It Works", href: "#how-it-works" },
+              { label: "Try Now", href: "#try-now" },
+              { label: "About", href: "/about" },
+              { label: "Contact", href: "/contact" },
+            ].map((item) => (
+              <Link
+                key={item.label}
+                href={item.href}
+                className="text-foreground/80 hover:text-primary font-medium transition-colors"
+              >
+                {item.label}
+              </Link>
+            ))}
           </nav>
 
           <div className="flex items-center gap-4">
+            <Link
+              href="/contact"
+              className="hidden sm:block text-foreground/70 hover:text-primary font-medium"
+            >
+              Contact
+            </Link>
+
             {isLoggedIn ? (
               <>
                 <Button asChild variant="ghost" className="font-medium">
@@ -309,6 +320,14 @@ export default async function HomePage() {
       {/* Footer */}
       <footer className="border-t border-border/50 bg-background/50 py-8">
         <div className="container mx-auto px-6 text-center">
+          <div className="mb-3">
+            <Link href="/about" className="mr-4 text-sm text-foreground/80 hover:text-primary font-medium">
+              About
+            </Link>
+            <Link href="/contact" className="text-sm text-foreground/80 hover:text-primary font-medium">
+              Contact
+            </Link>
+          </div>
           <p className="text-muted-foreground text-sm">
             © 2025 Bulk Email. All rights reserved. Made with{" "}
             <span className="text-red-500">❤️</span>
