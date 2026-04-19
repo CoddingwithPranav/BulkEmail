@@ -159,30 +159,18 @@
 
 
 
-console.log("[FILE-PROCESSOR] Loading modules...");
 import logger from "@repo/config/logger";
-console.log("[FILE-PROCESSOR] 1");
 import { dbClient } from "@repo/db/client";
-console.log("[FILE-PROCESSOR] 2");
 import { uploadFileSchema } from "@repo/types";
-console.log("[FILE-PROCESSOR] 3");
 import { Job } from "bullmq";
-console.log("[FILE-PROCESSOR] 4");
 import csv from "csv-parser";
-console.log("[FILE-PROCESSOR] 5");
 import fs from "fs";
-console.log("[FILE-PROCESSOR] 6");
 import XLSX from "xlsx";
-console.log("[FILE-PROCESSOR] Modules loaded");
-
-
-
 
 const normalizePhone = (phone: unknown): string => {
   if (phone === null || phone === undefined) return "";
   return String(phone).replace(/\D/g, "").trim();
 };
-
 
 export const processFileJob = async (job: Job) => {
   const { fileId, filePath, categoryId, userId } = job.data as {
@@ -192,7 +180,14 @@ export const processFileJob = async (job: Job) => {
     userId: string;
   };
 
+  const existingContacts = await dbClient.my_Contact.findMany({
+    where: { userId, categoryId, isDeleted: false },
+    select: { phoneNumber: true },
+  });
+
+  const seenPhoneNumbers = new Set(existingContacts.map((contact:any) => contact.phoneNumber));
   const validContacts: any[] = [];
+  let duplicateCount = 0;
   let rowNumber = 0;
 
   const processRow = (row: any) => {
@@ -205,15 +200,22 @@ export const processFileJob = async (job: Job) => {
     const rawMunicipality = String(row.Municipality || row.municipality || "").trim();
     const rawEmail = String(row.Email || row.email || "").trim();
     const phoneRaw =
-      [row.PhoneNumber, row.phone, row.mobile, row.Phone, row.Mobile, row.phoneNumber]
-        .find(Boolean) || "";
+      [row.PhoneNumber, row.phone, row.mobile, row.Phone, row.Mobile, row.phoneNumber].find(Boolean) || "";
 
-    console.log(`Processing row ${rowNumber}:`, row);
-    console.log(`Normalized phone:`,phoneRaw);
     const phoneNumber = normalizePhone(phoneRaw);
 
     if (phoneNumber.length !== 10) {
       throw new Error(`Row ${rowNumber}: Phone number must be exactly 10 digits`);
+    }
+
+    if (seenPhoneNumbers.has(phoneNumber)) {
+      duplicateCount++;
+      logger.info("Duplicate contact skipped during file import", {
+        fileId,
+        rowNumber,
+        phoneNumber,
+      });
+      return;
     }
 
     const parsed = uploadFileSchema.safeParse({
@@ -227,9 +229,11 @@ export const processFileJob = async (job: Job) => {
     });
 
     if (!parsed.success) {
-      const errors = parsed.error.issues.map(i => i.message).join(", ");
+      const errors = parsed.error.issues.map((issue:any) => issue.message).join(", ");
       throw new Error(`Row ${rowNumber}: ${errors}`);
     }
+
+    seenPhoneNumbers.add(phoneNumber);
 
     validContacts.push({
       userId,
@@ -251,7 +255,11 @@ export const processFileJob = async (job: Job) => {
         fs.createReadStream(filePath)
           .pipe(csv())
           .on("data", (row) => {
-            try { processRow(row); } catch (e: any) { reject(e); }
+            try {
+              processRow(row);
+            } catch (error: any) {
+              reject(error);
+            }
           })
           .on("end", resolve)
           .on("error", reject);
@@ -270,12 +278,13 @@ export const processFileJob = async (job: Job) => {
       rows.forEach(processRow);
     }
 
-    // ALL ROWS VALID → Save in transaction
     await dbClient.$transaction(async (tx) => {
-      await tx.my_Contact.createMany({
-        data: validContacts,
-        skipDuplicates: true,
-      });
+      if (validContacts.length > 0) {
+        await tx.my_Contact.createMany({
+          data: validContacts,
+          skipDuplicates: true,
+        });
+      }
 
       await tx.files.update({
         where: { id: fileId },
@@ -289,9 +298,9 @@ export const processFileJob = async (job: Job) => {
     logger.info("File fully processed and uploaded", {
       fileId,
       totalContacts: validContacts.length,
+      duplicateCount,
     });
   } catch (err: any) {
-    // First invalid row → reject entire file
     await dbClient.files.update({
       where: { id: fileId },
       data: {
