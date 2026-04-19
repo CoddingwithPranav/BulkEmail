@@ -39,8 +39,6 @@ export default async function HomePage() {
               { label: "Features", href: "#features" },
               { label: "How It Works", href: "#how-it-works" },
               { label: "Try Now", href: "#try-now" },
-              { label: "About", href: "/about" },
-              { label: "Contact", href: "/contact" },
             ].map((item) => (
               <Link
                 key={item.label}
@@ -53,12 +51,6 @@ export default async function HomePage() {
           </nav>
 
           <div className="flex items-center gap-4">
-            <Link
-              href="/contact"
-              className="hidden sm:block text-foreground/70 hover:text-primary font-medium"
-            >
-              Contact
-            </Link>
 
             {isLoggedIn ? (
               <>
